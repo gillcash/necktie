@@ -4,7 +4,7 @@
 
 <h1 align="center">Necktie</h1>
 
-<p align="center"><em>the angel of late-stage capitalism for your AI agent</em></p>
+<p align="center"><em>An always-on response check and bounded review loop for AI agents.</em></p>
 
 Necktie adds a compact quality check to every agent response and provides an explicit, bounded workflow for consequential work. Invoke `/necktie` to frame, baseline, critique, reverse, execute, review, and verify a goal.
 
