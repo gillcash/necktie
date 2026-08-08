@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const r=process.argv[1],e=process.argv[2],g=e&&!e.startsWith('$'+'{')?e:'',p=g||r;require(p+'/hooks/necktie-context.js').main(['SessionStart',g])\" \"${CLAUDE_PLUGIN_ROOT}\" \"${extensionPath}\"",
+            "additionalContextLimit": 1200
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const r=process.argv[1],e=process.argv[2],g=e&&!e.startsWith('$'+'{')?e:'',p=g||r;require(p+'/hooks/necktie-context.js').main(['SubagentStart',g])\" \"${CLAUDE_PLUGIN_ROOT}\" \"${extensionPath}\"",
+            "additionalContextLimit": 1200
+          }
+        ]
+      }
+    ]
+  }
+}

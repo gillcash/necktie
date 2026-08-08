@@ -1,0 +1,32 @@
+{
+  "name": "necktie",
+  "version": "0.2.0",
+  "description": "The angel of late-stage capitalism for your AI agent: an always-on response check and an explicit bounded review loop.",
+  "author": {
+    "name": "gillcash",
+    "url": "https://github.com/gillcash"
+  },
+  "homepage": "https://github.com/gillcash/necktie",
+  "repository": "https://github.com/gillcash/necktie",
+  "license": "MIT",
+  "keywords": ["agent-loop", "prompt-reversal", "review", "verification"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Necktie",
+    "shortDescription": "the angel of late-stage capitalism for your AI agent",
+    "longDescription": "Necktie checks every response for goal fit, material omissions, and the strongest unasked expert question. Invoke /necktie for a bounded frame-to-verification workflow.",
+    "developerName": "gillcash",
+    "category": "Productivity",
+    "capabilities": ["Response review", "Prompt reversal", "Artifact verification"],
+    "websiteURL": "https://github.com/gillcash/necktie",
+    "defaultPrompt": [
+      "Run /necktie on this goal and produce a reviewed final deliverable.",
+      "Reverse this iterative session into one reusable execution brief.",
+      "Critique this inquiry, execute it, and independently review the result."
+    ],
+    "brandColor": "#334155",
+    "composerIcon": "./assets/logo-dark.png",
+    "logo": "./assets/logo-dark.png",
+    "logoDark": "./assets/logo-dark.png"
+  }
+}

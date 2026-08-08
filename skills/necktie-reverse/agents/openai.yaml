@@ -1,0 +1,6 @@
+interface:
+  display_name: "Necktie Reverse"
+  short_description: "Compile iterations into an executable brief"
+  default_prompt: "Use $necktie-reverse to compile this goal and critique into one executable brief."
+policy:
+  allow_implicit_invocation: false

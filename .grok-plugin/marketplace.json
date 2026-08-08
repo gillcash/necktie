@@ -1,0 +1,13 @@
+{
+  "name": "necktie",
+  "description": "Necktie Core and the explicit bounded Necktie Loop.",
+  "owner": { "name": "gillcash", "url": "https://github.com/gillcash" },
+  "plugins": [
+    {
+      "name": "necktie",
+      "description": "Check, broaden, reverse, review, and verify agent work.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

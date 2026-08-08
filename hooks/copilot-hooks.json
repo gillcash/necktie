@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "node \"${PLUGIN_ROOT}/hooks/necktie-context.js\" SessionStart copilot",
+        "powershell": "node \"${PLUGIN_ROOT}\\hooks\\necktie-context.js\" SessionStart copilot",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+name: necktie
+version: 0.2.0
+description: Necktie Core on every response, plus an explicit bounded review loop for Hermes Agent.
+author: gillcash
+provides_hooks:
+  - pre_llm_call
+  - pre_gateway_dispatch
+provides_commands:
+  - necktie
+  - necktie-critique
+  - necktie-reverse
+  - necktie-review
+provides_skills:
+  - necktie
+  - necktie-critique
+  - necktie-reverse
+  - necktie-review

@@ -1,0 +1,2 @@
+description = "Independently gate a candidate deliverable"
+prompt = "Use $necktie-review on: {{args}}. Judge the exact candidate against its brief, evidence, criteria, and verification; return APPROVE, REVISE, or BLOCK."

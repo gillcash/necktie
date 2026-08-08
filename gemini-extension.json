@@ -1,0 +1,6 @@
+{
+  "name": "necktie",
+  "version": "0.2.0",
+  "description": "Necktie Core on every response, plus an explicit bounded review loop.",
+  "contextFileName": "AGENTS.md"
+}

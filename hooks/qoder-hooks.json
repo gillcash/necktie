@@ -1,0 +1,26 @@
+{
+  "_comment": "Copy the hooks object into Qoder settings and replace NECKTIE_DIR with the absolute path to this checkout.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"NECKTIE_DIR/hooks/necktie-context.js\" UserPromptSubmit qoder"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "task|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"NECKTIE_DIR/hooks/necktie-context.js\" SubagentStart qoder"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "name": "@gillcash/necktie",
+  "version": "0.2.0",
+  "description": "The angel of late-stage capitalism for your AI agent: an always-on response check and an explicit bounded review loop.",
+  "keywords": ["agent-plugin", "agent-loop", "prompt-reversal", "review", "verification"],
+  "license": "MIT",
+  "author": {
+    "name": "gillcash",
+    "url": "https://github.com/gillcash"
+  },
+  "homepage": "https://github.com/gillcash/necktie",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gillcash/necktie.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gillcash/necktie/issues"
+  },
+  "main": "./.opencode/plugins/necktie.mjs",
+  "exports": {
+    ".": "./.opencode/plugins/necktie.mjs",
+    "./plugin": "./.opencode/plugins/necktie.mjs"
+  },
+  "files": [
+    "AGENTS.md",
+    "plugin.json",
+    "core/",
+    "hooks/",
+    "skills/",
+    "commands/",
+    ".opencode/",
+    ".qoder/",
+    ".qoder-plugin/",
+    "pi-extension/",
+    "assets/",
+    "LICENSE",
+    "NOTICE",
+    "!**/__pycache__/**",
+    "!**/*.pyc",
+    "!pi-extension/test/**"
+  ],
+  "scripts": {
+    "build:adapters": "node scripts/build-adapters.js && node scripts/build-openclaw-skills.js",
+    "check:adapters": "node scripts/build-adapters.js --check",
+    "check:versions": "node scripts/check-versions.js",
+    "test": "npm run check:adapters && npm run check:versions && node --test tests/*.test.js tests/*.test.mjs && npm test --prefix pi-extension && npm test --prefix necktie-mcp && python -m unittest discover -s tests -p test_*.py"
+  },
+  "pi": {
+    "extensions": ["./pi-extension/index.js"],
+    "skills": ["./skills"]
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

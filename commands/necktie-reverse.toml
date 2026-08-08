@@ -1,0 +1,2 @@
+description = "Compile iterative context into one executable brief"
+prompt = "Use $necktie-reverse on: {{args}}. Produce a self-contained brief that can be executed in a fresh session from raw evidence."

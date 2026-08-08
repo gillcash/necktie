@@ -1,0 +1,6 @@
+interface:
+  display_name: "Necktie Review"
+  short_description: "Gate outputs against evidence and criteria"
+  default_prompt: "Use $necktie-review to independently review this deliverable."
+policy:
+  allow_implicit_invocation: false

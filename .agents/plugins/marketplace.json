@@ -1,0 +1,19 @@
+{
+  "name": "necktie",
+  "interface": { "displayName": "Necktie" },
+  "plugins": [
+    {
+      "name": "necktie",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/gillcash/necktie.git",
+        "ref": "main"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

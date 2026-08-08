@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "necktie",
+  "description": "Necktie Core on every response, plus an explicit bounded review loop.",
+  "owner": { "name": "gillcash", "url": "https://github.com/gillcash" },
+  "plugins": [
+    {
+      "name": "necktie",
+      "description": "Check, broaden, reverse, review, and verify agent work.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
