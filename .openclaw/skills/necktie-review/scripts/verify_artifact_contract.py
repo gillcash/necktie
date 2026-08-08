@@ -195,6 +195,30 @@ def _check(identifier: str, passed: bool, requirement: str, evidence: str) -> di
     }
 
 
+def _opening_fence(line: str) -> tuple[str, int] | None:
+    match = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
+    if not match:
+        return None
+    marker = match.group(1)
+    if marker[0] == "`" and "`" in match.group(2):
+        return None
+    return marker[0], len(marker)
+
+
+def _closing_fence(line: str, marker: str, minimum: int) -> bool:
+    return bool(re.fullmatch(
+        rf" {{0,3}}{re.escape(marker)}{{{minimum},}}[ \t]*", line,
+    ))
+
+
+def _atx_heading(line: str) -> str | None:
+    match = re.match(r"^ {0,3}#{1,6}(?:[ \t]+|$)(.*)$", line)
+    if not match:
+        return None
+    heading = re.sub(r"[ \t]+#+[ \t]*$", "", match.group(1)).strip()
+    return heading or None
+
+
 def verify_contract(contract: dict[str, object], artifact_root: Path) -> dict[str, object]:
     contract = validate_contract(contract)
     unresolved_root = Path(os.path.abspath(artifact_root))
@@ -233,11 +257,23 @@ def verify_contract(contract: dict[str, object], artifact_root: Path) -> dict[st
         try:
             headings: set[str] = set()
             words = 0
+            fence_marker = ""
+            fence_length = 0
             with path.open("r", encoding="utf-8") as handle:
                 for line in handle:
-                    match = re.match(r"^#{1,6}\s+(.+?)\s*$", line)
-                    if match:
-                        headings.add(match.group(1).strip().casefold())
+                    content = line.rstrip("\r\n")
+                    if fence_marker:
+                        if _closing_fence(content, fence_marker, fence_length):
+                            fence_marker = ""
+                            fence_length = 0
+                        continue
+                    opening = _opening_fence(content)
+                    if opening:
+                        fence_marker, fence_length = opening
+                        continue
+                    heading = _atx_heading(content)
+                    if heading:
+                        headings.add(heading.casefold())
                     words += len(re.findall(r"\b[\w'-]+\b", line, re.UNICODE))
         except (OSError, UnicodeError) as exc:
             add(False, f"markdown file readable: {relative}", str(exc))
@@ -260,7 +296,9 @@ def verify_contract(contract: dict[str, object], artifact_root: Path) -> dict[st
             with path.open("r", encoding="utf-8-sig", newline="") as handle:
                 reader = csv.reader(handle)
                 header = next(reader, [])
-                data_rows = sum(1 for _ in reader)
+                data_rows = sum(
+                    1 for row in reader if any(cell.strip() for cell in row)
+                )
         except (OSError, UnicodeError, csv.Error) as exc:
             add(False, f"CSV file readable: {relative}", str(exc))
             continue

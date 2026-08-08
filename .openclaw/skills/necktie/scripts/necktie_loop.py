@@ -18,6 +18,8 @@ import uuid
 SCHEMA_VERSION = "3.0"
 LEGACY_SCHEMA_VERSION = "2.0"
 REVISION_LIMIT = 3
+DEFAULT_MAX_FILE_BYTES = 25 * 1024 * 1024
+REMOTE_CANDIDATE_KINDS = {"remote-reference", "attachment-reference"}
 STATES = {
     "frame", "baseline", "critique", "reverse", "execute", "review",
     "revise", "verify", "complete", "blocked",
@@ -240,38 +242,117 @@ def _contains_link_component(path: Path) -> bool:
     return False
 
 
-def _fingerprint_accepted_candidate(candidate: dict[str, object]) -> str:
-    """Fingerprint an accepted bounded local file; never fetch remote references."""
+def _is_remote_candidate(candidate: dict[str, object]) -> bool:
     location = str(candidate.get("location", ""))
-    if (
+    return (
         not location
-        or location.startswith(("http://", "https://"))
-        or candidate.get("kind") in {"remote-reference", "attachment-reference"}
-    ):
-        return str(candidate.get("sha256", ""))
+        or candidate.get("kind") in REMOTE_CANDIDATE_KINDS
+        or location.lower().startswith(("http://", "https://"))
+    )
+
+
+def _candidate_max_file_bytes(candidate: dict[str, object]) -> int:
+    value = candidate.get("max_file_bytes")
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise LoopError(
+            "local candidate has no valid max_file_bytes limit; rediscover it before acceptance"
+        )
+    return value
+
+
+def _candidate_warnings(candidate: dict[str, object]) -> list[str]:
+    warnings = candidate.setdefault("warnings", [])
+    if not isinstance(warnings, list) or not all(isinstance(item, str) for item in warnings):
+        raise LoopError("source candidate warnings must be an array of strings")
+    return warnings
+
+
+def _accepted_local_path(candidate: dict[str, object]) -> Path | None:
+    """Validate and return a bounded local candidate path."""
+    if _is_remote_candidate(candidate):
+        return None
+    location = str(candidate.get("location", ""))
     path = Path(location)
     if _contains_link_component(path):
         raise LoopError(f"accepted candidate contains a link or junction: {location}")
     if not path.is_file():
         raise LoopError(f"accepted candidate is not a readable file: {location}")
+    resolved = path.resolve(strict=True)
     root_text = str(candidate.get("root", ""))
     if root_text:
         try:
             root = Path(root_text).resolve(strict=False)
-            resolved = path.resolve(strict=True)
             if os.path.commonpath([
                 os.path.normcase(str(resolved)), os.path.normcase(str(root)),
             ]) != os.path.normcase(str(root)):
                 raise LoopError(f"accepted candidate escaped its root: {location}")
         except ValueError as exc:
             raise LoopError(f"accepted candidate escaped its root: {location}") from exc
-    if path.stat().st_size > 25 * 1024 * 1024:
+    return resolved
+
+
+def _fingerprint_accepted_candidate(candidate: dict[str, object]) -> str:
+    """Fingerprint an accepted bounded local file; never fetch remote references."""
+    path = _accepted_local_path(candidate)
+    if path is None:
         return str(candidate.get("sha256", ""))
-    digest = hashlib.sha256()
+    limit = _candidate_max_file_bytes(candidate)
+    warnings = _candidate_warnings(candidate)
+    warning = "content-not-read:file-too-large"
     with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+        initial = os.fstat(handle.fileno())
+        candidate["size"] = initial.st_size
+        if initial.st_size > limit:
+            candidate["sha256"] = ""
+            if warning not in warnings:
+                warnings.append(warning)
+            return ""
+        if warning in warnings:
+            warnings.remove(warning)
+        signature = (initial.st_dev, initial.st_ino, initial.st_size, initial.st_mtime_ns)
+        remaining = initial.st_size
+        digest = hashlib.sha256()
+        while remaining:
+            chunk = handle.read(min(1024 * 1024, remaining))
+            if not chunk:
+                raise LoopError(f"accepted candidate changed while fingerprinting: {path}")
             digest.update(chunk)
+            remaining -= len(chunk)
+        final = os.fstat(handle.fileno())
+        if signature != (final.st_dev, final.st_ino, final.st_size, final.st_mtime_ns):
+            raise LoopError(f"accepted candidate changed while fingerprinting: {path}")
     return digest.hexdigest()
+
+
+def _refresh_archive_inventory(candidate: dict[str, object]) -> None:
+    """Revalidate the current bytes of a local ZIP immediately before acceptance."""
+    if _is_remote_candidate(candidate):
+        return
+    location = str(candidate.get("location", ""))
+    is_archive = (
+        candidate.get("kind") == "archive"
+        or isinstance(candidate.get("archive"), dict)
+        or Path(location).suffix.lower() == ".zip"
+    )
+    if not is_archive:
+        return
+    path = _accepted_local_path(candidate)
+    if path is None:
+        return
+    limit = _candidate_max_file_bytes(candidate)
+    inventory = _load_source_discovery_module().inventory_zip(
+        path, max_member_bytes=limit,
+    )
+    candidate["archive"] = inventory
+    if inventory.get("status") == "blocked":
+        raise LoopError("blocked archive candidate cannot be accepted")
+
+
+def _candidate_location_key(candidate: dict[str, object]) -> tuple[str, str]:
+    location = str(candidate.get("location", ""))
+    if _is_remote_candidate(candidate):
+        return ("opaque", location)
+    return ("local", os.path.normcase(os.path.normpath(location)))
 
 
 def record_discovery(packet: dict[str, object], result: dict[str, object]) -> None:
@@ -281,15 +362,14 @@ def record_discovery(packet: dict[str, object], result: dict[str, object]) -> No
     discovery = packet["discovery"]
     existing = discovery["candidates"]
     by_location = {
-        str(item.get("location", "")).casefold(): item
+        _candidate_location_key(item): item
         for item in existing if isinstance(item, dict)
     }
     added = 0
     for raw in result.get("candidates", []):
         if not isinstance(raw, dict):
             continue
-        location = str(raw.get("location", ""))
-        key = location.casefold()
+        key = _candidate_location_key(raw)
         if key in by_location:
             current = by_location[key]
             origins = current.setdefault("also_discovered_as", [])
@@ -347,11 +427,9 @@ def decide_source(
         raise LoopError("ACCEPT requires a valid --kind")
     if not use.strip():
         raise LoopError("ACCEPT requires a non-empty --use")
-    archive = candidate.get("archive")
-    if isinstance(archive, dict) and archive.get("status") == "blocked":
-        raise LoopError("blocked archive candidate cannot be accepted")
     if candidate.get("access") == "metadata" and not approve_content:
         raise LoopError("metadata-only candidate requires --approve-content before acceptance")
+    _refresh_archive_inventory(candidate)
     fingerprint = _fingerprint_accepted_candidate(candidate)
     source_id = _next_identifier(packet["sources"], "S")
     source = {
@@ -531,7 +609,7 @@ def build_parser() -> argparse.ArgumentParser:
     discover.add_argument("--allow-broad-root", action="store_true")
     discover.add_argument("--max-depth", type=int, default=3)
     discover.add_argument("--max-files", type=int, default=500)
-    discover.add_argument("--max-file-bytes", type=int, default=25 * 1024 * 1024)
+    discover.add_argument("--max-file-bytes", type=int, default=DEFAULT_MAX_FILE_BYTES)
     source = subparsers.add_parser("source", help="accept or reject a discovered source")
     source.add_argument("--file", type=Path, required=True)
     source.add_argument("--candidate", required=True)

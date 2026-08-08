@@ -59,6 +59,8 @@ Use these fields:
 
 The loader rejects unknown fields. This behavior prevents a misspelled limit from silently widening discovery.
 
+Each local candidate records its effective `max_file_bytes` value. Acceptance fingerprints only a current file at or below that limit. A larger file remains accepted with an empty digest and a `content-not-read:file-too-large` warning. Rediscover a pre-release candidate that does not contain a valid limit; the controller does not assume broader authority.
+
 ## Inventory a run
 
 Initialize a packet and inventory named inputs:
@@ -91,9 +93,11 @@ Use `--approve-content` when a configured boundary granted metadata access only.
 
 ## Inspect archives safely
 
-Discovery reads a ZIP directory but does not extract members. It blocks or flags path traversal, absolute paths, encryption, links, nested archives, excessive member size, excessive total size, and excessive compression ratios.
+Discovery reads a ZIP directory but does not extract members. It blocks or flags path traversal, absolute paths, encryption, links, nested archives, excessive member size, excessive total size, excessive compression ratios, and member names that resolve to the same platform-conservative extraction path.
 
 Do not accept a candidate when its archive inventory status is `blocked`.
+
+Acceptance inventories the current ZIP again before it records the source. Replacing a previously safe archive with unsafe bytes therefore blocks acceptance.
 
 If execution needs archive contents, first accept the archive. Then extract only validated members into a private `.necktie/` work directory. Repeat the boundary checks during extraction.
 
@@ -108,6 +112,8 @@ When the user supplies an expected package, classify it as `constraint` or `prio
 - rendering, calculation, or runtime checks.
 
 Build the new result from independently eligible evidence. Structural agreement with the reference does not prove factual accuracy.
+
+The deterministic verifier treats ATX headings outside backtick or tilde fenced blocks as Markdown structure. Fenced content does not contribute to `min_words`. CSV `min_data_rows` counts only records with at least one non-whitespace cell; it does not impose row-width or per-cell completeness rules.
 
 For example, a KPI data-reliability run can use a detailed research brief as a constraint, underlying standards and records as evidence, and an earlier multi-file package as the reference contract. A short methodology must receive `REVISE` when the contract requires a full report and machine-readable tables.
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -93,6 +94,7 @@ class LoopTests(unittest.TestCase):
             packet["discovery"]["candidates"].append({
                 "id": "C001", "location": str(source), "origin": "configured-inbox",
                 "kind": "file", "access": "metadata", "status": "candidate", "sha256": "",
+                "max_file_bytes": 25 * 1024 * 1024, "warnings": [],
             })
             with self.assertRaisesRegex(loop.LoopError, "approve-content"):
                 loop.decide_source(packet, "C001", "ACCEPT", "evidence", "Support claims", False)
@@ -197,6 +199,7 @@ class SourceDiscoveryTests(unittest.TestCase):
             self.assertEqual(candidate["origin"], "explicit")
             self.assertEqual(candidate["access"], "content")
             self.assertEqual(len(candidate["sha256"]), 64)
+            self.assertEqual(candidate["max_file_bytes"], 25 * 1024 * 1024)
 
     def test_explicit_url_is_recorded_but_not_fetched(self):
         result = sources.discover(
@@ -253,6 +256,44 @@ class SourceDiscoveryTests(unittest.TestCase):
             )
             self.assertEqual(len(packet["sources"][0]["sha256"]), 64)
 
+    def test_acceptance_enforces_candidate_file_size_limit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            inbox = root / "inbox"
+            inbox.mkdir()
+            (inbox / "evidence.txt").write_text("0123456789", encoding="utf-8")
+            config = root / "sources.json"
+            config.write_text(json.dumps({
+                "version": "1.0",
+                "inboxes": [{"path": "inbox", "max_file_bytes": 4}],
+                "search_roots": [],
+            }), encoding="utf-8")
+            discovered = sources.discover(workspace=root, config_path=config)
+            self.assertEqual(discovered["candidates"][0]["max_file_bytes"], 4)
+            packet = loop.new_packet("Respect the configured read limit")
+            loop.record_discovery(packet, discovered)
+            loop.decide_source(
+                packet, "C001", "ACCEPT", "evidence", "Support a bounded claim", True,
+            )
+            candidate = packet["discovery"]["candidates"][0]
+            self.assertEqual(candidate["sha256"], "")
+            self.assertEqual(packet["sources"][0]["sha256"], "")
+            self.assertIn("content-not-read:file-too-large", candidate["warnings"])
+
+    def test_local_candidate_without_size_limit_requires_rediscovery(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "research.md"
+            source.write_text("research", encoding="utf-8")
+            packet = loop.new_packet("Reject an unbounded pre-release candidate")
+            packet["discovery"]["candidates"].append({
+                "id": "C001", "location": str(source), "origin": "configured-inbox",
+                "kind": "file", "access": "content", "status": "candidate", "sha256": "",
+            })
+            with self.assertRaisesRegex(loop.LoopError, "rediscover"):
+                loop.decide_source(
+                    packet, "C001", "ACCEPT", "evidence", "Support claims", False,
+                )
+
     def test_configured_archive_ignore_omits_zip_candidate(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -303,6 +344,22 @@ class SourceDiscoveryTests(unittest.TestCase):
             self.assertIn("nested-archive", nested["blocked_reasons"])
             self.assertIn("duplicate-name", duplicate["blocked_reasons"])
 
+    def test_canonical_archive_member_aliases_are_blocked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / "aliases.zip"
+            with zipfile.ZipFile(archive, "w") as handle:
+                handle.writestr("report.md", "one")
+                handle.writestr("./report.md", "two")
+                handle.writestr("Caf\u00e9.md", "three")
+                handle.writestr("Cafe\u0301.md", "four")
+                handle.writestr("notes.md", "five")
+                handle.writestr("notes.md.", "six")
+            inventory = sources.inventory_zip(archive)
+            self.assertEqual(inventory["status"], "blocked")
+            for name in ("./report.md", "Cafe\u0301.md", "notes.md."):
+                member = next(item for item in inventory["members"] if item["name"] == name)
+                self.assertIn("duplicate-name", member["blocked_reasons"])
+
     def test_archive_file_size_limit_blocks_before_inventory(self):
         with tempfile.TemporaryDirectory() as directory:
             archive = Path(directory) / "package.zip"
@@ -327,6 +384,48 @@ class SourceDiscoveryTests(unittest.TestCase):
                 loop.decide_source(
                     packet, "C001", "ACCEPT", "prior-output", "Reference structure", False,
                 )
+
+    def test_archive_is_reinventoried_immediately_before_acceptance(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive = root / "package.zip"
+            with zipfile.ZipFile(archive, "w") as handle:
+                handle.writestr("report.md", "safe")
+            packet = loop.new_packet("Reject a changed archive")
+            loop.record_discovery(packet, sources.discover(workspace=root, inputs=[str(archive)]))
+            with zipfile.ZipFile(archive, "w") as handle:
+                handle.writestr("../escape.txt", "unsafe")
+            with self.assertRaisesRegex(loop.LoopError, "blocked archive"):
+                loop.decide_source(
+                    packet, "C001", "ACCEPT", "prior-output", "Reference structure", False,
+                )
+            self.assertEqual(packet["sources"], [])
+            self.assertEqual(packet["discovery"]["candidates"][0]["status"], "candidate")
+
+    def test_url_paths_that_differ_by_case_remain_distinct(self):
+        discovered = sources.discover(workspace=ROOT, inputs=[
+            "https://example.test/Report", "https://example.test/report",
+        ])
+        packet = loop.new_packet("Keep distinct remote references")
+        loop.record_discovery(packet, discovered)
+        self.assertEqual(len(packet["discovery"]["candidates"]), 2)
+
+    @unittest.skipIf(
+        os.path.normcase("A") == os.path.normcase("a"),
+        "the current filesystem convention is case-insensitive",
+    )
+    def test_case_sensitive_local_paths_remain_distinct(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            upper = root / "A.txt"
+            lower = root / "a.txt"
+            upper.write_text("upper", encoding="utf-8")
+            lower.write_text("lower", encoding="utf-8")
+            packet = loop.new_packet("Keep distinct local sources")
+            loop.record_discovery(
+                packet, sources.discover(workspace=root, inputs=[str(upper), str(lower)]),
+            )
+            self.assertEqual(len(packet["discovery"]["candidates"]), 2)
 
     def test_explicit_path_through_link_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -394,6 +493,60 @@ class ArtifactContractTests(unittest.TestCase):
             )
             result = contract.verify_contract(self.sample_contract(), root)
             self.assertEqual(result["decision"], "PASS")
+
+    def test_fenced_code_cannot_satisfy_markdown_structure_or_word_count(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            value = contract.validate_contract({
+                "schema_version": "1.0", "reference_sources": [], "required_files": [],
+                "markdown": [{
+                    "path": "report.md", "required_headings": ["Executive answer"],
+                    "min_words": 3,
+                }],
+                "csv": [], "evidence_rules": [],
+            })
+            for marker in ("```", "~~~"):
+                (root / "report.md").write_text(
+                    f"{marker}markdown\n# Executive answer\nplenty of fenced words\n{marker}\n",
+                    encoding="utf-8",
+                )
+                result = contract.verify_contract(value, root)
+                self.assertEqual(result["decision"], "FAIL")
+                self.assertEqual(result["failure_count"], 2)
+
+            (root / "report.md").write_text(
+                "   # Executive answer ###\nActual prose satisfies coverage.\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(contract.verify_contract(value, root)["decision"], "PASS")
+
+    def test_blank_csv_records_do_not_satisfy_minimum_data_rows(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            value = contract.validate_contract({
+                "schema_version": "1.0", "reference_sources": [], "required_files": [],
+                "markdown": [],
+                "csv": [{
+                    "path": "master.csv", "required_columns": ["KPI", "Formula"],
+                    "min_data_rows": 1,
+                }],
+                "evidence_rules": [],
+            })
+            (root / "master.csv").write_text(
+                "KPI,Formula\n\n , \n,,\n", encoding="utf-8",
+            )
+            result = contract.verify_contract(value, root)
+            self.assertEqual(result["decision"], "FAIL")
+            row_check = next(
+                item for item in result["checks"]
+                if item["requirement"].startswith("minimum data rows")
+            )
+            self.assertEqual(row_check["evidence"], "actual=0")
+
+            (root / "master.csv").write_text(
+                "KPI,Formula\n\nUtilization,Rented/Available\n", encoding="utf-8",
+            )
+            self.assertEqual(contract.verify_contract(value, root)["decision"], "PASS")
 
     def test_small_artifact_fails_reference_file_inventory(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -13,6 +13,7 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 import sys
+import unicodedata
 from urllib.parse import urlparse
 import zipfile
 
@@ -151,15 +152,28 @@ def _archive_member_is_link(info: zipfile.ZipInfo) -> bool:
     return stat.S_ISLNK(mode)
 
 
+def _archive_member_collision_key(name: str) -> str:
+    """Return a platform-conservative extraction key for duplicate detection."""
+    normalized = name.replace("\\", "/")
+    parts = [part for part in normalized.split("/") if part not in {"", "."}]
+    canonical = [
+        unicodedata.normalize("NFC", part).rstrip(" .").casefold()
+        for part in parts
+    ]
+    return "/".join(canonical)
+
+
 def _unsafe_archive_name(name: str) -> bool:
     normalized = name.replace("\\", "/")
     path = PurePosixPath(normalized)
     return (
         not normalized
+        or "\x00" in normalized
         or normalized.startswith("/")
         or bool(re.match(r"^[A-Za-z]:", normalized))
         or ".." in path.parts
         or any(":" in part for part in path.parts)
+        or not _archive_member_collision_key(name)
     )
 
 
@@ -204,7 +218,7 @@ def inventory_zip(
             for info in infos:
                 total += info.file_size
                 reasons: list[str] = []
-                normalized_name = info.filename.replace("\\", "/").casefold()
+                normalized_name = _archive_member_collision_key(info.filename)
                 if _unsafe_archive_name(info.filename):
                     reasons.append("unsafe-path")
                 if normalized_name in seen_names:
@@ -337,6 +351,7 @@ def _file_candidate(path: Path, *, root: Path, origin: str, policy: dict[str, ob
         "size": size,
         "modified_at": _utc_timestamp(stat_result.st_mtime),
         "sha256": digest,
+        "max_file_bytes": int(policy["max_file_bytes"]),
         "status": "candidate",
         "warnings": warnings,
     }

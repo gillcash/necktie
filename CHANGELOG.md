@@ -20,6 +20,10 @@ This file records material user-facing changes to Necktie. Version 0.2.0 is the 
 - Necktie Core now prohibits ambient local-file inspection and protects explicit breadth, depth, and deliverables from scope collapse.
 - Frame now records the discovery boundary, accepted source classes, and complete deliverable contract.
 - Critique, Reverse, Review, and Verify now distinguish reference structure from factual evidence.
+- Candidate acceptance now enforces the discovered fingerprint limit and revalidates current ZIP contents before recording a source.
+- ZIP duplication checks now detect canonical path aliases across separator, dot-component, Unicode, case, and trailing-dot or space variants.
+- Markdown contract checks ignore fenced code, and CSV minimum-row checks ignore blank or delimiter-only records.
+- Discovery merging now preserves case-sensitive local paths and URL paths.
 - The npm package now includes `docs/` and this changelog.
 
 ### Compatibility

@@ -56,6 +56,7 @@ Resolve relative paths against the configuration file's directory. Reject unknow
 - Do not follow symbolic links, junctions, reparse points, or archive paths outside the authorized root.
 - Reject a drive root, filesystem root, or entire user profile by default. Use the broad-root override only after the user explicitly names and authorizes that exact root.
 - Apply include and exclude patterns, depth, file-count, and file-size limits.
+- Carry each local candidate's effective file-size limit into acceptance. Do not fingerprint content above that limit, and require rediscovery when the limit is missing or invalid.
 - Exclude `.git`, `.necktie`, dependency caches, and generated cache directories by default.
 - Treat URLs as references for a host browsing capability. The discovery script records but does not fetch them.
 
@@ -68,9 +69,12 @@ Inventory an explicitly referenced or configured ZIP by reading its directory on
 - too many members;
 - excessive total uncompressed size;
 - excessive per-member size or compression ratio; and
-- nested archives unless the user separately authorizes their inspection.
+- nested archives unless the user separately authorizes their inspection; and
+- member-name aliases that resolve to the same platform-conservative extraction path.
 
 Do not accept an archive whose inventory status is `blocked`.
+
+Inventory the current archive again immediately before acceptance. Do not rely on the inventory captured during an earlier discovery pass.
 
 If later execution requires extraction, extract only accepted members into a private `.necktie/` work directory after repeating the boundary checks.
 
