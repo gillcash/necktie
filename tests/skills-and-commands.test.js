@@ -6,54 +6,39 @@ const path = require("node:path");
 const test = require("node:test");
 
 const root = path.resolve(__dirname, "..");
-const names = ["necktie", "necktie-critique", "necktie-reverse", "necktie-review"];
+const names = ["necktie"];
 
-test("exactly four canonical skills and command adapters ship", () => {
+test("exactly one canonical skill and command adapter ships", () => {
   const skillDirs = fs.readdirSync(path.join(root, "skills"), { withFileTypes: true })
-    .filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
-  assert.deepEqual(skillDirs, [...names].sort());
-  assert.deepEqual(fs.readdirSync(path.join(root, "commands")).sort(), names.map((name) => `${name}.toml`).sort());
-  assert.deepEqual(fs.readdirSync(path.join(root, ".opencode", "command")).sort(), names.map((name) => `${name}.md`).sort());
+    .filter((entry) => entry.isDirectory() && fs.existsSync(path.join(root, "skills", entry.name, "SKILL.md")))
+    .map((entry) => entry.name).sort();
+  assert.deepEqual(skillDirs, names);
+  assert.deepEqual(fs.readdirSync(path.join(root, "commands")), ["necktie.toml"]);
+  assert.deepEqual(fs.readdirSync(path.join(root, ".opencode", "command")), ["necktie.md"]);
 });
 
 test("skill frontmatter stays minimal and Codex invocation is explicit", () => {
-  for (const name of names) {
-    const skill = fs.readFileSync(path.join(root, "skills", name, "SKILL.md"), "utf8");
-    const frontmatter = skill.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] || "";
-    const keys = [...frontmatter.matchAll(/^([a-z_]+):/gm)].map((match) => match[1]).sort();
-    assert.deepEqual(keys, ["description", "name"], name);
-    const openai = fs.readFileSync(path.join(root, "skills", name, "agents", "openai.yaml"), "utf8");
-    assert.match(openai, new RegExp(`\\$${name.replace("-", "\\-")}`));
-    assert.match(openai, /allow_implicit_invocation:\s*false/);
-  }
-});
-
-test("primary skill defines the exact phase order and fixed review bound", () => {
   const skill = fs.readFileSync(path.join(root, "skills", "necktie", "SKILL.md"), "utf8");
-  const positions = ["### 1. Frame", "### 2. Establish a baseline", "### 3. Critique", "### 4. Reverse", "### 5. Execute", "### 6. Review", "### 7. Verify"].map((heading) => skill.indexOf(heading));
-  assert.ok(positions.every((position) => position >= 0));
-  assert.deepEqual([...positions].sort((a, b) => a - b), positions);
-  assert.match(skill, /three revision decisions/);
-  assert.doesNotMatch(skill, /quick|standard mode|deep mode|--mode/);
+  const frontmatter = skill.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] || "";
+  const keys = [...frontmatter.matchAll(/^([a-z_]+):/gm)].map((match) => match[1]).sort();
+  assert.deepEqual(keys, ["description", "name"]);
+  const openai = fs.readFileSync(path.join(root, "skills", "necktie", "agents", "openai.yaml"), "utf8");
+  assert.match(openai, /\$necktie/);
+  assert.match(openai, /allow_implicit_invocation:\s*false/);
 });
 
-test("OpenClaw copies match the generator", () => {
-  const { render } = require(path.join(root, "scripts", "build-openclaw-skills.js"));
-  for (const name of names) {
-    const actual = fs.readFileSync(path.join(root, ".openclaw", "skills", name, "SKILL.md"), "utf8");
-    assert.equal(actual, render(name), name);
-  }
-  for (const relative of [
-    "necktie/references/loop-protocol.md",
-    "necktie/scripts/necktie_loop.py",
-    "necktie-reverse/references/blueprint-template.md",
-    "necktie-review/references/reviewer-rubric.md",
-    "necktie-review/scripts/validate_review.py",
-  ]) {
-    assert.equal(
-      fs.readFileSync(path.join(root, ".openclaw", "skills", relative), "utf8"),
-      fs.readFileSync(path.join(root, "skills", relative), "utf8"),
-      relative,
-    );
-  }
+test("primary skill defines the internal Mammon boundary and opinionated judgment", () => {
+  const skill = fs.readFileSync(path.join(root, "skills", "necktie", "SKILL.md"), "utf8");
+  assert.match(skill, /Mammon is an internal adversarial voice/i);
+  assert.match(skill, /Consult Mammon privately/i);
+  assert.match(skill, /Rebut Mammon/i);
+  assert.match(skill, /least extractive effective alternative/i);
+  assert.doesNotMatch(skill, /Necktie Loop|run packet|state machine|APPROVE|REVISE|BLOCK/);
+});
+
+test("OpenClaw copy matches the generator", () => {
+  const { names: generatedNames, render } = require(path.join(root, "scripts", "build-openclaw-skills.js"));
+  assert.deepEqual(generatedNames, names);
+  const actual = fs.readFileSync(path.join(root, ".openclaw", "skills", "necktie", "SKILL.md"), "utf8");
+  assert.equal(actual, render("necktie"));
 });

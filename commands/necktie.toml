@@ -1,2 +1,2 @@
-description = "Run the explicit, bounded Necktie Loop"
-prompt = "Use $necktie for this goal: {{args}}. Frame, baseline, critique, reverse, execute, review, and verify. Return the final deliverable, reusable execution brief, verification record, material overlooked consideration, and strongest unasked question."
+description = "Apply Necktie's opinionated judgment"
+prompt = "Use $necktie on: {{args}}. Privately consult Mammon's strongest case for accumulation, control, and extraction; rebut it; then take a position and deliver the least extractive effective result."

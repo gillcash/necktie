@@ -1,4 +1,4 @@
-"""Hermes plugin for Necktie Core and the explicit Necktie Loop."""
+"""Hermes plugin for the opinionated Necktie Core."""
 
 from __future__ import annotations
 
@@ -10,10 +10,7 @@ ROOT = Path(__file__).resolve().parent
 SKILLS_DIR = ROOT / "skills"
 CORE_FILE = ROOT / "core" / "necktie-core.md"
 SKILL_COMMANDS = {
-    "necktie": "Run the bounded Necktie Loop on the supplied goal.",
-    "necktie-critique": "Challenge the inquiry and identify material blind spots.",
-    "necktie-reverse": "Compile iterative context into one fresh-session brief.",
-    "necktie-review": "Independently gate a candidate with APPROVE, REVISE, or BLOCK.",
+    "necktie": "Apply Necktie's judgment to the supplied decision, plan, or artifact.",
 }
 
 
@@ -45,7 +42,7 @@ def _slash_access_denied(event: Any, gateway: Any, command: str) -> bool:
 
 
 def rewrite_gateway_command(event: Any = None, gateway: Any = None, **_: Any) -> dict[str, str] | None:
-    """Rewrite authorized Necktie slash commands into normal agent prompts."""
+    """Rewrite an authorized Necktie slash command into a normal agent prompt."""
     text = str(getattr(event, "text", "") or "").strip()
     if not text.startswith("/"):
         return None
@@ -70,7 +67,7 @@ def _make_skill_command_handler(ctx: Any, command: str) -> Callable[[str], str]:
 
 
 def register(ctx: Any) -> None:
-    """Register four skills, four commands, and stateless Core hooks."""
+    """Register the Necktie skill, command, and stateless Core hooks."""
     for child in sorted(SKILLS_DIR.iterdir() if SKILLS_DIR.exists() else []):
         skill_md = child / "SKILL.md"
         if child.is_dir() and skill_md.exists():
@@ -82,5 +79,5 @@ def register(ctx: Any) -> None:
             command,
             _make_skill_command_handler(ctx, command),
             description=description,
-            args_hint="[goal, target, or notes]",
+            args_hint="[decision, plan, artifact, or question]",
         )

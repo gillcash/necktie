@@ -1,12 +1,12 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "necktie",
-  "description": "Necktie Core on every response, plus an explicit bounded review loop.",
+  "description": "The angel of late-stage capitalism for your AI agent, with Mammon as its internal adversary.",
   "owner": { "name": "gillcash", "url": "https://github.com/gillcash" },
   "plugins": [
     {
       "name": "necktie",
-      "description": "Check, broaden, reverse, review, and verify agent work.",
+      "description": "Expose incentives, rebut extraction, and recommend a better course.",
       "source": "./",
       "category": "productivity"
     }

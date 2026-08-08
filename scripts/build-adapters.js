@@ -8,7 +8,7 @@ const generated = {
   "AGENTS.md": `${core}\n`,
   ".agents/rules/necktie.md": `${core}\n`,
   ".clinerules/necktie.md": `${core}\n`,
-  ".cursor/rules/necktie.mdc": `---\ndescription: Necktie Core. Check every response, surface material omissions, and ask the strongest unasked question when it matters.\nglobs:\nalwaysApply: true\n---\n\n${core}\n`,
+  ".cursor/rules/necktie.mdc": `---\ndescription: Necktie Core. Apply opinionated judgment to incentives, power, extraction, and human agency.\nglobs:\nalwaysApply: true\n---\n\n${core}\n`,
   ".kiro/steering/necktie.md": `---\ntitle: Necktie Core\ninclusion: always\n---\n\n${core}\n`,
   ".qoder/rules/necktie.md": `${core}\n`,
   ".windsurf/rules/necktie.md": `${core}\n`,

@@ -1,6 +1,6 @@
 {
   "name": "necktie-mcp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Optional MCP fallback that serves Necktie Core as a prompt and read-only tool.",
   "private": true,
   "type": "module",

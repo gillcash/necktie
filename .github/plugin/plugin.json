@@ -1,12 +1,12 @@
 {
   "name": "necktie",
-  "description": "Necktie Core on every response, plus an explicit bounded review loop.",
-  "version": "0.2.0",
+  "description": "The angel of late-stage capitalism for your AI agent, with Mammon as its internal adversary.",
+  "version": "0.3.0",
   "author": { "name": "gillcash", "url": "https://github.com/gillcash" },
   "homepage": "https://github.com/gillcash/necktie",
   "repository": "https://github.com/gillcash/necktie",
   "license": "MIT",
-  "keywords": ["agent-loop", "review", "verification"],
+  "keywords": ["incentives", "power", "externalities", "opinionated-agent"],
   "commands": "commands/",
   "skills": "skills/",
   "hooks": "hooks/copilot-hooks.json"

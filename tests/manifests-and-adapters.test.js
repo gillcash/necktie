@@ -12,10 +12,10 @@ const jsonFiles = [
   "gemini-extension.json", "pi-extension/package.json", "necktie-mcp/package.json",
 ];
 
-test("versioned manifests identify Necktie 0.2.0", () => {
+test("versioned manifests identify Necktie 0.3.0", () => {
   for (const relative of jsonFiles) {
     const value = JSON.parse(fs.readFileSync(path.join(root, relative), "utf8"));
-    assert.equal(value.version, "0.2.0", relative);
+    assert.equal(value.version, "0.3.0", relative);
     if (value.name !== "@gillcash/necktie-pi-extension" && value.name !== "necktie-mcp" && value.name !== "@gillcash/necktie") {
       assert.equal(value.name, "necktie", relative);
     }

@@ -14,10 +14,10 @@ function fakePi() {
   };
 }
 
-test("Pi registers exactly four commands", () => {
+test("Pi registers exactly the Necktie command", () => {
   const pi = fakePi();
   necktieExtension(pi);
-  assert.deepEqual([...pi.commands.keys()].sort(), ["necktie", "necktie-critique", "necktie-reverse", "necktie-review"]);
+  assert.deepEqual([...pi.commands.keys()], ["necktie"]);
 });
 
 test("Pi injects Core with and without an existing system prompt", async () => {
@@ -31,8 +31,8 @@ test("Pi injects Core with and without an existing system prompt", async () => {
 
 test("Pi command delegation preserves arguments and follow-up delivery", () => {
   const pi = fakePi();
-  sendSkill(pi, "necktie", "a goal", { isIdle: () => false });
-  assert.deepEqual(pi.messages[0], ["/skill:necktie a goal", { deliverAs: "followUp" }]);
-  sendSkill(pi, "necktie-review", "", { isIdle: () => true });
-  assert.deepEqual(pi.messages[1], ["/skill:necktie-review"]);
+  sendSkill(pi, "necktie", "a decision", { isIdle: () => false });
+  assert.deepEqual(pi.messages[0], ["/skill:necktie a decision", { deliverAs: "followUp" }]);
+  sendSkill(pi, "necktie", "", { isIdle: () => true });
+  assert.deepEqual(pi.messages[1], ["/skill:necktie"]);
 });

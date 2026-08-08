@@ -1,7 +1,7 @@
 {
   "name": "necktie",
-  "version": "0.2.0",
-  "description": "The angel of late-stage capitalism for your AI agent: an always-on response check and an explicit bounded review loop.",
+  "version": "0.3.0",
+  "description": "The angel of late-stage capitalism for your AI agent, with Mammon as its internal adversary.",
   "author": {
     "name": "gillcash",
     "url": "https://github.com/gillcash"
@@ -9,20 +9,20 @@
   "homepage": "https://github.com/gillcash/necktie",
   "repository": "https://github.com/gillcash/necktie",
   "license": "MIT",
-  "keywords": ["agent-loop", "prompt-reversal", "review", "verification"],
+  "keywords": ["incentives", "power", "externalities", "opinionated-agent"],
   "skills": "./skills/",
   "interface": {
     "displayName": "Necktie",
     "shortDescription": "the angel of late-stage capitalism for your AI agent",
-    "longDescription": "Necktie checks every response for goal fit, material omissions, and the strongest unasked expert question. Invoke /necktie for a bounded frame-to-verification workflow.",
+    "longDescription": "Necktie privately tests material decisions against Mammon's strongest case for accumulation and extraction, then gives one candid recommendation.",
     "developerName": "gillcash",
     "category": "Productivity",
-    "capabilities": ["Response review", "Prompt reversal", "Artifact verification"],
+    "capabilities": ["Incentive analysis", "Power and externality analysis", "Opinionated recommendations"],
     "websiteURL": "https://github.com/gillcash/necktie",
     "defaultPrompt": [
-      "Run /necktie on this goal and produce a reviewed final deliverable.",
-      "Reverse this iterative session into one reusable execution brief.",
-      "Critique this inquiry, execute it, and independently review the result."
+      "Use /necktie to expose the incentives in this decision and recommend a better course.",
+      "Who benefits, who pays, who controls this system, and who can leave?",
+      "Give me Necktie's opinionated take on this plan."
     ],
     "brandColor": "#334155",
     "composerIcon": "./assets/logo-dark.png",

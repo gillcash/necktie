@@ -1,6 +1,6 @@
 {
   "name": "necktie",
-  "version": "0.2.0",
-  "description": "Necktie Core on every response, plus an explicit bounded review loop.",
+  "version": "0.3.0",
+  "description": "The angel of late-stage capitalism for your AI agent, with Mammon as its internal adversary.",
   "contextFileName": "AGENTS.md"
 }
