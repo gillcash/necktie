@@ -16,7 +16,9 @@ Require:
 - the exact executable brief;
 - the candidate artifact or change set;
 - acceptance criteria and constraints;
+- the discovery boundary plus source acceptance and rejection decisions;
 - a source ledger plus relevant evidence excerpts, paths, or links;
+- the deliverable contract and structural verification results when a reference artifact exists;
 - verification results, if already available.
 
 If an input is unavailable, decide whether that absence is itself a material finding. Read [references/reviewer-rubric.md](references/reviewer-rubric.md) completely before judging.
@@ -24,12 +26,14 @@ If an input is unavailable, decide whether that absence is itself a material fin
 ## Review
 
 1. Inspect the candidate read-only. Do not author fixes while acting as reviewer.
-2. Test each acceptance criterion and every material factual claim against the evidence ledger.
-3. Look for omissions, contradictions, fabricated support, stale assumptions, unsafe actions, unusable formatting, and failure to verify in the target environment.
-4. Check whether the deliverable advances the actual goal rather than merely matching its requested shape.
-5. Identify what the author and user may not have considered.
-6. Name the single strongest unasked expert question and its consequence.
-7. Report only material findings. Combine duplicates and point to exact locations when possible.
+2. Confirm that every inspected local source was explicit, attached, configured, or inside a user-approved root, and that metadata-only candidates received content approval before use.
+3. Test each acceptance criterion and every material factual claim against the accepted evidence ledger.
+4. Test the exact candidate against every observable deliverable-contract requirement. Treat a material file, section, table, column, or coverage shortfall as a major finding even if the prose is accurate.
+5. Look for omissions, contradictions, fabricated support, stale assumptions, unsafe actions, unusable formatting, and failure to verify in the target environment.
+6. Check whether the deliverable advances the actual goal rather than merely resembling the reference artifact. Structural agreement is not factual corroboration.
+7. Identify what the author and user may not have considered.
+8. Name the single strongest unasked expert question and its consequence.
+9. Report only material findings. Combine duplicates and point to exact locations when possible.
 
 ## Decide
 
@@ -37,7 +41,7 @@ If an input is unavailable, decide whether that absence is itself a material fin
 - `REVISE`: one or more fixable critical or major findings remain. State the smallest required change for each.
 - `BLOCK`: a required decision, authority, source, or safe execution path is absent and the author cannot resolve it within scope.
 
-Confidence is not a substitute for evidence. Do not approve because the prose sounds plausible.
+Confidence is not a substitute for evidence. Do not approve because the prose sounds plausible or because a narrow self-check passes while the contracted output is materially incomplete.
 
 ## Output
 
@@ -58,6 +62,7 @@ Each finding must contain `id`, `severity` (`critical`, `major`, or `minor`), `c
 
 ```text
 python skills/necktie-review/scripts/validate_review.py review.json
+python skills/necktie-review/scripts/verify_artifact_contract.py --contract contract.json --artifact-root output
 ```
 
 Do not include markdown around the JSON, private reasoning, or an edited artifact.

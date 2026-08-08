@@ -34,6 +34,9 @@ test("primary skill defines the exact phase order and fixed review bound", () =>
   assert.ok(positions.every((position) => position >= 0));
   assert.deepEqual([...positions].sort((a, b) => a - b), positions);
   assert.match(skill, /three revision decisions/);
+  assert.match(skill, /explicitly named inputs, current-request attachments, configured inboxes, then user-approved search roots/);
+  assert.match(skill, /deliverable contract/);
+  assert.match(skill, /Never shrink the deliverable contract/);
   assert.doesNotMatch(skill, /quick|standard mode|deep mode|--mode/);
 });
 
@@ -45,10 +48,13 @@ test("OpenClaw copies match the generator", () => {
   }
   for (const relative of [
     "necktie/references/loop-protocol.md",
+    "necktie/references/source-discovery.md",
     "necktie/scripts/necktie_loop.py",
+    "necktie/scripts/necktie_sources.py",
     "necktie-reverse/references/blueprint-template.md",
     "necktie-review/references/reviewer-rubric.md",
     "necktie-review/scripts/validate_review.py",
+    "necktie-review/scripts/verify_artifact_contract.py",
   ]) {
     assert.equal(
       fs.readFileSync(path.join(root, ".openclaw", "skills", relative), "utf8"),

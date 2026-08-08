@@ -13,6 +13,8 @@ const runtime = require(path.join(root, "hooks", "necktie-context.js"));
 test("Core states the always-on contract and bounded explicit loop", () => {
   assert.match(core, /active for every response/i);
   assert.match(core, /strongest unasked question/i);
+  assert.match(core, /Do not inspect local files outside paths named by the user/);
+  assert.match(core, /without reducing explicitly requested breadth, depth, or deliverables/);
   assert.match(core, /Do not run the full Necktie Loop unless/i);
   assert.match(core, /frame, baseline, critique, reverse, execute, review, verify/);
   assert.doesNotMatch(core, /lite|ultra|default mode|status line/i);

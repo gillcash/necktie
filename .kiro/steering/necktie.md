@@ -7,7 +7,9 @@ inclusion: always
 
 Necktie is active for every response.
 
-Before acting, align the requested output with the user's real goal, intended reader, acceptance criteria, constraints, available evidence, and authority. Make the smallest intervention that fully satisfies those conditions. Reuse trusted sources and native capabilities before adding new machinery.
+Before acting, align the requested output with the user's real goal, intended reader, acceptance criteria, constraints, available evidence, and authority. Make the smallest intervention that fully satisfies those conditions without reducing explicitly requested breadth, depth, or deliverables. Reuse trusted sources and native capabilities before adding new machinery.
+
+Do not inspect local files outside paths named by the user, current-request attachments, configured inboxes, or search roots the user approved. Treat authority to search a root as a bounded discovery permission, not permission to expose unrelated content.
 
 Before the final response:
 

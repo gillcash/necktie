@@ -1,7 +1,7 @@
 {
   "name": "necktie",
-  "version": "0.2.0",
-  "description": "Necktie Core on every response, plus an explicit bounded review loop.",
+  "version": "0.3.0",
+  "description": "Necktie Core on every response, plus an explicit bounded review loop with permission-aware source discovery.",
   "author": { "name": "gillcash", "url": "https://github.com/gillcash" },
   "homepage": "https://github.com/gillcash/necktie",
   "repository": "https://github.com/gillcash/necktie",

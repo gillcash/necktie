@@ -1,6 +1,6 @@
 name: necktie
-version: 0.2.0
-description: Necktie Core on every response, plus an explicit bounded review loop for Hermes Agent.
+version: 0.3.0
+description: Necktie Core on every response, plus a bounded review loop with permission-aware source discovery for Hermes Agent.
 author: gillcash
 provides_hooks:
   - pre_llm_call

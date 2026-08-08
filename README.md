@@ -29,6 +29,12 @@ The root `plugin.json` targets the [Agent Plugins 1.0.0 specification](https://a
 /necktie Assess KPI data reliability for a tool and equipment rental store. Build a decision-ready control plan from eligible evidence and verify every material claim.
 ```
 
+Name the governing inputs when the result must reproduce or improve an existing deliverable:
+
+```text
+/necktie Rebuild the KPI data-reliability package from @research-brief.md and eligible raw evidence. Use @reference-package.zip as the structural reference and verify every material claim independently.
+```
+
 On a skill-oriented host, use:
 
 ```text
@@ -36,6 +42,41 @@ $necktie Assess KPI data reliability for a tool and equipment rental store. Buil
 ```
 
 The loop returns the requested artifact, a reusable execution brief, a review decision, a verification record, known limitations, and the strongest unasked question when it could affect action.
+
+## Authorize sources safely
+
+Necktie discovers local sources only from:
+
+1. paths and links that you name;
+2. files attached to the current request;
+3. configured inboxes; and
+4. search roots that you approve.
+
+It does not search your user profile, home directory, Downloads folder, Taildrop folder, drive root, sibling projects, or unrelated directories by default.
+
+For repeat work, create the ignored local file `.necktie/sources.json`:
+
+```json
+{
+  "version": "1.0",
+  "inboxes": [
+    {
+      "label": "research-inbox",
+      "path": "../research-inbox",
+      "access": "metadata",
+      "include": ["*.md", "*.csv", "*.zip"],
+      "max_depth": 2,
+      "max_files": 200,
+      "archives": "inventory"
+    }
+  ],
+  "search_roots": []
+}
+```
+
+`metadata` permits names, sizes, timestamps, and safe ZIP inventory. It does not permit reading file contents. Promote a selected candidate before Necktie reads it. Use `content` only for a boundary whose relevant files may be read without another prompt.
+
+See [source discovery and authority](docs/source-discovery.md) for the configuration fields, commands, archive controls, and privacy boundary.
 
 ## Follow the seven phases
 
@@ -48,8 +89,8 @@ frame -> baseline -> critique -> reverse -> execute -> review -> verify
 
 | Phase | Required result |
 | --- | --- |
-| Frame | Outcome, reader, scope, constraints, source classes, and acceptance criteria |
-| Baseline | Smallest plausible approach and its assumptions |
+| Frame | Outcome, reader, authorized discovery boundary, accepted source classes, deliverable contract, and acceptance criteria |
+| Baseline | Smallest plausible approach that can satisfy the full contract, plus its assumptions |
 | Critique | Material omissions, framing defects, evidence needs, and strongest unasked question |
 | Reverse | One self-contained execution brief for a fresh session |
 | Execute | Candidate built from eligible raw evidence |
@@ -205,12 +246,22 @@ Most runs need no file. Create a packet only when the work must be resumable or 
 
 ```bash
 python skills/necktie/scripts/necktie_loop.py init --goal "Assess KPI data reliability for a tool and equipment rental store" --output .necktie/run.json
+python skills/necktie/scripts/necktie_loop.py discover --file .necktie/run.json --input research-brief.md --attachment reference-package.zip
+python skills/necktie/scripts/necktie_loop.py source --file .necktie/run.json --candidate C001 --decision ACCEPT --kind constraint --use "Defines the required research scope"
+python skills/necktie/scripts/necktie_loop.py contract --file .necktie/run.json --input .necktie/contract.json
 python skills/necktie/scripts/necktie_loop.py transition --file .necktie/run.json --to baseline --note "Sources classified"
+python skills/necktie/scripts/necktie_loop.py transition --file .necktie/run.json --to critique --note "Baseline recorded"
+python skills/necktie/scripts/necktie_loop.py transition --file .necktie/run.json --to reverse --note "Critique resolved"
+python skills/necktie/scripts/necktie_loop.py transition --file .necktie/run.json --to execute --note "Brief compiled"
+python skills/necktie/scripts/necktie_loop.py verify-contract --file .necktie/run.json --artifact-root output
+python skills/necktie/scripts/necktie_loop.py transition --file .necktie/run.json --to review --note "Candidate frozen"
+python skills/necktie/scripts/necktie_loop.py review --file .necktie/run.json --decision APPROVE --reason "All material criteria pass"
+python skills/necktie/scripts/necktie_loop.py transition --file .necktie/run.json --to complete --note "Verification passed"
 python skills/necktie/scripts/necktie_loop.py show --file .necktie/run.json
 python skills/necktie-review/scripts/validate_review.py review.json
 ```
 
-The Python scripts use only the standard library. They record states, decisions, and verification evidence, not private reasoning.
+The Python scripts use only the standard library. They record source authority, states, decisions, and verification evidence, not private reasoning or source contents. `.necktie/` is ignored by Git because its files can contain local paths.
 
 ## Develop and validate
 

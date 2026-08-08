@@ -28,6 +28,20 @@ Use this document to select and verify a Necktie adapter. Necktie supports every
 
 A plugin cannot create a lifecycle event that the host does not expose. Static rules provide the always-on layer only while the host reads that rule. MCP provides retrieval, not automatic activation. Document the installed mechanism accurately when you distribute Necktie in a managed environment.
 
+## Handle attachments and local roots
+
+Hosts expose current-request attachments in different forms. Some provide a local materialized path. Others provide an attachment identifier or a host tool. Necktie records the available form and uses the host-approved reader. It does not search for a guessed local copy.
+
+The portable plugin manifest does not grant runtime access to user directories. Configure project-local inboxes in `.necktie/sources.json`, pass an explicit configuration path, or name a search root in the request. Do not add personal paths to a published plugin manifest or repository file.
+
+Verify source discovery separately from hook activation:
+
+1. Start a test in a directory that contains an unrelated file and no source configuration.
+2. Confirm that discovery returns no candidate for the unrelated file.
+3. Attach or explicitly name a test source and confirm that it appears.
+4. Configure a metadata-only inbox and confirm that Necktie inventories it without reading file contents.
+5. Approve one candidate and confirm that the run packet records the approval and source class.
+
 ## Apply the documentation profile
 
 This document is governed primarily by ISO 24495-1-oriented plain-language practice because its intended readers must select, install, and verify the correct host adapter, misunderstanding could cause Core not to run or the explicit loop to be unavailable, and the document requires both reader-level organization and technical semantic control. It is supplemented by ASD-STE100-oriented controls for command syntax, event names, conditions, and verification steps.

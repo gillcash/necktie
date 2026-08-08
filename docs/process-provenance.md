@@ -51,6 +51,14 @@ The influence is deliberately bounded. Necktie asks the user only when an answer
 
 The Prompt Reversal Method belongs in `method`. User instructions belong in `constraint`. Original records, standards, code, and test results may belong in `evidence` when they are eligible for the claim being made.
 
+## Preserve the source-authority boundary
+
+Necktie may discover only inputs that the user names, files attached to the current request, configured inboxes, and search roots the user approves. File proximity, a familiar name, a recent modification time, or presence elsewhere on the same machine does not create authority.
+
+Configured roots distinguish metadata access from content access. Metadata discovery can identify a likely controlling brief or reference package without reading its contents. The run records content approval before it uses a metadata-only candidate.
+
+An expected output can define structure and acceptance requirements, but it remains `prior-output` or `constraint`. Its factual statements do not become evidence merely because the agent is asked to reproduce the package.
+
 ## Separate Core from Loop
 
 Necktie Core is a small, always-on response policy. It checks work, surfaces material omissions, and asks the strongest unasked question when useful.

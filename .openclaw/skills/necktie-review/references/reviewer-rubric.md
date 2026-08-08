@@ -2,10 +2,10 @@
 
 ## Order of review
 
-1. **Authority and safety**: Is the action permitted, reversible where appropriate, and within the agreed scope?
-2. **Goal fit**: Does the artifact support the user's actual outcome and audience?
-3. **Evidence integrity**: Are material claims traceable to eligible, current sources? Are method context and prior outputs kept out of the evidence chain?
-4. **Correctness and completeness**: Are calculations, logic, content, and required sections accurate and sufficient?
+1. **Authority and safety**: Is every inspected source explicit, attached, configured, or inside a user-approved root? Was metadata-only access promoted before content was read? Is the action permitted, reversible where appropriate, and within the agreed scope?
+2. **Goal fit**: Does the artifact support the user's actual outcome and audience without collapsing explicitly requested breadth or depth?
+3. **Evidence integrity**: Are material claims traceable to accepted, eligible, current sources? Are method context, reference artifacts, and prior outputs kept out of the evidence chain?
+4. **Contract, correctness, and completeness**: Does every required file, section, table, column, and coverage rule pass? Are calculations, logic, and content accurate and sufficient?
 5. **Usability**: Can the intended audience use the result in its target environment?
 6. **Verification**: Were the relevant tests, renders, checks, or inspections performed, and do their results support completion?
 7. **Economy**: Is the solution no larger or more complex than the goal requires?
@@ -21,7 +21,7 @@ Do not inflate preferences into findings. A valid finding states the violated cr
 ## Decision examples
 
 - Approve a sound artifact with an optional wording improvement; record it only as a minor finding if useful.
-- Revise when a KPI definition lacks a denominator, a cited claim is unsupported, a requested file does not render, or a required test fails.
+- Revise when a KPI definition lacks a denominator, a cited claim is unsupported, a requested file does not render, a narrow artifact replaces a required package, or a required contract check fails.
 - Block when the user must choose between materially different scopes, required private data is unavailable, or execution needs authority the run does not possess.
 
 ## Independence
