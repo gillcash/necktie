@@ -33,6 +33,8 @@
     ".qoder-plugin/",
     "pi-extension/",
     "assets/",
+    "docs/",
+    "CHANGELOG.md",
     "LICENSE",
     "NOTICE",
     "!**/__pycache__/**",

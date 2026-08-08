@@ -2,6 +2,8 @@
 
 Use this guide to give a Necktie run the sources it needs without authorizing an unrestricted filesystem search.
 
+This capability is new in version 0.3.0. Existing 0.2.0 invocations continue to work without a source configuration file. For the complete version transition, read [Upgrading from 0.2.0 to 0.3.0](upgrading-to-0.3.0.md).
+
 ## Know what Necktie can inspect
 
 | Source | Discovery authority | Content authority |

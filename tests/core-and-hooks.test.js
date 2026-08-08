@@ -17,6 +17,7 @@ test("Core states the always-on contract and bounded explicit loop", () => {
   assert.match(core, /without reducing explicitly requested breadth, depth, or deliverables/);
   assert.match(core, /Do not run the full Necktie Loop unless/i);
   assert.match(core, /frame, baseline, critique, reverse, execute, review, verify/);
+  assert.match(core, /do not approve or complete machine-checkable work until the contract passes/i);
   assert.doesNotMatch(core, /lite|ultra|default mode|status line/i);
 });
 

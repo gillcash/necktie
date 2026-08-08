@@ -23,6 +23,19 @@ The root `plugin.json` targets the [Agent Plugins 1.0.0 specification](https://a
 
 `necktie-mcp/` is an optional retrieval fallback. It is not required by the plugin or loop, and MCP alone does not make Core active on every response.
 
+## Upgrade from 0.2.0 to 0.3.0
+
+Version 0.3.0 preserves the four skills and seven phases from 0.2.0. It adds four controls:
+
+- permission-aware discovery limited to named inputs, current-request attachments, configured inboxes, and user-approved search roots;
+- run-packet schema 3.0, with automatic migration from schema 2.0 when the controller next loads and saves the packet;
+- deliverable contracts that preserve required files, sections, tables, columns, evidence rules, and verification requirements; and
+- a deterministic gate that requires the latest machine-checkable contract verification to pass before `APPROVE` or completion.
+
+Existing simple invocations need no configuration change. Reinstall or update the plugin through the host's normal mechanism, restart the host when required, and start a new session so the revised Core and skills load.
+
+Read [Upgrading from 0.2.0 to 0.3.0](docs/upgrading-to-0.3.0.md) for migration and verification steps. See [CHANGELOG.md](CHANGELOG.md) for the version record.
+
 ## Run the loop
 
 ```text

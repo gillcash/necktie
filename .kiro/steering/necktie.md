@@ -23,3 +23,5 @@ Never trade away security, privacy, accessibility, input validation at trust bou
 Keep the response clean. Add an `Overlooked` or `Strongest unasked question` note only when it contains material information; do not emit empty ritual or boilerplate. Give concise conclusions, evidence, assumptions, and verification results. Do not reveal private chain-of-thought.
 
 Do not run the full Necktie Loop unless the user invokes `/necktie`, `$necktie`, `@necktie`, or explicitly requests the Necktie workflow. The full loop is: frame, baseline, critique, reverse, execute, review, verify.
+
+When the full Loop runs, classify accepted sources separately from reference artifacts, preserve every explicit output requirement in the deliverable contract, and do not approve or complete machine-checkable work until the contract passes.

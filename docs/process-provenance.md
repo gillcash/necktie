@@ -2,6 +2,12 @@
 
 This document explains which context shaped Necktie, how the context was used, and which boundaries maintainers must preserve. It generalizes local session and asset provenance so the public repository does not disclose personal paths, account data, or private transcripts.
 
+## Record the version boundary
+
+Version 0.2.0 established the first published Necktie package: the always-on Core, the explicit four-skill and seven-phase Loop, cross-host adapters, the schema-2 state controller, and the independent review validator.
+
+Version 0.3.0 adds bounded source discovery, source-authority decisions, run-packet schema 3.0, reference-artifact contracts, structural verification, and a passing-contract gate for approval and completion. These controls extend Frame, Review, and Verify. They do not add a fifth skill, an eighth phase, a service, or a persistent operating mode.
+
 ## Identify the starting context
 
 The starting method context included a document commonly titled *The Prompt Reversal Method*. That document was important because it defined the central transformation: analyze the successful path through an iterative exchange, then compile the stable goal, useful corrections, constraints, evidence rules, and output requirements into one self-contained prompt for a fresh execution.

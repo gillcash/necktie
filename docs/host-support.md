@@ -2,6 +2,8 @@
 
 Use this document to select and verify a Necktie adapter. Necktie supports every host covered by its Ponytail foundation, but each host supplies a different instruction mechanism.
 
+If you are updating an existing 0.2.0 installation, read [Upgrading from 0.2.0 to 0.3.0](upgrading-to-0.3.0.md). Update or reinstall through the host's normal mechanism. Restart the host when it caches instructions or hooks. Start a new session before you verify Core.
+
 ## Select the mechanism
 
 | Mechanism | Hosts | Core behavior | Loop behavior |

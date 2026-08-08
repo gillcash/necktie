@@ -44,4 +44,18 @@ test("package exposes the Necktie OpenCode adapter", () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   assert.equal(pkg.main, "./.opencode/plugins/necktie.mjs");
   assert.equal(pkg.repository.url, "git+https://github.com/gillcash/necktie.git");
+  assert.ok(pkg.files.includes("docs/"));
+  assert.ok(pkg.files.includes("CHANGELOG.md"));
+});
+
+test("0.3.0 release documentation covers every README language", () => {
+  for (const relative of ["README.md", "README.es.md", "README.ko.md"]) {
+    const content = fs.readFileSync(path.join(root, relative), "utf8");
+    assert.match(content, /0\.2\.0/);
+    assert.match(content, /0\.3\.0/);
+    assert.match(content, /docs\/upgrading-to-0\.3\.0\.md/);
+  }
+  const changelog = fs.readFileSync(path.join(root, "CHANGELOG.md"), "utf8");
+  assert.match(changelog, /\[0\.3\.0\] - Unreleased/);
+  assert.match(changelog, /\[0\.2\.0\] - 2026-08-08/);
 });
