@@ -10,12 +10,14 @@ const root = path.resolve(__dirname, "..");
 const core = fs.readFileSync(path.join(root, "core", "necktie-core.md"), "utf8").trim();
 const runtime = require(path.join(root, "hooks", "necktie-context.js"));
 
-test("Core states the always-on contract and bounded explicit loop", () => {
+test("Core states the always-on Necktie and internal Mammon contract", () => {
   assert.match(core, /active for every response/i);
+  assert.match(core, /angel of late-stage capitalism/i);
+  assert.match(core, /privately consult Mammon/i);
+  assert.match(core, /Mammon is internal only/i);
   assert.match(core, /strongest unasked question/i);
-  assert.match(core, /Do not run the full Necktie Loop unless/i);
-  assert.match(core, /frame, baseline, critique, reverse, execute, review, verify/);
-  assert.doesNotMatch(core, /lite|ultra|default mode|status line/i);
+  assert.doesNotMatch(core, /Necktie Loop|frame, baseline, critique, reverse/i);
+  assert.doesNotMatch(core, /lite|ultra|default mode|status line|Mammon command/i);
 });
 
 test("hook runtime reads the canonical Core", () => {

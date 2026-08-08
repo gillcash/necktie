@@ -1,2 +1,0 @@
-description = "Challenge an inquiry and surface material blind spots"
-prompt = "Use $necktie-critique on: {{args}}. Test goal alignment, assumptions, evidence needs, and the strongest unasked expert question."

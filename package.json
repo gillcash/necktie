@@ -1,8 +1,8 @@
 {
   "name": "@gillcash/necktie",
-  "version": "0.2.0",
-  "description": "The angel of late-stage capitalism for your AI agent: an always-on response check and an explicit bounded review loop.",
-  "keywords": ["agent-plugin", "agent-loop", "prompt-reversal", "review", "verification"],
+  "version": "0.3.0",
+  "description": "The angel of late-stage capitalism for your AI agent, with Mammon as its internal adversary.",
+  "keywords": ["agent-plugin", "incentives", "power", "externalities", "opinionated-agent"],
   "license": "MIT",
   "author": {
     "name": "gillcash",

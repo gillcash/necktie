@@ -1,6 +1,0 @@
-interface:
-  display_name: "Necktie Critique"
-  short_description: "Challenge goals and surface blind spots"
-  default_prompt: "Use $necktie-critique to challenge this inquiry before execution."
-policy:
-  allow_implicit_invocation: false

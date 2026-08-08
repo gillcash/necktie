@@ -1,14 +1,14 @@
 {
   "name": "necktie",
-  "description": "Necktie Core and the explicit bounded Necktie Loop.",
+  "description": "The angel of late-stage capitalism for your AI agent.",
   "owner": { "name": "gillcash", "url": "https://github.com/gillcash" },
   "plugins": [
     {
       "name": "necktie",
-      "description": "Check, broaden, reverse, review, and verify agent work.",
+      "description": "Expose incentives, rebut extraction, and recommend a better course.",
       "source": "./",
       "category": "productivity",
-      "tags": ["agent-loop", "review", "verification"],
+      "tags": ["incentives", "power", "externalities"],
       "commands": "commands/",
       "skills": "skills/",
       "hooks": "hooks/copilot-hooks.json"

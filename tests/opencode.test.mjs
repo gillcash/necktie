@@ -7,13 +7,13 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
 
-test("OpenCode registers four commands, skills, and Core", async () => {
+test("OpenCode registers the Necktie command, skill, and Core", async () => {
   const module = await import(pathToFileURL(path.join(root, ".opencode", "plugins", "necktie.mjs")));
   assert.deepEqual(Object.keys(module), ["default"]);
   const plugin = await module.default();
   const config = {};
   await plugin.config(config);
-  assert.deepEqual(Object.keys(config.command).sort(), ["necktie", "necktie-critique", "necktie-reverse", "necktie-review"]);
+  assert.deepEqual(Object.keys(config.command), ["necktie"]);
   assert.ok(config.skills.paths.includes(path.join(root, "skills")));
   const output = { system: ["base"] };
   await plugin["experimental.chat.system.transform"]({}, output);

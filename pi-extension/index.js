@@ -16,7 +16,7 @@ export function sendSkill(pi, skill, args, ctx) {
 }
 
 export default function necktieExtension(pi) {
-  for (const skill of ["necktie", "necktie-critique", "necktie-reverse", "necktie-review"]) {
+  for (const skill of ["necktie"]) {
     pi.registerCommand(skill, {
       description: `Run /skill:${skill}`,
       handler: (args, ctx) => sendSkill(pi, skill, args, ctx),
