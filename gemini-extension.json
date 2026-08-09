@@ -1,6 +1,6 @@
 {
   "name": "necktie",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "The angel of late-stage capitalism for your AI agent, with Mammon as its internal adversary.",
   "contextFileName": "AGENTS.md"
 }

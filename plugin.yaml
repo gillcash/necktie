@@ -1,5 +1,5 @@
 name: necktie
-version: 0.3.0
+version: 0.4.0
 description: The angel of late-stage capitalism for your AI agent, with Mammon as its internal adversary.
 author: gillcash
 provides_hooks:
@@ -7,5 +7,6 @@ provides_hooks:
   - pre_gateway_dispatch
 provides_commands:
   - necktie
+  - necktie-mode
 provides_skills:
   - necktie

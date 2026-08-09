@@ -8,6 +8,14 @@
         "powershell": "node \"${PLUGIN_ROOT}\\hooks\\necktie-context.js\" SessionStart copilot",
         "timeoutSec": 10
       }
+    ],
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "bash": "node \"${PLUGIN_ROOT}/hooks/necktie-context.js\" UserPromptSubmit copilot",
+        "powershell": "node \"${PLUGIN_ROOT}\\hooks\\necktie-context.js\" UserPromptSubmit copilot",
+        "timeoutSec": 10
+      }
     ]
   }
 }

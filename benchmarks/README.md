@@ -17,3 +17,11 @@ Measure observable outcomes:
 Publish prompts, fixtures, scoring rules, sample sizes, failures, and limitations with every result. A benchmark must not reward political vocabulary by itself; it must reward better decisions and more visible tradeoffs.
 
 No benchmark result is claimed in this release.
+
+## Mode fixtures
+
+`fixtures.json` defines three stable prompts for comparing Lite, Full, and Ultra. Run every prompt with the same model, evidence, permissions, and environment at each mode. Score only observable recommendations and artifacts; never require or collect hidden reasoning.
+
+- Lite should preserve the v0.3 incentive-and-power judgment.
+- Full should additionally notice material opportunities for ambitious, authorized leverage.
+- Ultra should more aggressively test premature restraint without turning Mammon into a public voice or relaxing safety boundaries.

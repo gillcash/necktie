@@ -7,7 +7,7 @@ const homepage = "https://github.com/gillcash/necktie";
 const names = ["necktie"];
 
 function render(name) {
-  const source = fs.readFileSync(path.join(root, "skills", name, "SKILL.md"), "utf8").replace(/\r\n/g, "\n");
+  const source = fs.readFileSync(path.join(root, "skills", name, "SKILL.md"), "utf8").replace(/\r\n?/g, "\n");
   const match = source.match(/^---\n([\s\S]*?)\n---\n?/);
   if (!match) throw new Error(`skills/${name}/SKILL.md has no frontmatter`);
   const description = match[1].match(/^description:\s*(.+)$/m)?.[1];
@@ -20,23 +20,74 @@ function copyAuxiliary(name, targetDir) {
   const sourceDir = path.join(root, "skills", name);
   for (const child of ["references", "scripts"]) {
     const source = path.join(sourceDir, child);
+    const destination = path.join(targetDir, child);
+    if (fs.existsSync(destination)) fs.rmSync(destination, { recursive: true, force: true });
     if (!fs.existsSync(source)) continue;
-    fs.cpSync(source, path.join(targetDir, child), {
+    fs.cpSync(source, destination, {
       recursive: true,
       filter: (entry) => !entry.includes("__pycache__") && !entry.endsWith(".pyc"),
     });
   }
 }
 
-if (require.main === module) {
-  for (const name of names) {
-    const targetDir = path.join(root, ".openclaw", "skills", name);
-    const target = path.join(targetDir, "SKILL.md");
-    fs.mkdirSync(targetDir, { recursive: true });
-    fs.writeFileSync(target, render(name), "utf8");
-    copyAuxiliary(name, targetDir);
+function generatedFiles(name) {
+  const files = new Map([["SKILL.md", render(name)]]);
+  const sourceDir = path.join(root, "skills", name);
+  for (const child of ["references", "scripts"]) {
+    const source = path.join(sourceDir, child);
+    if (!fs.existsSync(source)) continue;
+    for (const relative of walk(source)) {
+      const content = fs.readFileSync(path.join(source, relative));
+      files.set(path.join(child, relative), content);
+    }
   }
-  console.log(`Generated ${names.length} OpenClaw skill adapters.`);
+  return files;
 }
 
-module.exports = { copyAuxiliary, names, render };
+function walk(directory, prefix = "") {
+  const results = [];
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    if (entry.name === "__pycache__" || entry.name.endsWith(".pyc")) continue;
+    const relative = path.join(prefix, entry.name);
+    if (entry.isDirectory()) results.push(...walk(path.join(directory, entry.name), relative));
+    else if (entry.isFile()) results.push(relative);
+  }
+  return results;
+}
+
+function run({ check = process.argv.includes("--check") } = {}) {
+  const stale = [];
+  for (const name of names) {
+    const targetDir = path.join(root, ".openclaw", "skills", name);
+    const files = generatedFiles(name);
+    if (check) {
+      for (const [relative, expected] of files) {
+        const target = path.join(targetDir, relative);
+        const actual = fs.existsSync(target) ? fs.readFileSync(target) : null;
+        const expectedBuffer = Buffer.isBuffer(expected) ? expected : Buffer.from(expected, "utf8");
+        if (!actual || !actual.equals(expectedBuffer)) stale.push(path.relative(root, target));
+      }
+      const expectedPaths = new Set([...files.keys()].map((relative) => path.normalize(relative)));
+      for (const relative of fs.existsSync(targetDir) ? walk(targetDir) : []) {
+        if (!expectedPaths.has(path.normalize(relative))) stale.push(path.relative(root, path.join(targetDir, relative)));
+      }
+      continue;
+    }
+    fs.mkdirSync(targetDir, { recursive: true });
+    fs.writeFileSync(path.join(targetDir, "SKILL.md"), render(name), "utf8");
+    copyAuxiliary(name, targetDir);
+  }
+  if (stale.length) {
+    console.error(`Generated OpenClaw skills are stale: ${stale.join(", ")}`);
+    process.exitCode = 1;
+    return stale;
+  }
+  if (!check) console.log(`Generated ${names.length} OpenClaw skill adapters.`);
+  return [];
+}
+
+if (require.main === module) {
+  run();
+}
+
+module.exports = { copyAuxiliary, generatedFiles, names, render, run, walk };

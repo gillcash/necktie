@@ -1,14 +1,43 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { fileURLToPath } from "node:url";
-import { buildInstructions } from "../instructions.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const expected = fs.readFileSync(path.resolve(__dirname, "..", "..", "core", "necktie-core.md"), "utf8").trim();
+import { MODES, buildInstructions, resolveMode, selectInstructions } from "../instructions.js";
 
-test("MCP fallback serves the canonical Core without modes", () => {
-  assert.equal(buildInstructions(), expected);
-  assert.doesNotMatch(buildInstructions(), /lite|ultra|default mode/i);
+test("MCP selector serves exactly lite, full, and ultra", () => {
+  assert.deepEqual(MODES, ["lite", "full", "ultra"]);
+  for (const mode of MODES) {
+    assert.equal(resolveMode(mode), mode);
+    const selected = selectInstructions(mode);
+    assert.equal(selected.mode, mode);
+    assert.match(selected.instructions, new RegExp(`level: ${mode}`, "i"));
+    assert.equal(buildInstructions(mode), selected.instructions);
+  }
+  assert.throws(() => resolveMode("off"), /Invalid Necktie mode/);
+});
+
+test("MCP omitted mode uses environment, configuration, then Full", () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "necktie-mcp-config-"));
+  const configPath = path.join(directory, "config.json");
+  try {
+    fs.writeFileSync(configPath, JSON.stringify({ defaultMode: "lite" }));
+    assert.equal(selectInstructions(undefined, { env: {}, configOptions: { configPath } }).mode, "lite");
+    assert.equal(selectInstructions(undefined, {
+      env: { NECKTIE_DEFAULT_MODE: "ultra" },
+      configOptions: { configPath },
+    }).mode, "ultra");
+    const warnings = [];
+    assert.equal(selectInstructions(undefined, {
+      env: { NECKTIE_DEFAULT_MODE: "off" },
+      configOptions: { configPath },
+      onWarning: (warning) => warnings.push(warning),
+    }).mode, "lite");
+    assert.match(warnings.join("\n"), /NECKTIE_DEFAULT_MODE/);
+    fs.unlinkSync(configPath);
+    assert.equal(selectInstructions(undefined, { env: {}, configOptions: { configPath } }).mode, "full");
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
 });
