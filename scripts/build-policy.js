@@ -47,7 +47,6 @@ function targets(rendered) {
     output[`skills/necktie/references/${mode}.md`] = rendered[mode];
     output[`core/necktie-${mode}.md`] = rendered[mode];
   }
-  output["core/necktie-core.md"] = rendered.full;
   return output;
 }
 

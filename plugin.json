@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "necktie",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "The angel of late-stage capitalism for your AI agent, with useful Full and unrebutted Mammon modes.",
   "author": {
     "name": "gillcash",

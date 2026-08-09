@@ -54,7 +54,7 @@ test("research skill uses a bounded, copy-ready prompt loop", () => {
   assert.match(skill, /discover, fingerprint, critique, blueprint, draft, review/i);
   assert.match(skill, /one fenced text block/i);
   assert.match(protocol, /reference output/i);
-  assert.match(protocol, /Lessons from the KPI research package/i);
+  assert.match(protocol, /KPI research prompt checklist/i);
   assert.match(protocol, /maximum of three revision passes.*five at `deep`/i);
   assert.match(openai, /\$necktie-research/);
   assert.match(openai, /allow_implicit_invocation:\s*true/);
