@@ -6,13 +6,13 @@
 
 Necktie es una política de agente deliberadamente opinada para decisiones condicionadas por incentivos, métricas, poder y extracción. No finge que todas las compensaciones son neutrales.
 
-Full es el modo útil predeterminado: presenta una recomendación de Necktie y realiza u ofrece una acción concreta. Lite conserva el juicio concentrado. Mammon sustituye a Ultra y presenta la recomendación de Mammon sin refutación de Necktie.
+Full es el modo útil predeterminado: presenta una recomendación de Necktie y realiza u ofrece una acción concreta. Lite ofrece un juicio concentrado. Mammon presenta la recomendación de Mammon sin refutación de Necktie.
 
 ## Elige la profundidad
 
 | Modo | Juicio y acción |
 | --- | --- |
-| Lite | Conserva el análisis concentrado de la versión 0.3: desafío de Mammon y refutación de Necktie |
+| Lite | Análisis concentrado: desafío de Mammon y refutación de Necktie |
 | Full | Lite más una evaluación de la construcción autorizada con mayor impacto y una acción útil; es el valor predeterminado |
 | Mammon | La conclusión de Mammon sin refutación de Necktie, más una acción útil |
 
@@ -60,7 +60,7 @@ Full y Mammon realizan el trabajo ya autorizado o normalmente ofrecen una acció
 $necktie-research Convierte esta conversación y el informe de referencia en un único prompt de investigación reutilizable.
 ```
 
-La superficie portátil contiene `necktie` y `necktie-research`. El antiguo flujo general permanece retirado; el nuevo flujo acotado solo construye, revisa y verifica prompts de investigación.
+La superficie portátil contiene `necktie` y `necktie-research`. Necktie Research construye, revisa y verifica prompts de investigación.
 
 ## Instale Necktie
 
@@ -104,4 +104,4 @@ npm run build:adapters
 npm test
 ```
 
-`skills/necktie/references/policy.md` es la fuente canónica de las reglas generadas; `core/necktie-core.md` sigue siendo el alias compatible del modo Full. El proyecto conserva la atribución de la base de adaptadores Ponytail en [NOTICE](NOTICE) y usa la [licencia MIT](LICENSE).
+`skills/necktie/references/policy.md` es la fuente canónica de las reglas generadas. El proyecto registra las atribuciones de terceros en [NOTICE](NOTICE) y usa la [licencia MIT](LICENSE).

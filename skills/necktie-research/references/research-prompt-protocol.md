@@ -210,20 +210,16 @@ Return:
 2. a short instruction naming the files to attach or facts to replace;
 3. material assumptions and limitations only.
 
-## Lessons from the KPI research package
+## KPI research prompt checklist
 
-The KPI benchmark improved because the process did more than add detail:
+For KPI and data-reliability work, require:
 
-- A broad KPI question became a decision-safety question about whether source events were trustworthy.
-- "Employee diligence" was reframed as workflow, control, and incentive design.
-- The prompt defined a default operating case instead of leaving the researcher to invent one.
-- A cross-functional panel covered operational, financial, technical, frontline, safety, data, and incentive failure knowledge, then had to reconcile its views.
-- A truth chain and data-provenance classes gave the research an organizing model.
-- Explicit hypotheses forced verdicts, limitations, confidence, and practical implications.
-- Exact master-table schemas converted vague coverage into reproducible analysis.
-- Quantitative failure examples showed how bad source events changed downstream decisions.
-- Startup and mature-state frameworks made recommendations implementable at different levels of capability.
-- A numbered source register, final error checks, strongest unasked question, and expert objections made the output auditable.
-- The prompt required a human-readable report plus machine-readable tables and implementation artifacts.
-
-Reuse these design moves when they serve the new outcome. Do not blindly reuse the KPI topic, counts, or section names.
+- a decision-safety question about source-event trustworthiness, workflow, controls, and incentives;
+- a default operating case and a reconciled cross-functional expert panel;
+- a truth chain and explicit data-provenance classes;
+- falsifiable hypotheses with verdicts, limitations, confidence, and practical implications;
+- exact schemas for reproducible analysis;
+- quantitative examples of failures propagating into decisions;
+- startup and mature-state control frameworks;
+- a numbered source register, final checks, expert objections, and the strongest unasked question;
+- a human-readable report plus machine-readable tables and implementation artifacts.

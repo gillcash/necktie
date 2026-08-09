@@ -8,13 +8,13 @@
 
 Necktie is an opinionated agent policy for decisions shaped by incentives, metrics, power, and extraction. It does not pretend every tradeoff is neutral.
 
-Full is the useful default: it gives one Necktie judgment and completes or offers a concrete next action. Lite preserves the focused v0.3 judgment. Mammon replaces Ultra and returns Mammon's recommendation without a Necktie rebuttal. Full and Mammon can route accepted research-prompt work through a bounded prompt-reversal loop.
+Full is the useful default: it gives one Necktie judgment and completes or offers a concrete next action. Lite gives a focused Necktie judgment. Mammon returns Mammon's recommendation without a Necktie rebuttal. Full and Mammon can route accepted research-prompt work through a bounded prompt-reversal loop.
 
 ## Choose the depth
 
 | Mode | Judgment and action | Best fit |
 | --- | --- | --- |
-| Lite | Mammon's strongest accumulation and extraction case, followed by Necktie's rebuttal | Focused decisions and the v0.3 behavior |
+| Lite | Mammon's strongest accumulation and extraction case, followed by Necktie's rebuttal | Focused decisions with a bounded judgment |
 | Full | Lite plus an ambition pass and one context-specific useful action | Default product, engineering, and strategy work |
 | Mammon | Mammon's evidence-based conclusion with no Necktie rebuttal, plus one useful action | The strongest accumulation, growth, control, or extraction case |
 
@@ -82,17 +82,9 @@ Necktie leads with a verdict or completed outcome, names the incentive or power 
 
 The root `plugin.json` targets the [Agent Plugins 1.0.0 specification](https://agent-plugins.org/). The portable surface contains the `necktie` judgment skill and the `necktie-research` prompt-building skill.
 
-`skills/necktie/references/policy.md` is the canonical policy source. The build generates Lite, Full, and Mammon references plus `core/` artifacts; `core/necktie-core.md` remains a Full compatibility alias. Static rules inject Full. Dynamic hooks select the session mode.
+`skills/necktie/references/policy.md` is the canonical policy source. The build generates Lite, Full, and Mammon references plus matching `core/` artifacts. Static rules inject Full. Dynamic hooks select the session mode.
 
 `necktie-mcp/` is an optional private stdio adapter. Its `necktie` prompt and read-only `necktie_instructions` tool accept Lite, Full, or Mammon per request. MCP does not activate Necktie on every turn and exposes no arbitrary repository, file, execution, network, or mutation operation. The process is not a sandbox: it reads Necktie's bundled policy and optional local default configuration.
-
-The former general-purpose artifact loop remains retired. Necktie Research adds a narrower prompt-building loop with source discovery, reference fingerprinting, prompt reversal, independent review, verification, and an optional auditable state packet. The retired general commands remain:
-
-- `necktie-critique`
-- `necktie-reverse`
-- `necktie-review`
-
-Use `necktie` for the complete judgment. Existing `.necktie/run.json` files are historical artifacts and are not read by this version.
 
 ## Install
 
@@ -191,14 +183,6 @@ python C:/Users/you/.codex/skills/.system/plugin-creator/scripts/validate_plugin
 
 `skills/necktie/references/policy.md` is the source for generated instruction artifacts and static adapters. Do not edit generated copies directly.
 
-## Upgrade from 0.4
-
-Version 0.5 replaces Ultra with Mammon. Existing saved or environment values of `ultra` are invalid and safely fall back to Full; select Mammon explicitly because its final authority differs materially from the former Ultra policy. Lite and Full retain Necktie's final judgment, while Full and Mammon gain useful action behavior and the research-prompt workflow.
-
-See the [0.5.0 release notes](docs/release-notes-0.5.0.md) for the complete migration summary.
-
-See [design provenance](docs/process-provenance.md) for the product boundary and inherited adapter foundation.
-
 ## License
 
-Necktie is available under the [MIT License](LICENSE). [NOTICE](NOTICE) preserves attribution for the inherited Ponytail adapter foundation.
+Necktie is available under the [MIT License](LICENSE). Third-party attribution is recorded in [NOTICE](NOTICE).

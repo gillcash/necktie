@@ -11,7 +11,6 @@ __pycache__/
 
 # one-off social/announcement art, not repo content
 announce-*.png
-changelog-*.png
 necktie-*.gif
 
 # Claude Code local settings (machine-specific permission grants)

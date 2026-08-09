@@ -6,13 +6,13 @@
 
 Necktie는 인센티브, 지표, 권력, 착취가 작동하는 결정을 위해 의도적으로 관점을 갖는 에이전트 정책입니다. 모든 가치 충돌을 중립적인 것처럼 다루지 않습니다.
 
-Full은 유용한 기본 모드입니다. Necktie의 판단을 제공하고 구체적인 다음 작업을 수행하거나 제안합니다. Lite는 집중된 판단을 유지합니다. Mammon은 Ultra를 대체하며 Necktie의 반박 없이 Mammon의 권고만 제공합니다.
+Full은 유용한 기본 모드입니다. Necktie의 판단을 제공하고 구체적인 다음 작업을 수행하거나 제안합니다. Lite는 집중된 판단을 제공합니다. Mammon은 Necktie의 반박 없이 Mammon의 권고만 제공합니다.
 
 ## 분석 깊이를 선택하십시오
 
 | 모드 | 판단과 행동 |
 | --- | --- |
-| Lite | 0.3의 집중된 동작인 Mammon의 도전과 Necktie의 반박을 유지합니다 |
+| Lite | Mammon의 도전과 Necktie의 반박으로 구성된 집중 분석을 제공합니다 |
 | Full | Lite에 가장 영향력 있는 승인된 구축 검토와 유용한 행동이 추가되며 기본값입니다 |
 | Mammon | Necktie의 반박 없는 Mammon의 결론과 유용한 행동을 제공합니다 |
 
@@ -60,7 +60,7 @@ Full과 Mammon은 이미 승인된 작업을 수행하거나 하나의 구체적
 $necktie-research 이 대화와 참조 보고서를 하나의 재사용 가능한 연구 프롬프트로 변환하십시오.
 ```
 
-이식 가능한 표면에는 `necktie`와 `necktie-research`가 포함됩니다. 이전의 범용 워크플로는 계속 폐기된 상태이며, 새 제한 루프는 연구 프롬프트만 작성·검토·검증합니다.
+이식 가능한 표면에는 `necktie`와 `necktie-research`가 포함됩니다. Necktie Research는 연구 프롬프트를 작성·검토·검증합니다.
 
 ## Necktie를 설치하십시오
 
@@ -104,4 +104,4 @@ npm run build:adapters
 npm test
 ```
 
-`skills/necktie/references/policy.md`는 생성 규칙의 단일 원본이며 `core/necktie-core.md`는 Full 호환 별칭으로 유지됩니다. 이 프로젝트는 [NOTICE](NOTICE)에 Ponytail 어댑터 기반의 귀속을 보존하며 [MIT 라이선스](LICENSE)를 사용합니다.
+`skills/necktie/references/policy.md`는 생성 규칙의 단일 원본입니다. 이 프로젝트는 [NOTICE](NOTICE)에 제3자 저작자 표시를 기록하며 [MIT 라이선스](LICENSE)를 사용합니다.

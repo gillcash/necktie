@@ -18,7 +18,7 @@ In Lite and Full, Mammon must not appear as a speaker in the output. The user ne
 
 Full should offer to build a research prompt when the store's actual systems, source events, policies, or evidence are not yet known. Mammon should also offer a concrete artifact, although its research objective may prioritize control, leverage, and value capture.
 
-If the user accepts, `necktie-research` should work backward from the intended operating package rather than emit a generic "research this topic" prompt. The benchmark package in the design corpus became useful because its final prompt encoded:
+If the user accepts, `necktie-research` should work backward from the intended operating package rather than emit a generic "research this topic" prompt. The prompt should encode:
 
 - a specific one-branch Greater Moncton operating case;
 - a reframed inquiry about process and control design instead of employee diligence;
@@ -33,4 +33,4 @@ If the user accepts, `necktie-research` should work backward from the intended o
 
 Those counts are properties of that case, not a universal template. The reusable principle is to fingerprint the target deliverable, preserve the required research intensity, and translate every material quality into an observable prompt requirement.
 
-The earlier general Necktie loop failed this benchmark because it searched only an empty working directory, missed the controlling brief and reference package, interpreted minimum machinery as minimum research depth, and approved a small methodology that did not match the target structure. The focused research loop must scan the user-authorized context, capture the exact required schema, and structurally compare the prompt blueprint with any reference output before approval.
+The research loop must scan the user-authorized context, capture the exact required schema, and structurally compare the prompt blueprint with any reference output before approval.

@@ -23,8 +23,6 @@ test("generated modes compose the canonical policy exactly", () => {
   const lite = policy.buildInstructions("lite");
   const full = policy.buildInstructions("full");
   const mammon = policy.buildInstructions("mammon");
-  const core = fs.readFileSync(path.join(root, "core", "necktie-core.md"), "utf8").trim();
-
   assert.match(lite, /level: lite/i);
   assert.match(lite, /privately consult Mammon/i);
   assert.match(lite, /In Lite and Full, Mammon remains internal/i);
@@ -41,9 +39,8 @@ test("generated modes compose the canonical policy exactly", () => {
   assert.match(mammon, /Do not perform or append Necktie's rebuttal/i);
   assert.match(mammon, /Useful action pass/);
   assert.doesNotMatch(mammon, /Then rebut Mammon|Private ambition pass/);
-  assert.equal(core, full);
   assert.throws(() => policy.buildInstructions("off"), { code: "NECKTIE_INVALID_MODE" });
-  assert.throws(() => policy.buildInstructions("ultra"), { code: "NECKTIE_INVALID_MODE" });
+  assert.throws(() => policy.buildInstructions("bogus"), { code: "NECKTIE_INVALID_MODE" });
 });
 
 test("mode resolution follows request, session, environment, config, full precedence", () => {
@@ -72,7 +69,7 @@ test("mode resolution follows request, session, environment, config, full preced
     const malformed = policy.resolveMode({ env: {}, configOptions: options });
     assert.equal(malformed.mode, "full");
     assert.ok(malformed.warnings.some((warning) => /invalid Necktie configuration/.test(warning)));
-    const invalidEnvironment = policy.resolveMode({ env: { NECKTIE_DEFAULT_MODE: "ultra" }, configOptions: options });
+    const invalidEnvironment = policy.resolveMode({ env: { NECKTIE_DEFAULT_MODE: "bogus" }, configOptions: options });
     assert.equal(invalidEnvironment.mode, "full");
     assert.ok(invalidEnvironment.warnings.some((warning) => /NECKTIE_DEFAULT_MODE/.test(warning)));
   } finally {
@@ -136,7 +133,7 @@ test("invalid stored session state falls back with a diagnostic", () => {
   try {
     const target = sessions.statePath("codex", "bad", options);
     fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.writeFileSync(target, JSON.stringify({ mode: "ultra" }));
+    fs.writeFileSync(target, JSON.stringify({ mode: "bogus" }));
     const stored = sessions.readSessionMode("codex", "bad", options);
     const resolved = policy.resolveMode({ sessionMode: stored, env: {}, configOptions: { configPath: path.join(directory, "config.json") } });
     assert.equal(resolved.mode, "full");

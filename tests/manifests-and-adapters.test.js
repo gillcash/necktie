@@ -37,13 +37,12 @@ test("static adapter generation targets Full and the package ships shared mode a
   assert.equal(fs.readFileSync(path.join(root, "AGENTS.md"), "utf8").trim(), full);
   assert.match(full, /level: full/i);
   assert.equal(fs.existsSync(path.join(root, "core", "necktie-mammon.md")), true);
-  assert.equal(fs.existsSync(path.join(root, "core", "necktie-ultra.md")), false);
   const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   assert.ok(pkg.files.includes("lib/"));
   assert.ok(pkg.files.includes("core/"));
   assert.ok(pkg.files.includes("skills/"));
-  const legacyManifest = fs.readFileSync(path.join(root, "plugin.yaml"), "utf8");
-  assert.match(legacyManifest, /provides_skills:[\s\S]*- necktie\s+- necktie-research/);
+  const yamlManifest = fs.readFileSync(path.join(root, "plugin.yaml"), "utf8");
+  assert.match(yamlManifest, /provides_skills:[\s\S]*- necktie\s+- necktie-research/);
 });
 
 test("package exposes the OpenCode adapter and uses generated-policy checks", () => {
