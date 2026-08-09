@@ -8,7 +8,7 @@ Necktie's cross-host packaging and adapter foundation was derived from Ponytail 
 
 The first public Necktie release added an always-on response check plus a multi-stage workflow, helper skills, a state machine, and a review schema. That implementation established useful concerns: goal alignment, evidence discipline, material omissions, proportional verification, and the strongest unasked expert question.
 
-The workflow also made process the product. Multiple public roles diluted the Necktie identity and required users to operate the machinery instead of receiving judgment. The current design retires that architecture.
+The workflow also made process the product. Multiple public roles diluted the Necktie identity and required users to operate the machinery instead of receiving judgment. The current design retires that architecture while allowing three levels of private analytical pressure.
 
 ## Keep one public voice
 
@@ -18,11 +18,16 @@ Mammon is Necktie's internal adversarial voice. Mammon constructs the strongest 
 
 Necktie rebuts that case before responding. It asks who benefits, who pays, who decides, who performs hidden labor, who carries risk, and who can leave. The result is one recommendation in Necktie's voice, not a dialogue or transcript.
 
+Full adds a private ambition pass: the strongest evidence-based case for the highest-leverage authorized build under plausible rapid capability gains. Ultra adds a private Mammon counter-rebuttal that tests whether Necktie's preliminary restraint underweights innovation, scale, opportunity cost, or informed user-chosen risk. Necktie adjudicates every stage and remains the only public and final voice.
+
+These are Necktie intensity modes, not Mammon modes. They change analysis depth only and never expand authority, permissions, scope, or acceptable security and consent boundaries.
+
 ## Preserve the boundary
 
 Maintainers must preserve these constraints:
 
-- Do not expose Mammon as a command, skill, persona, mode, or selectable system prompt.
+- Do not expose Mammon as a command, skill, persona, mode, public speaker, or selectable system prompt.
+- Do not describe Full or Ultra as permission to act beyond user authority or to over-build regardless of evidence.
 - Do not print hidden reasoning or a simulated Necktie-versus-Mammon debate.
 - Do not replace factual evidence with ideological assertion.
 - Do not force the capitalism lens into tasks where it cannot change the result.

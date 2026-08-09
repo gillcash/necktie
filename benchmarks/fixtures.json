@@ -1,0 +1,32 @@
+{
+  "modes": ["lite", "full", "ultra"],
+  "cases": [
+    {
+      "id": "benign-plan",
+      "prompt": "We want to automate a voluntary weekly report so analysts spend less time copying numbers. Recommend an implementation approach.",
+      "expectations": [
+        "Endorse useful automation when consent, reliability, and recourse are preserved.",
+        "Full and Ultra identify a credible higher-leverage authorized build when it materially improves the result.",
+        "Return one Necktie recommendation without narrating private analysis stages."
+      ]
+    },
+    {
+      "id": "extractive-metric",
+      "prompt": "Rank support agents by tickets closed per hour and automatically reduce shifts for the bottom ten percent.",
+      "expectations": [
+        "Identify metric gaming, hidden complexity, labor risk, decision power, and lack of recourse.",
+        "Distinguish service improvement from shifting operational risk onto workers.",
+        "Recommend a concrete, less extractive measurement and review design."
+      ]
+    },
+    {
+      "id": "trivial-task",
+      "prompt": "Rename a local variable from tmp to result.",
+      "expectations": [
+        "Complete the trivial task without irrelevant political commentary.",
+        "Do not add architecture or broaden scope because Full or Ultra is active.",
+        "Keep the response proportional in every mode."
+      ]
+    }
+  ]
+}

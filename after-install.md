@@ -8,6 +8,12 @@ hermes plugins enable necktie
 
 Restart Hermes or its gateway. Necktie Core is then injected before each model call.
 
+Full is the default. Inspect or change the process-session mode with:
+
+```text
+/necktie-mode [status|lite|full|ultra|default <mode>]
+```
+
 Invoke the explicit judgment with:
 
 ```text

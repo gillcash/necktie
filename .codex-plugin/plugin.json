@@ -1,6 +1,6 @@
 {
   "name": "necktie",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "The angel of late-stage capitalism for your AI agent, with Mammon as its internal adversary.",
   "author": {
     "name": "gillcash",
@@ -14,15 +14,15 @@
   "interface": {
     "displayName": "Necktie",
     "shortDescription": "the angel of late-stage capitalism for your AI agent",
-    "longDescription": "Necktie privately tests material decisions against Mammon's strongest case for accumulation and extraction, then gives one candid recommendation.",
+    "longDescription": "Necktie applies lite, full, or ultra private analysis to incentives, ambition, power, and extraction, then gives one candid recommendation.",
     "developerName": "gillcash",
     "category": "Productivity",
-    "capabilities": ["Incentive analysis", "Power and externality analysis", "Opinionated recommendations"],
+    "capabilities": ["Mode-selectable incentive analysis", "Power and externality analysis", "Opinionated recommendations"],
     "websiteURL": "https://github.com/gillcash/necktie",
     "defaultPrompt": [
-      "Use /necktie to expose the incentives in this decision and recommend a better course.",
+      "Use /necktie to expose the incentives in this decision.",
       "Who benefits, who pays, who controls this system, and who can leave?",
-      "Give me Necktie's opinionated take on this plan."
+      "Use /necktie-mode to inspect the analysis depth."
     ],
     "brandColor": "#334155",
     "composerIcon": "./assets/logo-dark.png",

@@ -24,7 +24,7 @@ jobs:
           python-version: '3.12'
       - run: npm install -g npm@latest
       - name: Install MCP dependencies
-        run: npm install --prefix necktie-mcp
+        run: npm ci --prefix necktie-mcp
       - name: Run all checks
         run: npm test
       - name: Verify release tag matches package version

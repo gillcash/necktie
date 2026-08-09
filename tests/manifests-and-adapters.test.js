@@ -12,36 +12,68 @@ const jsonFiles = [
   "gemini-extension.json", "pi-extension/package.json", "necktie-mcp/package.json",
 ];
 
-test("versioned manifests identify Necktie 0.3.0", () => {
+test("versioned manifests identify Necktie 0.4.0", () => {
   for (const relative of jsonFiles) {
     const value = JSON.parse(fs.readFileSync(path.join(root, relative), "utf8"));
-    assert.equal(value.version, "0.3.0", relative);
-    if (value.name !== "@gillcash/necktie-pi-extension" && value.name !== "necktie-mcp" && value.name !== "@gillcash/necktie") {
+    assert.equal(value.version, "0.4.0", relative);
+    if (!["@gillcash/necktie-pi-extension", "necktie-mcp", "@gillcash/necktie"].includes(value.name)) {
       assert.equal(value.name, "necktie", relative);
     }
   }
+  assert.match(fs.readFileSync(path.join(root, "plugin.yaml"), "utf8"), /^version: 0\.4\.0$/m);
+  assert.match(fs.readFileSync(path.join(root, "NOTICE"), "utf8"), /^Necktie 0\.4\.0$/m);
 });
 
-test("Codex manifest relies on default hook discovery", () => {
+test("Codex manifest relies on component discovery and keeps MCP optional", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, ".codex-plugin", "plugin.json"), "utf8"));
   assert.equal(manifest.hooks, undefined);
+  assert.equal(manifest.mcpServers, undefined);
   assert.equal(manifest.skills, "./skills/");
   assert.equal(manifest.interface.shortDescription, "the angel of late-stage capitalism for your AI agent");
 });
 
-test("static adapters contain the exact canonical Core", () => {
-  const core = fs.readFileSync(path.join(root, "core", "necktie-core.md"), "utf8").trim();
-  for (const relative of [
-    ".agents/rules/necktie.md", ".clinerules/necktie.md", ".qoder/rules/necktie.md",
-    ".windsurf/rules/necktie.md", ".github/copilot-instructions.md",
-  ]) {
-    assert.equal(fs.readFileSync(path.join(root, relative), "utf8").trim(), core, relative);
-  }
-  assert.equal(fs.readFileSync(path.join(root, "AGENTS.md"), "utf8").trim(), core);
+test("static adapter generation targets Full and the package ships shared mode assets", () => {
+  const full = fs.readFileSync(path.join(root, "core", "necktie-full.md"), "utf8").trim();
+  assert.equal(fs.readFileSync(path.join(root, "AGENTS.md"), "utf8").trim(), full);
+  assert.match(full, /level: full/i);
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+  assert.ok(pkg.files.includes("lib/"));
+  assert.ok(pkg.files.includes("core/"));
+  assert.ok(pkg.files.includes("skills/"));
 });
 
-test("package exposes the Necktie OpenCode adapter", () => {
+test("package exposes the OpenCode adapter and uses generated-policy checks", () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   assert.equal(pkg.main, "./.opencode/plugins/necktie.mjs");
   assert.equal(pkg.repository.url, "git+https://github.com/gillcash/necktie.git");
+  assert.match(pkg.scripts["build:adapters"], /build:policy/);
+  assert.match(pkg.scripts["check:adapters"], /check:policy/);
+});
+
+test("private MCP package keeps only required direct dependencies and a matching lockfile", () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, "necktie-mcp", "package.json"), "utf8"));
+  const lock = JSON.parse(fs.readFileSync(path.join(root, "necktie-mcp", "package-lock.json"), "utf8"));
+  assert.deepEqual(Object.keys(manifest.dependencies).sort(), ["@modelcontextprotocol/sdk", "zod"]);
+  assert.deepEqual(lock.packages[""].dependencies, manifest.dependencies);
+  assert.equal(lock.version, "0.4.0");
+});
+
+test("CI checks clean generation on Ubuntu and Windows", () => {
+  const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "test.yml"), "utf8");
+  assert.match(workflow, /os: \[ubuntu-latest, windows-latest\]/);
+  assert.match(workflow, /npm ci --prefix necktie-mcp/);
+  assert.match(workflow, /npm run build:adapters/);
+  assert.match(workflow, /git diff --exit-code/);
+  const attributes = fs.readFileSync(path.join(root, ".gitattributes"), "utf8");
+  assert.match(attributes, /\/core\/\*\.md text eol=lf/);
+  assert.match(attributes, /\/\.openclaw\/skills\/necktie\/\*\* text eol=lf/);
+});
+
+test("benchmark fixtures cover each mode and observable safety boundaries", () => {
+  const fixtures = JSON.parse(fs.readFileSync(path.join(root, "benchmarks", "fixtures.json"), "utf8"));
+  assert.deepEqual(fixtures.modes, ["lite", "full", "ultra"]);
+  assert.deepEqual(fixtures.cases.map((entry) => entry.id).sort(), ["benign-plan", "extractive-metric", "trivial-task"]);
+  for (const fixture of fixtures.cases) {
+    assert.ok(fixture.expectations.every((value) => !/chain.of.thought/i.test(value)));
+  }
 });

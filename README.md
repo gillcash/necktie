@@ -8,9 +8,29 @@
 
 Necktie is an opinionated agent policy for decisions shaped by incentives, metrics, power, and extraction. It does not pretend every tradeoff is neutral.
 
-For material decisions, Necktie privately consults Mammon: the strongest plausible case for accumulation, growth, control, rent extraction, lock-in, surveillance, exploitation, and shifting costs onto people with less power. Necktie then rebuts that case and gives the user one candid recommendation.
+For material decisions, Necktie privately tests incentives, ambition, and extraction, then gives the user one candid recommendation. Full is the default; Lite preserves the focused v0.3 judgment, while Ultra adds a stronger private challenge to premature restraint.
 
 Mammon never speaks to the user. There is no Mammon command, persona, or debate transcript.
+
+## Choose the depth
+
+| Mode | Private analysis | Best fit |
+| --- | --- | --- |
+| Lite | Mammon's strongest accumulation and extraction case, followed by Necktie's rebuttal | Focused decisions and the v0.3 behavior |
+| Full | Lite plus an ambition pass for the highest-leverage authorized build | Default product and engineering work |
+| Ultra | Full plus a counter-rebuttal that stress-tests Necktie's preliminary restraint | Consequential or difficult-to-reverse strategy |
+
+Full and Ultra do not grant more authority or relax security, privacy, consent, accessibility, validation, or verification. They increase private analytical pressure only. Every mode returns one result in Necktie's voice without an internal transcript.
+
+On hosts with dynamic command support:
+
+```text
+/necktie-mode
+/necktie-mode lite
+/necktie-mode default ultra
+```
+
+A plain mode changes only the current session. `default <mode>` changes new sessions without changing the current one. The effective default is read from `NECKTIE_DEFAULT_MODE`, then `%APPDATA%\necktie\config.json` on Windows or `$XDG_CONFIG_HOME/necktie/config.json`/`~/.config/necktie/config.json` elsewhere, and finally falls back to Full. Status reports the saved or built-in default separately from any environment override. There is no `off` mode; disable or uninstall the adapter to stop ambient injection.
 
 ## Know the arrangement
 
@@ -35,7 +55,7 @@ Necktie is not reflexively anti-business or contrarian. Mammon must make the leg
 
 Necktie Core is active on every response through the host's native hook or instruction mechanism. It applies the lens proportionately; a trivial coding question should not become an unsolicited political sermon.
 
-Invoke the explicit skill when you want the full judgment:
+Invoke the explicit skill when you want a direct judgment:
 
 ```text
 /necktie We are considering ranking support agents by tickets closed per hour. Should we do it, and if so, how?
@@ -45,7 +65,10 @@ On skill-oriented hosts:
 
 ```text
 $necktie Audit this pricing plan. Who benefits, who pays, who controls the relationship, and who can leave?
+$necktie --mode ultra Decide whether this platform investment is too ambitious or not ambitious enough.
 ```
+
+`--mode lite|full|ultra` is a one-shot skill override. It does not change session or configured defaults.
 
 Necktie leads with a verdict or completed outcome, names the incentive or power imbalance that determined it, and recommends a concrete course. It does not expose private chain-of-thought or print ritual sections when they add no value.
 
@@ -53,7 +76,9 @@ Necktie leads with a verdict or completed outcome, names the incentive or power 
 
 The root `plugin.json` targets the [Agent Plugins 1.0.0 specification](https://agent-plugins.org/). The portable surface contains one skill: `necktie`.
 
-`core/necktie-core.md` is the canonical always-on policy. Host-specific hooks and rule files inject that policy. `necktie-mcp/` is an optional retrieval fallback; MCP alone cannot guarantee per-response activation.
+`skills/necktie/references/policy.md` is the canonical policy source. The build generates Lite, Full, and Ultra references plus `core/` artifacts; `core/necktie-core.md` remains a Full compatibility alias. Static rules inject Full. Dynamic hooks select the session mode.
+
+`necktie-mcp/` is an optional private stdio adapter. Its `necktie` prompt and read-only `necktie_instructions` tool accept Lite, Full, or Ultra per request. MCP does not activate Necktie on every turn and exposes no arbitrary repository, file, execution, network, or mutation operation. The process is not a sandbox: it reads Necktie's bundled policy and optional local default configuration.
 
 The loop-based workflow, helper skills, state machine, review schema, and run packets from the earlier release have been removed. The retired commands are:
 
@@ -90,7 +115,7 @@ copilot plugin marketplace add gillcash/necktie
 copilot plugin install necktie@necktie
 ```
 
-Copilot namespaces the command as `/necktie:necktie`.
+Copilot namespaces the commands as `/necktie:necktie` and `/necktie:necktie-mode`.
 
 ### Pi
 
@@ -125,7 +150,8 @@ agy plugin install https://github.com/gillcash/necktie
 hermes plugins install gillcash/necktie --enable
 ```
 
-Restart Hermes. It injects Core before each model call and registers the `necktie` skill and command.
+Restart Hermes. It injects the selected policy before each model call and registers the `necktie` and `necktie-mode` commands.
+Use `/necktie-mode` to inspect or change the process-session mode.
 
 ### Other supported hosts
 
@@ -149,13 +175,20 @@ See [host support](docs/host-support.md) for adapter boundaries and installation
 ## Develop and validate
 
 ```bash
+npm ci --prefix necktie-mcp
 npm run build:adapters
 npm test
 python C:/Users/you/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/necktie
 python C:/Users/you/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py .
 ```
 
-`core/necktie-core.md` is the source for generated instruction adapters. Do not edit generated copies directly.
+`skills/necktie/references/policy.md` is the source for generated instruction artifacts and static adapters. Do not edit generated copies directly.
+
+## Upgrade from 0.3
+
+Version 0.4 changes the default behavior from the former single policy to Full. The old behavior is now Lite. Use `/necktie-mode lite` on a dynamic host or `$necktie --mode lite ...` for a one-shot skill invocation. Static adapters intentionally remain Full. Mammon is still internal and is not a selectable mode or persona.
+
+See the [0.4.0 release notes](docs/release-notes-0.4.0.md) for the complete migration summary.
 
 See [design provenance](docs/process-provenance.md) for the product boundary and inherited adapter foundation.
 

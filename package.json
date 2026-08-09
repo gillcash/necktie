@@ -1,6 +1,6 @@
 {
   "name": "@gillcash/necktie",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "The angel of late-stage capitalism for your AI agent, with Mammon as its internal adversary.",
   "keywords": ["agent-plugin", "incentives", "power", "externalities", "opinionated-agent"],
   "license": "MIT",
@@ -25,9 +25,11 @@
     "AGENTS.md",
     "plugin.json",
     "core/",
+    "lib/",
     "hooks/",
     "skills/",
     "commands/",
+    "docs/",
     ".opencode/",
     ".qoder/",
     ".qoder-plugin/",
@@ -40,8 +42,10 @@
     "!pi-extension/test/**"
   ],
   "scripts": {
-    "build:adapters": "node scripts/build-adapters.js && node scripts/build-openclaw-skills.js",
-    "check:adapters": "node scripts/build-adapters.js --check",
+    "build:policy": "node scripts/build-policy.js",
+    "build:adapters": "npm run build:policy && node scripts/build-adapters.js && node scripts/build-openclaw-skills.js",
+    "check:policy": "node scripts/build-policy.js --check",
+    "check:adapters": "npm run check:policy && node scripts/build-adapters.js --check && node scripts/build-openclaw-skills.js --check",
     "check:versions": "node scripts/check-versions.js",
     "test": "npm run check:adapters && npm run check:versions && node --test tests/*.test.js tests/*.test.mjs && npm test --prefix pi-extension && npm test --prefix necktie-mcp && python -m unittest discover -s tests -p test_*.py"
   },

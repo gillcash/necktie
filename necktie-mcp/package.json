@@ -1,7 +1,7 @@
 {
   "name": "necktie-mcp",
-  "version": "0.3.0",
-  "description": "Optional MCP fallback that serves Necktie Core as a prompt and read-only tool.",
+  "version": "0.4.0",
+  "description": "Optional MCP adapter that serves Necktie's lite, full, or ultra instructions.",
   "private": true,
   "type": "module",
   "license": "MIT",
@@ -9,7 +9,6 @@
     "test": "node --test ./test/*.test.js"
   },
   "dependencies": {
-    "@gillcash/necktie": "file:..",
     "@modelcontextprotocol/sdk": "^1.30.0",
     "zod": "^3.25.0"
   }

@@ -10,6 +10,24 @@ Ante una decisión material, Necktie consulta en privado a Mammon: el argumento 
 
 Mammon nunca habla con el usuario. No existe un comando, una personalidad ni un diálogo de Mammon.
 
+## Elige la profundidad
+
+| Modo | Análisis privado |
+| --- | --- |
+| Lite | Conserva el análisis concentrado de la versión 0.3: desafío de Mammon y refutación de Necktie |
+| Full | Lite más una evaluación de la construcción autorizada con mayor impacto; es el valor predeterminado |
+| Ultra | Full más una contrarréplica privada que pone a prueba si Necktie está siendo demasiado prudente |
+
+Los modos solo cambian la profundidad del análisis. No amplían permisos, autoridad ni riesgo aceptable, y Mammon nunca se convierte en una voz pública.
+
+```text
+/necktie-mode status
+/necktie-mode lite|full|ultra
+/necktie-mode default lite|full|ultra
+```
+
+No existe el modo `off`; desactiva o desinstala el adaptador si no quieres la inyección ambiental.
+
 ## Entienda la relación
 
 | Voz | Función | Límite |
@@ -35,6 +53,7 @@ En hosts orientados a skills:
 
 ```text
 $necktie Audita este plan de precios. ¿Quién se beneficia, quién paga, quién controla la relación y quién puede salir?
+$necktie --mode ultra Decide si esta inversión es demasiado ambiciosa o no lo suficiente.
 ```
 
 La superficie portátil contiene un único skill: `necktie`. Se eliminaron el flujo por etapas, los tres skills auxiliares, la máquina de estados y los paquetes de ejecución de la versión anterior.
@@ -81,4 +100,4 @@ npm run build:adapters
 npm test
 ```
 
-`core/necktie-core.md` es la fuente canónica de las reglas generadas. El proyecto conserva la atribución de la base de adaptadores Ponytail en [NOTICE](NOTICE) y usa la [licencia MIT](LICENSE).
+`skills/necktie/references/policy.md` es la fuente canónica de las reglas generadas; `core/necktie-core.md` sigue siendo el alias compatible del modo Full. El proyecto conserva la atribución de la base de adaptadores Ponytail en [NOTICE](NOTICE) y usa la [licencia MIT](LICENSE).

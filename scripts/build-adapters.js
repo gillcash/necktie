@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 const fs = require("node:fs");
 const path = require("node:path");
+const { buildInstructions } = require("../lib/necktie-policy.cjs");
 
 const root = path.resolve(__dirname, "..");
-const core = fs.readFileSync(path.join(root, "core", "necktie-core.md"), "utf8").trim();
+const core = buildInstructions("full", { root });
 const generated = {
   "AGENTS.md": `${core}\n`,
   ".agents/rules/necktie.md": `${core}\n`,
@@ -20,7 +21,8 @@ const stale = [];
 for (const [relative, content] of Object.entries(generated)) {
   const target = path.join(root, relative);
   if (check) {
-    if (!fs.existsSync(target) || fs.readFileSync(target, "utf8") !== content) stale.push(relative);
+    const actual = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : null;
+    if (actual !== content) stale.push(relative);
     continue;
   }
   fs.mkdirSync(path.dirname(target), { recursive: true });

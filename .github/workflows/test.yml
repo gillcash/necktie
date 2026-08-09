@@ -8,7 +8,11 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -18,6 +22,10 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install MCP dependencies
-        run: npm install --prefix necktie-mcp
+        run: npm ci --prefix necktie-mcp
       - name: Run all checks
         run: npm test
+      - name: Verify generation is idempotent
+        run: npm run build:adapters
+      - name: Require a clean generated diff
+        run: git diff --exit-code
