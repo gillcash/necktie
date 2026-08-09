@@ -8,26 +8,24 @@
 
 Necktie is an opinionated agent policy for decisions shaped by incentives, metrics, power, and extraction. It does not pretend every tradeoff is neutral.
 
-For material decisions, Necktie privately tests incentives, ambition, and extraction, then gives the user one candid recommendation. Full is the default; Lite preserves the focused v0.3 judgment, while Ultra adds a stronger private challenge to premature restraint.
-
-Mammon never speaks to the user. There is no Mammon command, persona, or debate transcript.
+Full is the useful default: it gives one Necktie judgment and completes or offers a concrete next action. Lite preserves the focused v0.3 judgment. Mammon replaces Ultra and returns Mammon's recommendation without a Necktie rebuttal. Full and Mammon can route accepted research-prompt work through a bounded prompt-reversal loop.
 
 ## Choose the depth
 
-| Mode | Private analysis | Best fit |
+| Mode | Judgment and action | Best fit |
 | --- | --- | --- |
 | Lite | Mammon's strongest accumulation and extraction case, followed by Necktie's rebuttal | Focused decisions and the v0.3 behavior |
-| Full | Lite plus an ambition pass for the highest-leverage authorized build | Default product and engineering work |
-| Ultra | Full plus a counter-rebuttal that stress-tests Necktie's preliminary restraint | Consequential or difficult-to-reverse strategy |
+| Full | Lite plus an ambition pass and one context-specific useful action | Default product, engineering, and strategy work |
+| Mammon | Mammon's evidence-based conclusion with no Necktie rebuttal, plus one useful action | The strongest accumulation, growth, control, or extraction case |
 
-Full and Ultra do not grant more authority or relax security, privacy, consent, accessibility, validation, or verification. They increase private analytical pressure only. Every mode returns one result in Necktie's voice without an internal transcript.
+Full and Mammon do not grant more authority or relax security, privacy, consent, accessibility, validation, or verification. Every mode returns one result without an internal debate transcript.
 
 On hosts with dynamic command support:
 
 ```text
 /necktie-mode
 /necktie-mode lite
-/necktie-mode default ultra
+/necktie-mode default mammon
 ```
 
 A plain mode changes only the current session. `default <mode>` changes new sessions without changing the current one. The effective default is read from `NECKTIE_DEFAULT_MODE`, then `%APPDATA%\necktie\config.json` on Windows or `$XDG_CONFIG_HOME/necktie/config.json`/`~/.config/necktie/config.json` elsewhere, and finally falls back to Full. Status reports the saved or built-in default separately from any environment override. There is no `off` mode; disable or uninstall the adapter to stop ambient injection.
@@ -36,8 +34,8 @@ A plain mode changes only the current session. `default <mode>` changes new sess
 
 | Voice | Role | Boundary |
 | --- | --- | --- |
-| Necktie | The user-facing angel of late-stage capitalism | Takes a position, explains the material tradeoff, and completes the work |
-| Mammon | Necktie's internal adversarial voice | Builds the strongest extractive case; never becomes a user-facing agent |
+| Necktie | The public judgment in Lite and Full | Takes a position, explains the material tradeoff, and completes or offers useful work |
+| Mammon | Internal adversary in Lite and Full; final perspective in Mammon mode | Builds the strongest accumulation and extraction case without weakening evidence or safety boundaries |
 
 Necktie asks who benefits, who pays, who decides, who performs hidden labor, and who can leave. It distinguishes durable value creation from value capture, tests metrics for the behavior they reward, and looks for costs or risks that have been made invisible.
 
@@ -49,7 +47,7 @@ Its commitments are opinionated:
 - truth over convenient narrative;
 - accountable power over opaque control.
 
-Necktie is not reflexively anti-business or contrarian. Mammon must make the legitimate efficiency case as strongly as the extractive one. If a plan survives that challenge, Necktie should endorse it. If it does not, Necktie should say so plainly and offer the least extractive effective alternative.
+Necktie is not reflexively anti-business or contrarian. In Lite and Full, Mammon must make the legitimate efficiency case as strongly as the extractive one. If a plan survives that challenge, Necktie should endorse it. Mammon mode deliberately omits that rebuttal while remaining truthful about material strategic risks.
 
 ## Use Necktie
 
@@ -65,22 +63,30 @@ On skill-oriented hosts:
 
 ```text
 $necktie Audit this pricing plan. Who benefits, who pays, who controls the relationship, and who can leave?
-$necktie --mode ultra Decide whether this platform investment is too ambitious or not ambitious enough.
+$necktie --mode mammon Make the strongest case for controlling this market and identify the move with the highest expected leverage.
 ```
 
-`--mode lite|full|ultra` is a one-shot skill override. It does not change session or configured defaults.
+`--mode lite|full|mammon` is a one-shot skill override. It does not change session or configured defaults.
+
+Full and Mammon normally do the work already authorized. When a response would otherwise stop at an opinion, they offer one specific build or action. If deeper evidence is the next constraint, they usually offer a portable research prompt. Invoke the prompt builder directly or accept the offer:
+
+```text
+$necktie-research Reverse-engineer this discussion and the reference report into one copy-ready research prompt.
+```
+
+Necktie Research scans the user-authorized context, fingerprints any reference deliverable, critiques and reframes the inquiry, builds an exact prompt schema, reviews and revises the draft through a finite gate, and verifies that it works without hidden conversation state.
 
 Necktie leads with a verdict or completed outcome, names the incentive or power imbalance that determined it, and recommends a concrete course. It does not expose private chain-of-thought or print ritual sections when they add no value.
 
 ## Understand the plugin
 
-The root `plugin.json` targets the [Agent Plugins 1.0.0 specification](https://agent-plugins.org/). The portable surface contains one skill: `necktie`.
+The root `plugin.json` targets the [Agent Plugins 1.0.0 specification](https://agent-plugins.org/). The portable surface contains the `necktie` judgment skill and the `necktie-research` prompt-building skill.
 
-`skills/necktie/references/policy.md` is the canonical policy source. The build generates Lite, Full, and Ultra references plus `core/` artifacts; `core/necktie-core.md` remains a Full compatibility alias. Static rules inject Full. Dynamic hooks select the session mode.
+`skills/necktie/references/policy.md` is the canonical policy source. The build generates Lite, Full, and Mammon references plus `core/` artifacts; `core/necktie-core.md` remains a Full compatibility alias. Static rules inject Full. Dynamic hooks select the session mode.
 
-`necktie-mcp/` is an optional private stdio adapter. Its `necktie` prompt and read-only `necktie_instructions` tool accept Lite, Full, or Ultra per request. MCP does not activate Necktie on every turn and exposes no arbitrary repository, file, execution, network, or mutation operation. The process is not a sandbox: it reads Necktie's bundled policy and optional local default configuration.
+`necktie-mcp/` is an optional private stdio adapter. Its `necktie` prompt and read-only `necktie_instructions` tool accept Lite, Full, or Mammon per request. MCP does not activate Necktie on every turn and exposes no arbitrary repository, file, execution, network, or mutation operation. The process is not a sandbox: it reads Necktie's bundled policy and optional local default configuration.
 
-The loop-based workflow, helper skills, state machine, review schema, and run packets from the earlier release have been removed. The retired commands are:
+The former general-purpose artifact loop remains retired. Necktie Research adds a narrower prompt-building loop with source discovery, reference fingerprinting, prompt reversal, independent review, verification, and an optional auditable state packet. The retired general commands remain:
 
 - `necktie-critique`
 - `necktie-reverse`
@@ -179,16 +185,17 @@ npm ci --prefix necktie-mcp
 npm run build:adapters
 npm test
 python C:/Users/you/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/necktie
+python C:/Users/you/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/necktie-research
 python C:/Users/you/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py .
 ```
 
 `skills/necktie/references/policy.md` is the source for generated instruction artifacts and static adapters. Do not edit generated copies directly.
 
-## Upgrade from 0.3
+## Upgrade from 0.4
 
-Version 0.4 changes the default behavior from the former single policy to Full. The old behavior is now Lite. Use `/necktie-mode lite` on a dynamic host or `$necktie --mode lite ...` for a one-shot skill invocation. Static adapters intentionally remain Full. Mammon is still internal and is not a selectable mode or persona.
+Version 0.5 replaces Ultra with Mammon. Existing saved or environment values of `ultra` are invalid and safely fall back to Full; select Mammon explicitly because its final authority differs materially from the former Ultra policy. Lite and Full retain Necktie's final judgment, while Full and Mammon gain useful action behavior and the research-prompt workflow.
 
-See the [0.4.0 release notes](docs/release-notes-0.4.0.md) for the complete migration summary.
+See the [0.5.0 release notes](docs/release-notes-0.5.0.md) for the complete migration summary.
 
 See [design provenance](docs/process-provenance.md) for the product boundary and inherited adapter foundation.
 

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Necktie Research"
+  short_description: "Build rigorous, reusable research prompts"
+  default_prompt: "Use $necktie-research to turn this question and its available context into a rigorous copy-ready research prompt."
+policy:
+  allow_implicit_invocation: true

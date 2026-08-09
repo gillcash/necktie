@@ -6,7 +6,7 @@ const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
 const sourcePath = path.join(root, "skills", "necktie", "references", "policy.md");
-const modes = ["lite", "full", "ultra"];
+const modes = ["lite", "full", "mammon"];
 
 function normalize(text) {
   return String(text).replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
@@ -26,12 +26,14 @@ function section(source, name) {
 function renderPolicies(sourceText = fs.readFileSync(sourcePath, "utf8")) {
   const source = normalize(sourceText);
   const shared = section(source, "shared");
+  const judgment = section(source, "judgment");
   const full = section(source, "full");
-  const ultra = section(source, "ultra");
+  const useful = section(source, "useful");
+  const mammon = section(source, "mammon");
   const parts = {
-    lite: [shared],
-    full: [shared, full],
-    ultra: [shared, full, ultra],
+    lite: [shared, judgment],
+    full: [shared, judgment, full, useful],
+    mammon: [shared, mammon, useful],
   };
   return Object.fromEntries(modes.map((mode) => [
     mode,

@@ -20,8 +20,8 @@ No benchmark result is claimed in this release.
 
 ## Mode fixtures
 
-`fixtures.json` defines three stable prompts for comparing Lite, Full, and Ultra. Run every prompt with the same model, evidence, permissions, and environment at each mode. Score only observable recommendations and artifacts; never require or collect hidden reasoning.
+`fixtures.json` defines three stable prompts for comparing Lite, Full, and Mammon. Run every prompt with the same model, evidence, permissions, and environment at each mode. Score only observable recommendations and artifacts; never require or collect hidden reasoning.
 
 - Lite should preserve the v0.3 incentive-and-power judgment.
-- Full should additionally notice material opportunities for ambitious, authorized leverage.
-- Ultra should more aggressively test premature restraint without turning Mammon into a public voice or relaxing safety boundaries.
+- Full should additionally notice material opportunities for ambitious, authorized leverage and complete or offer one useful action.
+- Mammon should return the strongest accumulation, growth, control, or extraction recommendation without a Necktie rebuttal, while remaining factually honest and inside the same safety boundaries.

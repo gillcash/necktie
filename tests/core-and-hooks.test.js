@@ -18,29 +18,32 @@ function temporary(prefix) {
 }
 
 test("generated modes compose the canonical policy exactly", () => {
-  assert.deepEqual(policy.MODES, ["lite", "full", "ultra"]);
+  assert.deepEqual(policy.MODES, ["lite", "full", "mammon"]);
   assert.equal(policy.DEFAULT_MODE, "full");
   const lite = policy.buildInstructions("lite");
   const full = policy.buildInstructions("full");
-  const ultra = policy.buildInstructions("ultra");
+  const mammon = policy.buildInstructions("mammon");
   const core = fs.readFileSync(path.join(root, "core", "necktie-core.md"), "utf8").trim();
 
   assert.match(lite, /level: lite/i);
   assert.match(lite, /privately consult Mammon/i);
-  assert.match(lite, /Mammon is internal only/i);
-  assert.doesNotMatch(lite, /Private ambition pass|Private counter-rebuttal/);
+  assert.match(lite, /In Lite and Full, Mammon remains internal/i);
+  assert.doesNotMatch(lite, /Private ambition pass|Useful action pass|Mammon judgment/);
 
   assert.match(full, /level: full/i);
   assert.match(full, /Private ambition pass/);
-  assert.doesNotMatch(full, /Private counter-rebuttal/);
+  assert.match(full, /Useful action pass/);
+  assert.match(full, /necktie-research/);
+  assert.doesNotMatch(full, /Mammon is the sole final perspective/i);
 
-  assert.match(ultra, /level: ultra/i);
-  assert.match(ultra, /Private ambition pass/);
-  assert.match(ultra, /Private counter-rebuttal/);
-  assert.match(ultra, /Mammon never becomes the public voice or final authority/i);
+  assert.match(mammon, /level: mammon/i);
+  assert.match(mammon, /Mammon is the sole final perspective/i);
+  assert.match(mammon, /Do not perform or append Necktie's rebuttal/i);
+  assert.match(mammon, /Useful action pass/);
+  assert.doesNotMatch(mammon, /Then rebut Mammon|Private ambition pass/);
   assert.equal(core, full);
-  assert.doesNotMatch([lite, full, ultra].join("\n"), /Mammon (?:command|mode|persona)/i);
   assert.throws(() => policy.buildInstructions("off"), { code: "NECKTIE_INVALID_MODE" });
+  assert.throws(() => policy.buildInstructions("ultra"), { code: "NECKTIE_INVALID_MODE" });
 });
 
 test("mode resolution follows request, session, environment, config, full precedence", () => {
@@ -50,15 +53,15 @@ test("mode resolution follows request, session, environment, config, full preced
   const options = { configPath };
   try {
     assert.equal(policy.resolveMode({ env: {}, configOptions: options }).mode, "lite");
-    assert.equal(policy.resolveMode({ sessionMode: "ultra", env: {}, configOptions: options }).mode, "ultra");
-    assert.equal(policy.resolveMode({ requestedMode: "FULL", sessionMode: "ultra", env: {}, configOptions: options }).mode, "full");
-    const environment = policy.resolveMode({ env: { NECKTIE_DEFAULT_MODE: "ultra" }, configOptions: options });
-    assert.equal(environment.mode, "ultra");
-    assert.equal(environment.environmentOverride, "ultra");
+    assert.equal(policy.resolveMode({ sessionMode: "mammon", env: {}, configOptions: options }).mode, "mammon");
+    assert.equal(policy.resolveMode({ requestedMode: "FULL", sessionMode: "mammon", env: {}, configOptions: options }).mode, "full");
+    const environment = policy.resolveMode({ env: { NECKTIE_DEFAULT_MODE: "mammon" }, configOptions: options });
+    assert.equal(environment.mode, "mammon");
+    assert.equal(environment.environmentOverride, "mammon");
     assert.equal(environment.configuredDefaultMode, "lite");
     assert.equal(
       commands.formatStatus(environment),
-      "Necktie mode: current ultra; configured default lite. Environment override: ultra.",
+      "Necktie mode: current mammon; configured default lite. Environment override: mammon.",
     );
     assert.throws(
       () => policy.resolveMode({ requestedMode: "off", env: {}, configOptions: options }),
@@ -69,7 +72,7 @@ test("mode resolution follows request, session, environment, config, full preced
     const malformed = policy.resolveMode({ env: {}, configOptions: options });
     assert.equal(malformed.mode, "full");
     assert.ok(malformed.warnings.some((warning) => /invalid Necktie configuration/.test(warning)));
-    const invalidEnvironment = policy.resolveMode({ env: { NECKTIE_DEFAULT_MODE: "off" }, configOptions: options });
+    const invalidEnvironment = policy.resolveMode({ env: { NECKTIE_DEFAULT_MODE: "ultra" }, configOptions: options });
     assert.equal(invalidEnvironment.mode, "full");
     assert.ok(invalidEnvironment.warnings.some((warning) => /NECKTIE_DEFAULT_MODE/.test(warning)));
   } finally {
@@ -96,9 +99,9 @@ test("default writes are atomic, preserve unrelated keys, and report environment
   const configPath = path.join(directory, "config.json");
   fs.writeFileSync(configPath, JSON.stringify({ keep: true, defaultMode: "lite" }));
   try {
-    const written = policy.writeDefaultMode("ultra", {}, { configPath });
-    assert.equal(written.mode, "ultra");
-    assert.deepEqual(JSON.parse(fs.readFileSync(configPath, "utf8")), { keep: true, defaultMode: "ultra" });
+    const written = policy.writeDefaultMode("mammon", {}, { configPath });
+    assert.equal(written.mode, "mammon");
+    assert.deepEqual(JSON.parse(fs.readFileSync(configPath, "utf8")), { keep: true, defaultMode: "mammon" });
     const overridden = policy.writeDefaultMode("lite", { NECKTIE_DEFAULT_MODE: "full" }, { configPath });
     assert.equal(overridden.writtenMode, "lite");
     assert.equal(overridden.mode, "full");
@@ -115,9 +118,9 @@ test("session state is isolated and stores no prompt content", () => {
   const options = { stateDirectory: directory };
   try {
     sessions.writeSessionMode("codex", "one", "lite", options);
-    sessions.writeSessionMode("codex", "two", "ultra", options);
+    sessions.writeSessionMode("codex", "two", "mammon", options);
     assert.equal(sessions.readSessionMode("codex", "one", options), "lite");
-    assert.equal(sessions.readSessionMode("codex", "two", options), "ultra");
+    assert.equal(sessions.readSessionMode("codex", "two", options), "mammon");
     for (const file of fs.readdirSync(directory)) {
       const value = JSON.parse(fs.readFileSync(path.join(directory, file), "utf8"));
       assert.deepEqual(value, { mode: value.mode });
@@ -133,7 +136,7 @@ test("invalid stored session state falls back with a diagnostic", () => {
   try {
     const target = sessions.statePath("codex", "bad", options);
     fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.writeFileSync(target, JSON.stringify({ mode: "off" }));
+    fs.writeFileSync(target, JSON.stringify({ mode: "ultra" }));
     const stored = sessions.readSessionMode("codex", "bad", options);
     const resolved = policy.resolveMode({ sessionMode: stored, env: {}, configOptions: { configPath: path.join(directory, "config.json") } });
     assert.equal(resolved.mode, "full");
@@ -160,11 +163,11 @@ test("session store prunes stale mode-only files", () => {
 
 test("mode command grammar is separate from the Necktie decision command", () => {
   assert.deepEqual(commands.parseModeCommand("/necktie-mode"), { type: "status" });
-  assert.deepEqual(commands.parseModeCommand("/necktie:necktie-mode ultra"), { type: "set-session", mode: "ultra" });
+  assert.deepEqual(commands.parseModeCommand("/necktie:necktie-mode mammon"), { type: "set-session", mode: "mammon" });
   assert.deepEqual(commands.parseModeCommand("[NECKTIE_MODE_COMMAND] default lite"), { type: "set-default", mode: "lite" });
   assert.deepEqual(
-    commands.parseModeCommand("[NECKTIE_MODE_COMMAND] ultra\n\nReport the selected mode."),
-    { type: "set-session", mode: "ultra" },
+    commands.parseModeCommand("[NECKTIE_MODE_COMMAND] mammon\n\nReport the selected mode."),
+    { type: "set-session", mode: "mammon" },
   );
   assert.equal(commands.parseModeCommand("/necktie assess this policy"), null);
   assert.equal(commands.parseModeArguments("off").type, "invalid");
@@ -199,11 +202,11 @@ test("hook runtime switches only the addressed session and preserves default-onl
       "UserPromptSubmit",
       env,
       "",
-      { session_id: "one", prompt: "/necktie-mode default ultra" },
+      { session_id: "one", prompt: "/necktie-mode default mammon" },
       options,
     );
     assert.equal(changedDefault.resolution.mode, "lite");
-    assert.equal(JSON.parse(fs.readFileSync(configPath, "utf8")).defaultMode, "ultra");
+    assert.equal(JSON.parse(fs.readFileSync(configPath, "utf8")).defaultMode, "mammon");
 
     const status = runtime.evaluate(
       "UserPromptSubmit",
@@ -212,7 +215,7 @@ test("hook runtime switches only the addressed session and preserves default-onl
       { session_id: "one", prompt: "/necktie-mode status" },
       options,
     );
-    assert.match(status.message, /current lite; configured default ultra/);
+    assert.match(status.message, /current lite; configured default mammon/);
 
     const invalid = runtime.evaluate(
       "UserPromptSubmit",
@@ -316,7 +319,7 @@ test("hook reports a failed default write without losing active instructions", (
       "UserPromptSubmit",
       { PLUGIN_ROOT: root, PLUGIN_DATA: directory },
       "",
-      { session_id: "write-failure", prompt: "/necktie-mode default ultra" },
+      { session_id: "write-failure", prompt: "/necktie-mode default mammon" },
       options,
     );
     assert.match(result.message, /Failed to save Necktie default/);

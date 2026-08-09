@@ -1,2 +1,2 @@
-description = "Apply Necktie's opinionated judgment"
-prompt = "Use $necktie on: {{args}}. Privately consult Mammon's strongest case for accumulation, control, and extraction; rebut it; then take a position and deliver the least extractive effective result."
+description = "Apply Necktie's or Mammon's useful judgment"
+prompt = "Use $necktie on: {{args}}. Apply the selected Lite, Full, or Mammon policy, take one candid position, and complete or offer one context-specific useful action when the selected mode requires it."

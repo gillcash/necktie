@@ -9,7 +9,7 @@ import { MODES, selectInstructions } from "./instructions.js";
 const { version } = JSON.parse(await fs.promises.readFile(new URL("./package.json", import.meta.url), "utf8"));
 const server = new McpServer({ name: "necktie", version });
 const modeArg = z.enum(MODES).optional()
-  .describe("Necktie analysis depth: lite, full, or ultra. Omit for the configured default.");
+  .describe("Necktie policy mode: lite, full, or mammon. Omit for the configured default.");
 const select = (mode) => selectInstructions(mode, {
   onWarning: (warning) => process.stderr.write(`${warning}\n`),
 });
@@ -18,7 +18,7 @@ server.registerPrompt(
   "necktie",
   {
     title: "Necktie mode",
-    description: "Load Necktie's private incentive, power, and ambition analysis instructions.",
+    description: "Load Necktie's selected incentive, power, ambition, or Mammon instructions.",
     argsSchema: { mode: modeArg },
   },
   ({ mode }) => {
@@ -34,7 +34,7 @@ server.registerTool(
   "necktie_instructions",
   {
     title: "Necktie instructions",
-    description: "Return Necktie instructions for lite, full, or ultra analysis. MCP does not activate them automatically.",
+    description: "Return Necktie instructions for lite, full, or mammon mode. MCP does not activate them automatically.",
     inputSchema: { mode: modeArg },
     outputSchema: { mode: z.enum(MODES), instructions: z.string() },
     annotations: { readOnlyHint: true, openWorldHint: false },

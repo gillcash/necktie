@@ -77,15 +77,15 @@ test("Pi mode command updates and restores only session state", async () => with
   necktieExtension(pi);
   const ctx = context();
   await pi.handlers.get("session_start")({}, ctx);
-  const message = await pi.commands.get("necktie-mode").handler("ultra", ctx);
-  assert.match(message, /ultra for this session/);
-  assert.deepEqual(pi.entries.at(-1), { type: "custom", customType: "necktie-mode", data: { mode: "ultra" } });
-  assert.match((await pi.handlers.get("before_agent_start")({})).systemPrompt, /level: ultra/i);
+  const message = await pi.commands.get("necktie-mode").handler("mammon", ctx);
+  assert.match(message, /mammon for this session/);
+  assert.deepEqual(pi.entries.at(-1), { type: "custom", customType: "necktie-mode", data: { mode: "mammon" } });
+  assert.match((await pi.handlers.get("before_agent_start")({})).systemPrompt, /level: mammon/i);
 
   const resumed = fakePi();
   necktieExtension(resumed);
   await resumed.handlers.get("session_start")({}, context(pi.entries));
-  assert.match((await resumed.handlers.get("before_agent_start")({})).systemPrompt, /level: ultra/i);
+  assert.match((await resumed.handlers.get("before_agent_start")({})).systemPrompt, /level: mammon/i);
 }));
 
 test("Pi persisted default leaves the current session unchanged", async () => withTempConfig(async (directory) => {
@@ -94,11 +94,11 @@ test("Pi persisted default leaves the current session unchanged", async () => wi
   const ctx = context();
   await pi.handlers.get("session_start")({}, ctx);
   await pi.commands.get("necktie-mode").handler("lite", ctx);
-  const message = await pi.commands.get("necktie-mode").handler("default ultra", ctx);
+  const message = await pi.commands.get("necktie-mode").handler("default mammon", ctx);
   assert.match(message, /Current session remains lite/);
   assert.match((await pi.handlers.get("before_agent_start")({})).systemPrompt, /level: lite/i);
   const config = JSON.parse(fs.readFileSync(path.join(directory, "necktie", "config.json"), "utf8"));
-  assert.equal(config.defaultMode, "ultra");
+  assert.equal(config.defaultMode, "mammon");
 }));
 
 test("Pi status and invalid commands are non-mutating", async () => withTempConfig(async () => {
@@ -124,6 +124,6 @@ test("Pi helper parsing and session resolution accept exactly three modes", () =
   assert.equal(parseNecktieModeCommand("off").type, "invalid");
   assert.equal(resolveSessionMode([
     { type: "custom", customType: "necktie-mode", data: { mode: "lite" } },
-    { type: "custom", customType: "necktie-mode", data: { mode: "ultra" } },
-  ], "full"), "ultra");
+    { type: "custom", customType: "necktie-mode", data: { mode: "mammon" } },
+  ], "full"), "mammon");
 });

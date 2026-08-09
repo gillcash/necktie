@@ -6,24 +6,22 @@
 
 Necktie es una política de agente deliberadamente opinada para decisiones condicionadas por incentivos, métricas, poder y extracción. No finge que todas las compensaciones son neutrales.
 
-Ante una decisión material, Necktie consulta en privado a Mammon: el argumento más sólido a favor de la acumulación, el crecimiento, el control, la captura de rentas, la dependencia, la vigilancia, la explotación y el traslado de costes a quienes tienen menos poder. Después refuta ese argumento y presenta una única recomendación con la voz de Necktie.
-
-Mammon nunca habla con el usuario. No existe un comando, una personalidad ni un diálogo de Mammon.
+Full es el modo útil predeterminado: presenta una recomendación de Necktie y realiza u ofrece una acción concreta. Lite conserva el juicio concentrado. Mammon sustituye a Ultra y presenta la recomendación de Mammon sin refutación de Necktie.
 
 ## Elige la profundidad
 
-| Modo | Análisis privado |
+| Modo | Juicio y acción |
 | --- | --- |
 | Lite | Conserva el análisis concentrado de la versión 0.3: desafío de Mammon y refutación de Necktie |
-| Full | Lite más una evaluación de la construcción autorizada con mayor impacto; es el valor predeterminado |
-| Ultra | Full más una contrarréplica privada que pone a prueba si Necktie está siendo demasiado prudente |
+| Full | Lite más una evaluación de la construcción autorizada con mayor impacto y una acción útil; es el valor predeterminado |
+| Mammon | La conclusión de Mammon sin refutación de Necktie, más una acción útil |
 
-Los modos solo cambian la profundidad del análisis. No amplían permisos, autoridad ni riesgo aceptable, y Mammon nunca se convierte en una voz pública.
+Los modos no amplían permisos, autoridad ni riesgo aceptable. Cada modo devuelve una sola conclusión, sin transcribir el debate interno.
 
 ```text
 /necktie-mode status
-/necktie-mode lite|full|ultra
-/necktie-mode default lite|full|ultra
+/necktie-mode lite|full|mammon
+/necktie-mode default lite|full|mammon
 ```
 
 No existe el modo `off`; desactiva o desinstala el adaptador si no quieres la inyección ambiental.
@@ -32,8 +30,8 @@ No existe el modo `off`; desactiva o desinstala el adaptador si no quieres la in
 
 | Voz | Función | Límite |
 | --- | --- | --- |
-| Necktie | El ángel visible del capitalismo tardío | Toma una posición, explica la compensación material y completa el trabajo |
-| Mammon | La voz adversarial interna de Necktie | Construye el mejor argumento extractivo; nunca se presenta como agente |
+| Necktie | La perspectiva final en Lite y Full | Toma una posición, explica la compensación material y completa u ofrece trabajo útil |
+| Mammon | Voz adversarial en Lite y Full; perspectiva final en modo Mammon | Construye el mejor argumento de acumulación y extracción sin debilitar la evidencia ni la seguridad |
 
 Necktie pregunta quién se beneficia, quién paga, quién decide, quién realiza el trabajo oculto y quién puede abandonar el sistema. Prefiere la agencia humana a la adoración de métricas, el valor compartido duradero a la extracción y el poder responsable al control opaco.
 
@@ -53,10 +51,16 @@ En hosts orientados a skills:
 
 ```text
 $necktie Audita este plan de precios. ¿Quién se beneficia, quién paga, quién controla la relación y quién puede salir?
-$necktie --mode ultra Decide si esta inversión es demasiado ambiciosa o no lo suficiente.
+$necktie --mode mammon Presenta el argumento más sólido para controlar este mercado y la acción con mayor apalancamiento.
 ```
 
-La superficie portátil contiene un único skill: `necktie`. Se eliminaron el flujo por etapas, los tres skills auxiliares, la máquina de estados y los paquetes de ejecución de la versión anterior.
+Full y Mammon realizan el trabajo ya autorizado o normalmente ofrecen una acción concreta. Cuando hace falta investigación, use o acepte el generador de prompts:
+
+```text
+$necktie-research Convierte esta conversación y el informe de referencia en un único prompt de investigación reutilizable.
+```
+
+La superficie portátil contiene `necktie` y `necktie-research`. El antiguo flujo general permanece retirado; el nuevo flujo acotado solo construye, revisa y verifica prompts de investigación.
 
 ## Instale Necktie
 

@@ -1,6 +1,6 @@
 name: necktie
-version: 0.4.0
-description: The angel of late-stage capitalism for your AI agent, with Mammon as its internal adversary.
+version: 0.5.0
+description: The angel of late-stage capitalism for your AI agent, with useful Full and unrebutted Mammon modes.
 author: gillcash
 provides_hooks:
   - pre_llm_call
@@ -10,3 +10,4 @@ provides_commands:
   - necktie-mode
 provides_skills:
   - necktie
+  - necktie-research

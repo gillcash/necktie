@@ -1,7 +1,7 @@
 {
   "name": "necktie",
-  "version": "0.4.0",
-  "description": "The angel of late-stage capitalism for your AI agent, with Mammon as its internal adversary.",
+  "version": "0.5.0",
+  "description": "The angel of late-stage capitalism for your AI agent, with useful Full and unrebutted Mammon modes.",
   "author": {
     "name": "gillcash",
     "url": "https://github.com/gillcash"
@@ -14,15 +14,15 @@
   "interface": {
     "displayName": "Necktie",
     "shortDescription": "the angel of late-stage capitalism for your AI agent",
-    "longDescription": "Necktie applies lite, full, or ultra private analysis to incentives, ambition, power, and extraction, then gives one candid recommendation.",
+    "longDescription": "Necktie applies Lite or Full judgment, or an unrebutted Mammon perspective, then completes or offers useful work such as a rigorous reusable research prompt.",
     "developerName": "gillcash",
     "category": "Productivity",
-    "capabilities": ["Mode-selectable incentive analysis", "Power and externality analysis", "Opinionated recommendations"],
+    "capabilities": ["Mode-selectable incentive analysis", "Power and externality analysis", "Research-prompt construction"],
     "websiteURL": "https://github.com/gillcash/necktie",
     "defaultPrompt": [
       "Use /necktie to expose the incentives in this decision.",
       "Who benefits, who pays, who controls this system, and who can leave?",
-      "Use /necktie-mode to inspect the analysis depth."
+      "Use $necktie-research to build a reusable research brief."
     ],
     "brandColor": "#334155",
     "composerIcon": "./assets/logo-dark.png",

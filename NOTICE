@@ -1,4 +1,4 @@
-Necktie 0.4.0
+Necktie 0.5.0
 Copyright (c) 2026 gillcash
 
 This project was structurally derived from Ponytail by Dietrich Gebert. It retains portions of Ponytail's cross-host packaging, adapter patterns, and test architecture under the MIT License. Necktie's behavior, documentation, branding, and command surface have been substantially rewritten.

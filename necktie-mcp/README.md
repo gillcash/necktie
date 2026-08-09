@@ -1,6 +1,6 @@
 # Necktie MCP adapter
 
-This optional private stdio server exposes prompt `necktie` and read-only tool `necktie_instructions`. Both accept an optional `mode` of `lite`, `full`, or `ultra`; omission resolves `NECKTIE_DEFAULT_MODE`, local configuration, then Full.
+This optional private stdio server exposes prompt `necktie` and read-only tool `necktie_instructions`. Both accept an optional `mode` of `lite`, `full`, or `mammon`; omission resolves `NECKTIE_DEFAULT_MODE`, local configuration, then Full.
 
 ```text
 npm install --prefix necktie-mcp
