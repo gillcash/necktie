@@ -10,7 +10,7 @@
 6. Phase 5 — Draft the controlling prompt
 7. Phase 6 — Review and revise
 8. Phase 7 — Verify and hand off
-9. Lessons from the KPI research package
+9. KPI research prompt checklist
 
 ## Completion contract
 
@@ -212,7 +212,7 @@ Return:
 
 ## KPI research prompt checklist
 
-For KPI and data-reliability work, require:
+For KPI and data-reliability work, use only the following elements that materially serve the requested outcome; do not treat this list as a fixed template:
 
 - a decision-safety question about source-event trustworthiness, workflow, controls, and incentives;
 - a default operating case and a reconciled cross-functional expert panel;

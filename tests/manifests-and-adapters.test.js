@@ -6,6 +6,7 @@ const path = require("node:path");
 const test = require("node:test");
 
 const root = path.resolve(__dirname, "..");
+const { modes } = require(path.join(root, "scripts", "build-policy.js"));
 const jsonFiles = [
   "package.json", "plugin.json", ".codex-plugin/plugin.json", ".claude-plugin/plugin.json",
   ".devin-plugin/plugin.json", ".qoder-plugin/plugin.json", ".github/plugin/plugin.json",
@@ -36,7 +37,10 @@ test("static adapter generation targets Full and the package ships shared mode a
   const full = fs.readFileSync(path.join(root, "core", "necktie-full.md"), "utf8").trim();
   assert.equal(fs.readFileSync(path.join(root, "AGENTS.md"), "utf8").trim(), full);
   assert.match(full, /level: full/i);
-  assert.equal(fs.existsSync(path.join(root, "core", "necktie-mammon.md")), true);
+  assert.deepEqual(
+    fs.readdirSync(path.join(root, "core")).sort(),
+    modes.map((mode) => `necktie-${mode}.md`).sort(),
+  );
   const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   assert.ok(pkg.files.includes("lib/"));
   assert.ok(pkg.files.includes("core/"));
