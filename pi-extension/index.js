@@ -41,7 +41,7 @@ export default function necktieExtension(pi) {
   });
 
   pi.registerCommand("necktie-mode", {
-    description: "Set Necktie mode: lite, full, or ultra. Commands: status, default <mode>",
+    description: "Set Necktie mode: lite, full, or mammon. Commands: status, default <mode>",
     handler: async (args, ctx) => {
       const parsed = parseModeArguments(args);
       let message;

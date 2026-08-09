@@ -4,8 +4,10 @@
 /.cursor/rules/necktie.mdc text eol=lf
 /.github/copilot-instructions.md text eol=lf
 /.kiro/steering/necktie.md text eol=lf
-/.openclaw/skills/necktie/** text eol=lf
+/.openclaw/skills/** text eol=lf
 /.qoder/rules/necktie.md text eol=lf
 /.windsurf/rules/necktie.md text eol=lf
 /core/*.md text eol=lf
 /skills/necktie/references/*.md text eol=lf
+/skills/necktie-research/references/*.md text eol=lf
+/skills/necktie-research/scripts/*.py text eol=lf

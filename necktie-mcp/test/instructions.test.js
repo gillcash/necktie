@@ -6,8 +6,8 @@ import test from "node:test";
 
 import { MODES, buildInstructions, resolveMode, selectInstructions } from "../instructions.js";
 
-test("MCP selector serves exactly lite, full, and ultra", () => {
-  assert.deepEqual(MODES, ["lite", "full", "ultra"]);
+test("MCP selector serves exactly lite, full, and mammon", () => {
+  assert.deepEqual(MODES, ["lite", "full", "mammon"]);
   for (const mode of MODES) {
     assert.equal(resolveMode(mode), mode);
     const selected = selectInstructions(mode);
@@ -25,9 +25,9 @@ test("MCP omitted mode uses environment, configuration, then Full", () => {
     fs.writeFileSync(configPath, JSON.stringify({ defaultMode: "lite" }));
     assert.equal(selectInstructions(undefined, { env: {}, configOptions: { configPath } }).mode, "lite");
     assert.equal(selectInstructions(undefined, {
-      env: { NECKTIE_DEFAULT_MODE: "ultra" },
+      env: { NECKTIE_DEFAULT_MODE: "mammon" },
       configOptions: { configPath },
-    }).mode, "ultra");
+    }).mode, "mammon");
     const warnings = [];
     assert.equal(selectInstructions(undefined, {
       env: { NECKTIE_DEFAULT_MODE: "off" },

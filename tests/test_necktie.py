@@ -25,6 +25,10 @@ def load_module(name: str, path: Path):
 
 
 hermes = load_module("necktie_hermes", ROOT / "__init__.py")
+research_loop = load_module(
+    "necktie_research_loop",
+    ROOT / "skills" / "necktie-research" / "scripts" / "research_prompt_loop.py",
+)
 
 
 def config_environment(directory: str) -> dict[str, str]:
@@ -36,17 +40,18 @@ class HermesTests(unittest.TestCase):
         hermes._current_mode = None
 
     def test_generated_mode_contexts_and_default(self):
-        self.assertEqual(hermes.MODES, ("lite", "full", "ultra"))
+        self.assertEqual(hermes.MODES, ("lite", "full", "mammon"))
         with tempfile.TemporaryDirectory() as directory:
             self.assertEqual(hermes.resolve_mode(env=config_environment(directory))["mode"], "full")
         lite = hermes.build_injected_context("lite")
         full = hermes.build_injected_context("full")
-        ultra = hermes.build_injected_context("ultra")
+        mammon = hermes.build_injected_context("mammon")
         self.assertIn("level: lite", lite)
         self.assertNotIn("Private ambition pass", lite)
         self.assertIn("Private ambition pass", full)
-        self.assertNotIn("Private counter-rebuttal", full)
-        self.assertIn("Private counter-rebuttal", ultra)
+        self.assertIn("Useful action pass", full)
+        self.assertIn("Mammon is the sole final perspective", mammon)
+        self.assertNotIn("Then rebut Mammon", mammon)
         with self.assertRaises(ValueError):
             hermes.build_injected_context("off")
 
@@ -57,11 +62,11 @@ class HermesTests(unittest.TestCase):
             target.parent.mkdir(parents=True)
             target.write_text(json.dumps({"defaultMode": "lite", "keep": True}), encoding="utf-8")
             self.assertEqual(hermes.resolve_mode(env=env)["mode"], "lite")
-            self.assertEqual(hermes.resolve_mode(session_mode="ultra", env=env)["mode"], "ultra")
-            self.assertEqual(hermes.resolve_mode(requested_mode="FULL", session_mode="ultra", env=env)["mode"], "full")
-            written = hermes.write_default_mode("ultra", env)
-            self.assertEqual(written["mode"], "ultra")
-            self.assertEqual(json.loads(target.read_text(encoding="utf-8")), {"defaultMode": "ultra", "keep": True})
+            self.assertEqual(hermes.resolve_mode(session_mode="mammon", env=env)["mode"], "mammon")
+            self.assertEqual(hermes.resolve_mode(requested_mode="FULL", session_mode="mammon", env=env)["mode"], "full")
+            written = hermes.write_default_mode("mammon", env)
+            self.assertEqual(written["mode"], "mammon")
+            self.assertEqual(json.loads(target.read_text(encoding="utf-8")), {"defaultMode": "mammon", "keep": True})
             overridden = hermes.write_default_mode("lite", {**env, "NECKTIE_DEFAULT_MODE": "full"})
             self.assertEqual(overridden["written_mode"], "lite")
             self.assertEqual(overridden["mode"], "full")
@@ -76,9 +81,9 @@ class HermesTests(unittest.TestCase):
         ):
             self.assertIn("current full; configured default full", hermes._handle_mode_command("status"))
             self.assertEqual(hermes._handle_mode_command("lite"), "Necktie mode set to lite for this session.")
-            self.assertIn("Current session remains lite", hermes._handle_mode_command("default ultra"))
-            self.assertEqual(hermes.resolve_default_mode()["mode"], "ultra")
-            self.assertIn("current lite; configured default ultra", hermes._handle_mode_command(""))
+            self.assertIn("Current session remains lite", hermes._handle_mode_command("default mammon"))
+            self.assertEqual(hermes.resolve_default_mode()["mode"], "mammon")
+            self.assertIn("current lite; configured default mammon", hermes._handle_mode_command(""))
             self.assertEqual(hermes._handle_mode_command("off"), hermes.MODE_USAGE)
             self.assertEqual(hermes._current_mode, "lite")
 
@@ -95,16 +100,16 @@ class HermesTests(unittest.TestCase):
             self.assertIn("NECKTIE_DEFAULT_MODE", diagnostics.getvalue())
 
     def test_core_and_decision_command_rewrite(self):
-        event = types.SimpleNamespace(text="/necktie --mode ultra assess this policy", source="trusted")
+        event = types.SimpleNamespace(text="/necktie --mode mammon assess this policy", source="trusted")
         result = hermes.rewrite_gateway_command(event=event)
         self.assertEqual(result["action"], "rewrite")
         self.assertIn("necktie:necktie", result["text"])
-        self.assertIn("--mode ultra assess this policy", result["text"])
+        self.assertIn("--mode mammon assess this policy", result["text"])
         self.assertIsNone(hermes.rewrite_gateway_command(event=types.SimpleNamespace(
             text="/necktie-mode lite", source="trusted"
         )))
 
-    def test_registers_one_skill_two_commands_and_two_hooks(self):
+    def test_registers_two_skills_two_commands_and_two_hooks(self):
         class Context:
             def __init__(self):
                 self.skills, self.commands, self.hooks = [], [], []
@@ -120,7 +125,7 @@ class HermesTests(unittest.TestCase):
 
         ctx = Context()
         hermes.register(ctx)
-        self.assertEqual(ctx.skills, ["necktie"])
+        self.assertEqual(ctx.skills, ["necktie", "necktie-research"])
         self.assertEqual(ctx.commands, ["necktie", "necktie-mode"])
         self.assertEqual(sorted(ctx.hooks), ["pre_gateway_dispatch", "pre_llm_call"])
 
@@ -138,7 +143,7 @@ class HermesTests(unittest.TestCase):
                 "const session=process.argv[2]==='-'?undefined:process.argv[2];"
                 "process.stdout.write(p.resolveMode({requestedMode:requested,sessionMode:session}).mode);"
             )
-            for requested, session in [(None, None), (None, "ultra"), ("full", "lite")]:
+            for requested, session in [(None, None), (None, "mammon"), ("full", "lite")]:
                 javascript = subprocess.check_output(
                     ["node", "-e", script, requested or "-", session or "-"],
                     cwd=ROOT,
@@ -147,6 +152,40 @@ class HermesTests(unittest.TestCase):
                 )
                 python = hermes.resolve_mode(requested, session, config_environment(directory))["mode"]
                 self.assertEqual(javascript, python)
+
+
+class ResearchPromptLoopTests(unittest.TestCase):
+    def advance_to_review(self, packet):
+        for state in ("discover", "fingerprint", "critique", "blueprint", "draft", "review"):
+            research_loop.transition(packet, state, "tested")
+
+    def test_happy_path_reaches_complete_after_verification(self):
+        packet = research_loop.new_packet("Build a controlling research brief", "standard", "full")
+        self.advance_to_review(packet)
+        research_loop.record_review(packet, "APPROVE", "Every material prompt criterion passed", "")
+        self.assertEqual(packet["state"], "verify")
+        research_loop.record_verification(packet, "PASS", "Fresh-session simulation passed", "")
+        self.assertEqual(packet["state"], "complete")
+
+    def test_mammon_origin_and_same_issue_circuit_breaker(self):
+        packet = research_loop.new_packet("Build a market-control research brief", "deep", "mammon")
+        self.advance_to_review(packet)
+        for attempt in range(3):
+            research_loop.record_review(packet, "REVISE", "Required schema is still absent", "schema-gap")
+            if attempt < 2:
+                research_loop.transition(packet, "review", "revised")
+        self.assertEqual(packet["origin_mode"], "mammon")
+        self.assertEqual(packet["state"], "blocked")
+        self.assertEqual(packet["circuit_breaker"], "same-issue-three-times")
+
+    def test_round_trip_packet_contains_no_prompt_body_by_default(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "research-prompt.json"
+            packet = research_loop.new_packet("Test persistence", "standard", "full")
+            research_loop.save_packet(path, packet)
+            loaded = research_loop.load_packet(path)
+            self.assertEqual(loaded["run_id"], packet["run_id"])
+            self.assertEqual(loaded["prompt_path"], "")
 
 
 if __name__ == "__main__":

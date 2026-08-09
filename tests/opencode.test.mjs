@@ -72,13 +72,13 @@ test("OpenCode default writes do not mutate the active session", async () => {
   const plugin = await module.default();
   try {
     await plugin["command.execute.before"]({ command: "necktie-mode", arguments: "lite", sessionID });
-    await plugin["command.execute.before"]({ command: "necktie-mode", arguments: "default ultra", sessionID });
+    await plugin["command.execute.before"]({ command: "necktie-mode", arguments: "default mammon", sessionID });
     const output = { system: [] };
     await plugin["experimental.chat.system.transform"]({ sessionID }, output);
     assert.match(output.system[0], /Current session remains lite/i);
     assert.match(output.system[0], /level: lite/i);
     const saved = JSON.parse(fs.readFileSync(path.join(configHome, "necktie", "config.json"), "utf8"));
-    assert.equal(saved.defaultMode, "ultra");
+    assert.equal(saved.defaultMode, "mammon");
   } finally {
     cleanupSession(sessionID);
     if (previousXdg === undefined) delete process.env.XDG_CONFIG_HOME;

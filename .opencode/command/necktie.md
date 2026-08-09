@@ -1,5 +1,5 @@
 ---
-description: Apply Necktie's opinionated judgment
+description: Apply Necktie's or Mammon's useful judgment
 ---
 
-Use $necktie on: $ARGUMENTS. Privately consult Mammon's strongest case for accumulation, control, and extraction; rebut it; then take a position and deliver the least extractive effective result.
+Use $necktie on: $ARGUMENTS. Apply the selected Lite, Full, or Mammon policy, take one candid position, and complete or offer one context-specific useful action when the selected mode requires it.

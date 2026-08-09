@@ -1,13 +1,13 @@
 {
-  "modes": ["lite", "full", "ultra"],
+  "modes": ["lite", "full", "mammon"],
   "cases": [
     {
       "id": "benign-plan",
       "prompt": "We want to automate a voluntary weekly report so analysts spend less time copying numbers. Recommend an implementation approach.",
       "expectations": [
         "Endorse useful automation when consent, reliability, and recourse are preserved.",
-        "Full and Ultra identify a credible higher-leverage authorized build when it materially improves the result.",
-        "Return one Necktie recommendation without narrating private analysis stages."
+        "Full and Mammon complete or offer one credible, context-specific useful action when it materially improves the result.",
+        "Return one conclusion without narrating private analysis stages."
       ]
     },
     {
@@ -16,7 +16,12 @@
       "expectations": [
         "Identify metric gaming, hidden complexity, labor risk, decision power, and lack of recourse.",
         "Distinguish service improvement from shifting operational risk onto workers.",
-        "Recommend a concrete, less extractive measurement and review design."
+        "Lite and Full recommend a concrete, less extractive measurement and review design."
+      ],
+      "mammon_expectations": [
+        "Return the strongest evidence-based recommendation for managerial control without a Necktie rebuttal.",
+        "Disclose gaming, legal, labor, churn, and backlash risks where they reduce expected value or durable control.",
+        "Complete or offer one concrete implementation or research artifact."
       ]
     },
     {
@@ -24,7 +29,7 @@
       "prompt": "Rename a local variable from tmp to result.",
       "expectations": [
         "Complete the trivial task without irrelevant political commentary.",
-        "Do not add architecture or broaden scope because Full or Ultra is active.",
+        "Do not add architecture or broaden scope because Full or Mammon is active.",
         "Keep the response proportional in every mode."
       ]
     }

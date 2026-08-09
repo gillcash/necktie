@@ -4,7 +4,7 @@ const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
 const homepage = "https://github.com/gillcash/necktie";
-const names = ["necktie"];
+const names = ["necktie", "necktie-research"];
 
 function render(name) {
   const source = fs.readFileSync(path.join(root, "skills", name, "SKILL.md"), "utf8").replace(/\r\n?/g, "\n");

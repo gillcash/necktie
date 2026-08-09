@@ -1,4 +1,4 @@
-"""Hermes plugin for Necktie's lite, full, and ultra judgment modes."""
+"""Hermes plugin for Necktie's lite, full, and mammon judgment modes."""
 
 from __future__ import annotations
 
@@ -11,12 +11,12 @@ from typing import Any, Callable
 
 ROOT = Path(__file__).resolve().parent
 SKILLS_DIR = ROOT / "skills"
-MODES = ("lite", "full", "ultra")
+MODES = ("lite", "full", "mammon")
 DEFAULT_MODE = "full"
 SKILL_COMMANDS = {
     "necktie": "Apply Necktie's judgment to the supplied decision, plan, or artifact.",
 }
-MODE_USAGE = "Usage: /necktie-mode [status|lite|full|ultra|default <lite|full|ultra>]"
+MODE_USAGE = "Usage: /necktie-mode [status|lite|full|mammon|default <lite|full|mammon>]"
 
 _current_mode: str | None = None
 
@@ -94,7 +94,7 @@ def resolve_mode(
     if requested_mode is not None:
         requested = normalize_mode(requested_mode)
         if not requested:
-            raise ValueError(f"Invalid Necktie mode: {requested_mode}. Expected lite, full, or ultra.")
+            raise ValueError(f"Invalid Necktie mode: {requested_mode}. Expected lite, full, or mammon.")
         mode, source = requested, "requested"
     elif session_mode not in (None, ""):
         session = normalize_mode(session_mode)
@@ -121,7 +121,7 @@ def resolve_mode(
 def write_default_mode(mode: Any, env: dict[str, str] | None = None) -> dict[str, Any]:
     normalized = normalize_mode(mode)
     if not normalized:
-        raise ValueError(f"Invalid Necktie mode: {mode}. Expected lite, full, or ultra.")
+        raise ValueError(f"Invalid Necktie mode: {mode}. Expected lite, full, or mammon.")
     values = os.environ if env is None else env
     config, _, target = _read_config(values)
     config["defaultMode"] = normalized
@@ -259,6 +259,6 @@ def register(ctx: Any) -> None:
     ctx.register_command(
         "necktie-mode",
         _handle_mode_command,
-        description="Inspect or change Necktie's lite, full, or ultra mode.",
-        args_hint="[status|lite|full|ultra|default <mode>]",
+        description="Inspect or change Necktie's lite, full, or mammon mode.",
+        args_hint="[status|lite|full|mammon|default <mode>]",
     )
