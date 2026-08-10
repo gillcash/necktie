@@ -4,7 +4,7 @@
 
 <h1 align="center">Necktie</h1>
 
-<p align="center"><em>the angel of late-stage capitalism for your AI agent</em></p>
+<p align="center"><em>He follows the money. He finds the hidden cost. He takes a side.</em></p>
 
 Necktie is an opinionated agent policy for decisions shaped by incentives, metrics, power, and extraction. It does not pretend every tradeoff is neutral.
 
