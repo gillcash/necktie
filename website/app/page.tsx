@@ -49,7 +49,7 @@ export default function Home() {
   return (
     <>
       <a className="skip-link" href="#main">
-        Skip to the case
+        Skip to content
       </a>
 
       <header className="masthead">
@@ -57,7 +57,6 @@ export default function Home() {
           Necktie
         </a>
         <nav aria-label="Primary navigation">
-          <a href="#judgment">Judgment</a>
           <a href="#method">Method</a>
           <a href="#modes">Modes</a>
           <a href="#install">Install</a>
@@ -87,8 +86,8 @@ export default function Home() {
               <a className="button button-solid" href="#install">
                 Install Necktie
               </a>
-              <a className="button button-text" href="#judgment">
-                See the judgment <span aria-hidden="true">↓</span>
+              <a className="button button-text" href="#method">
+                See the method <span aria-hidden="true">↓</span>
               </a>
             </div>
           </div>
@@ -113,54 +112,6 @@ export default function Home() {
               <span className="mode-stamp">Full mode · Default</span>
             </figcaption>
           </figure>
-        </section>
-
-        <section className="judgment" id="judgment" aria-labelledby="judgment-title">
-          <div className="section-label light-label">
-            <span>Case 001</span>
-            <span>Support operations</span>
-          </div>
-          <div className="judgment-heading">
-            <p className="kicker">A concrete judgment</p>
-            <h2 id="judgment-title">One metric. Four hidden costs.</h2>
-          </div>
-
-          <div className="proposal">
-            <p className="proposal-label">The proposal</p>
-            <blockquote>
-              “Rank support agents by tickets closed per hour to raise productivity.”
-            </blockquote>
-          </div>
-
-          <div className="money-trail" aria-label="How the incentive travels">
-            <article>
-              <span className="trail-number">01</span>
-              <p className="trail-label">Metric rewards</p>
-              <h3>Fast closure</h3>
-              <p>Not durable resolution, careful diagnosis, or difficult cases.</p>
-            </article>
-            <article>
-              <span className="trail-number">02</span>
-              <p className="trail-label">Behavior follows</p>
-              <h3>Cherry-picking</h3>
-              <p>Easy tickets become valuable. Complex customers become liabilities.</p>
-            </article>
-            <article>
-              <span className="trail-number">03</span>
-              <p className="trail-label">Cost shifts to</p>
-              <h3>Workers + customers</h3>
-              <p>Reopened cases, rushed care, stress, gaming, and invisible cleanup.</p>
-            </article>
-            <article className="trail-verdict">
-              <span className="trail-number">04</span>
-              <p className="trail-label">Necktie says</p>
-              <h3>Do not rank people this way.</h3>
-              <p>
-                Use team throughput with quality and complexity guardrails,
-                qualitative review, and an appeal path.
-              </p>
-            </article>
-          </div>
         </section>
 
         <section className="method" id="method" aria-labelledby="method-title">

@@ -23,7 +23,7 @@ async function render(headers = {}) {
   );
 }
 
-test("server-renders the complete Necktie case", async () => {
+test("server-renders the complete Necktie homepage", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
@@ -33,7 +33,6 @@ test("server-renders the complete Necktie case", async () => {
   assert.match(html, /He follows the money\./);
   assert.match(html, /He finds the hidden cost\./);
   assert.match(html, /He takes a side\./);
-  assert.match(html, /One metric\. Four hidden costs\./);
   assert.match(html, /Who benefits\?/);
   assert.match(html, /Who pays\?/);
   assert.match(html, /Who decides\?/);
@@ -44,7 +43,12 @@ test("server-renders the complete Necktie case", async () => {
   assert.match(html, /Full/);
   assert.doesNotMatch(html, /mammon|angel/i);
   assert.match(html, /Opinionated, not arbitrary\./);
+  assert.match(html, /href="#method"[^>]*>See the method/);
   assert.match(html, /http:\/\/localhost(?::3000)?\/og\.png/);
+  assert.doesNotMatch(
+    html,
+    /Case 001|Support operations|A concrete judgment|One metric\. Four hidden costs\.|tickets closed per hour|Fast closure|Cherry-picking|Workers \+ customers|Do not rank people this way|href="#judgment"|id="judgment"/,
+  );
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Your site is taking shape/i);
 });
 

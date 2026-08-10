@@ -146,8 +146,6 @@ h2 {
 .section-label,
 .case-file-topline,
 .mode-stamp,
-.proposal-label,
-.trail-label,
 .panel-count,
 .evidence-stamp {
   font-family: var(--mono);
@@ -305,106 +303,6 @@ h2 {
 .light-label {
   border-color: rgba(243, 238, 226, 0.35);
   color: #d1c8b7;
-}
-
-.judgment {
-  padding: clamp(4.5rem, 9vw, 8rem) max(24px, calc((100vw - 1160px) / 2));
-  background: var(--ink);
-  color: var(--paper-bright);
-}
-
-.judgment-heading {
-  max-width: 900px;
-  margin: 4rem 0;
-}
-
-.judgment-heading .kicker {
-  color: var(--brass);
-}
-
-.judgment-heading h2 {
-  margin-bottom: 0;
-}
-
-.proposal {
-  display: grid;
-  grid-template-columns: 1fr 4fr;
-  gap: 2rem;
-  padding: 2.2rem 0;
-  border-top: 1px solid rgba(243, 238, 226, 0.3);
-  border-bottom: 1px solid rgba(243, 238, 226, 0.3);
-}
-
-.proposal-label {
-  margin: 0;
-  color: var(--brass);
-  font-size: 0.65rem;
-}
-
-.proposal blockquote {
-  max-width: 850px;
-  margin: 0;
-  font-size: clamp(1.65rem, 3.6vw, 3.35rem);
-  line-height: 1.1;
-}
-
-.money-trail {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-bottom: 1px solid rgba(243, 238, 226, 0.3);
-}
-
-.money-trail article {
-  min-height: 330px;
-  padding: 2rem 1.6rem 2rem 0;
-  position: relative;
-  border-right: 1px solid rgba(243, 238, 226, 0.25);
-}
-
-.money-trail article + article {
-  padding-left: 1.6rem;
-}
-
-.money-trail article:last-child {
-  padding-right: 0;
-  border-right: 0;
-}
-
-.trail-number {
-  display: block;
-  margin-bottom: 4.5rem;
-  color: var(--brass);
-  font-family: var(--mono);
-  font-size: 0.7rem;
-}
-
-.trail-label {
-  margin-bottom: 1rem;
-  color: #aba293;
-  font-size: 0.58rem;
-}
-
-.money-trail h3 {
-  margin-bottom: 1.1rem;
-  font-size: clamp(1.65rem, 2.7vw, 2.45rem);
-  line-height: 1.03;
-}
-
-.money-trail p:last-child {
-  margin-bottom: 0;
-  color: #cec5b4;
-  font-size: 0.95rem;
-}
-
-.money-trail .trail-verdict {
-  margin-top: -1px;
-  padding-right: 1.6rem;
-  background: var(--paper-bright);
-  color: var(--ink);
-}
-
-.money-trail .trail-verdict p:last-child {
-  color: var(--ink-soft);
 }
 
 .method,
@@ -896,18 +794,6 @@ footer > div:first-child p {
     justify-self: center;
   }
 
-  .money-trail {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .money-trail article:nth-child(2) {
-    border-right: 0;
-  }
-
-  .money-trail article:nth-child(n + 3) {
-    border-top: 1px solid rgba(243, 238, 226, 0.25);
-  }
-
   .method,
   .boundaries {
     grid-template-columns: 1fr;
@@ -979,32 +865,6 @@ footer > div:first-child p {
     width: 100%;
   }
 
-  .proposal {
-    grid-template-columns: 1fr;
-  }
-
-  .money-trail {
-    grid-template-columns: 1fr;
-  }
-
-  .money-trail article,
-  .money-trail article + article,
-  .money-trail article:last-child {
-    min-height: 0;
-    padding: 1.8rem 0;
-    border-right: 0;
-    border-top: 1px solid rgba(243, 238, 226, 0.25);
-  }
-
-  .trail-number {
-    margin-bottom: 2rem;
-  }
-
-  .money-trail .trail-verdict {
-    margin-inline: -24px;
-    padding-inline: 24px;
-  }
-
   .question-ledger li {
     grid-template-columns: 38px 1fr;
     gap: 0.75rem;
@@ -1063,7 +923,6 @@ footer > div:first-child p {
   }
 
   body,
-  .judgment,
   .install {
     background: white;
     color: black;
