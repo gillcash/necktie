@@ -14,7 +14,7 @@ Full is the useful default: it gives one Necktie judgment and completes or offer
 
 | Mode | Judgment and action | Best fit |
 | --- | --- | --- |
-| Lite | Mammon's strongest accumulation and extraction case, followed by Necktie's rebuttal | Focused decisions with a bounded judgment |
+| Lite | Strongest accumulation and extraction case, followed by Necktie's rebuttal | Focused decisions with a bounded judgment |
 | Full | Lite plus an ambition pass and one context-specific useful action | Default product, engineering, and strategy work |
 
 On hosts with dynamic command support:
