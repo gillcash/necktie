@@ -11,3 +11,6 @@
 /skills/necktie/references/*.md text eol=lf
 /skills/necktie-research/references/*.md text eol=lf
 /skills/necktie-research/scripts/*.py text eol=lf
+
+# Preserve checksummed asset bytes across platforms
+/assets/necktie-icon-favicon-pack/** -text

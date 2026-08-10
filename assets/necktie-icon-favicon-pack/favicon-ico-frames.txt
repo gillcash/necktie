@@ -1,0 +1,7 @@
+/mnt/data/necktie-icon-favicon-pack/public/favicon.ico[0] ICO 16x16 16x16+0+0 8-bit sRGB 0.000u 0:00.000
+/mnt/data/necktie-icon-favicon-pack/public/favicon.ico[1] ICO 24x24 24x24+0+0 8-bit sRGB 0.000u 0:00.000
+/mnt/data/necktie-icon-favicon-pack/public/favicon.ico[2] ICO 32x32 32x32+0+0 8-bit sRGB 0.000u 0:00.000
+/mnt/data/necktie-icon-favicon-pack/public/favicon.ico[3] ICO 48x48 48x48+0+0 8-bit sRGB 0.000u 0:00.000
+/mnt/data/necktie-icon-favicon-pack/public/favicon.ico[4] ICO 64x64 64x64+0+0 8-bit sRGB 0.000u 0:00.000
+/mnt/data/necktie-icon-favicon-pack/public/favicon.ico[5] ICO 128x128 128x128+0+0 8-bit sRGB 0.000u 0:00.000
+/mnt/data/necktie-icon-favicon-pack/public/favicon.ico[6] PNG 256x256 256x256+0+0 8-bit sRGB 139560B 0.000u 0:00.000

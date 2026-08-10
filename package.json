@@ -35,6 +35,7 @@
     ".qoder-plugin/",
     "pi-extension/",
     "assets/",
+    "!assets/necktie-icon-favicon-pack/**",
     "LICENSE",
     "NOTICE",
     "!**/__pycache__/**",
