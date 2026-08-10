@@ -1,6 +1,6 @@
 {
   "name": "necktie",
-  "description": "The angel of late-stage capitalism for your AI agent.",
+  "description": "An opinionated agent policy for decisions shaped by incentives, metrics, power, and hidden costs.",
   "owner": { "name": "gillcash", "url": "https://github.com/gillcash" },
   "plugins": [
     {
