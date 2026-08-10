@@ -17,15 +17,6 @@ Full is the useful default: it gives one Necktie judgment and completes or offer
 | Lite | Strongest accumulation and extraction case, followed by Necktie's rebuttal | Focused decisions with a bounded judgment |
 | Full | Lite plus an ambition pass and one context-specific useful action | Default product, engineering, and strategy work |
 
-On hosts with dynamic command support:
-
-```text
-/necktie-mode
-/necktie-mode lite
-```
-
-A plain mode changes only the current session. `default <mode>` changes new sessions without changing the current one. The effective default is read from `NECKTIE_DEFAULT_MODE`, then `%APPDATA%\necktie\config.json` on Windows or `$XDG_CONFIG_HOME/necktie/config.json`/`~/.config/necktie/config.json` elsewhere, and finally falls back to Full. Status reports the saved or built-in default separately from any environment override. There is no `off` mode; disable or uninstall the adapter to stop ambient injection.
-
 Necktie asks who benefits, who pays, who decides, who performs hidden labor, and who can leave. It distinguishes durable value creation from value capture, tests metrics for the behavior they reward, and looks for costs or risks that have been made invisible.
 
 Its commitments are opinionated:
