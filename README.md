@@ -16,26 +16,15 @@ Full is the useful default: it gives one Necktie judgment and completes or offer
 | --- | --- | --- |
 | Lite | Mammon's strongest accumulation and extraction case, followed by Necktie's rebuttal | Focused decisions with a bounded judgment |
 | Full | Lite plus an ambition pass and one context-specific useful action | Default product, engineering, and strategy work |
-| Mammon | Mammon's evidence-based conclusion with no Necktie rebuttal, plus one useful action | The strongest accumulation, growth, control, or extraction case |
-
-Full and Mammon do not grant more authority or relax security, privacy, consent, accessibility, validation, or verification. Every mode returns one result without an internal debate transcript.
 
 On hosts with dynamic command support:
 
 ```text
 /necktie-mode
 /necktie-mode lite
-/necktie-mode default mammon
 ```
 
 A plain mode changes only the current session. `default <mode>` changes new sessions without changing the current one. The effective default is read from `NECKTIE_DEFAULT_MODE`, then `%APPDATA%\necktie\config.json` on Windows or `$XDG_CONFIG_HOME/necktie/config.json`/`~/.config/necktie/config.json` elsewhere, and finally falls back to Full. Status reports the saved or built-in default separately from any environment override. There is no `off` mode; disable or uninstall the adapter to stop ambient injection.
-
-## Know the arrangement
-
-| Voice | Role | Boundary |
-| --- | --- | --- |
-| Necktie | The public judgment in Lite and Full | Takes a position, explains the material tradeoff, and completes or offers useful work |
-| Mammon | Internal adversary in Lite and Full; final perspective in Mammon mode | Builds the strongest accumulation and extraction case without weakening evidence or safety boundaries |
 
 Necktie asks who benefits, who pays, who decides, who performs hidden labor, and who can leave. It distinguishes durable value creation from value capture, tests metrics for the behavior they reward, and looks for costs or risks that have been made invisible.
 
@@ -47,11 +36,9 @@ Its commitments are opinionated:
 - truth over convenient narrative;
 - accountable power over opaque control.
 
-Necktie is not reflexively anti-business or contrarian. In Lite and Full, Mammon must make the legitimate efficiency case as strongly as the extractive one. If a plan survives that challenge, Necktie should endorse it. Mammon mode deliberately omits that rebuttal while remaining truthful about material strategic risks.
-
 ## Use Necktie
 
-Necktie Core is active on every response through the host's native hook or instruction mechanism. It applies the lens proportionately; a trivial coding question should not become an unsolicited political sermon.
+Necktie Core is active on every response through the host's native hook or instruction mechanism.
 
 Invoke the explicit skill when you want a direct judgment:
 
@@ -63,12 +50,12 @@ On skill-oriented hosts:
 
 ```text
 $necktie Audit this pricing plan. Who benefits, who pays, who controls the relationship, and who can leave?
-$necktie --mode mammon Make the strongest case for controlling this market and identify the move with the highest expected leverage.
+$necktie Make the strongest case for controlling this market and identify the move with the highest expected leverage.
 ```
 
-`--mode lite|full|mammon` is a one-shot skill override. It does not change session or configured defaults.
+`--mode lite|full` is a one-shot skill override. It does not change session or configured defaults.
 
-Full and Mammon normally do the work already authorized. When a response would otherwise stop at an opinion, they offer one specific build or action. If deeper evidence is the next constraint, they usually offer a portable research prompt. Invoke the prompt builder directly or accept the offer:
+Full does the work already authorized. When a response would otherwise stop at an opinion, full offers one specific build or action. If deeper evidence is the next constraint, full will usually offer a portable research prompt. Invoke the prompt builder directly or accept the offer:
 
 ```text
 $necktie-research Reverse-engineer this discussion and the reference report into one copy-ready research prompt.
