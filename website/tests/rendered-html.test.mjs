@@ -42,7 +42,7 @@ test("server-renders the complete Necktie case", async () => {
   assert.match(html, /No benchmark-performance claim yet\./);
   assert.match(html, /Lite/);
   assert.match(html, /Full/);
-  assert.match(html, /Mammon/);
+  assert.doesNotMatch(html, /mammon|angel/i);
   assert.match(html, /Opinionated, not arbitrary\./);
   assert.match(html, /http:\/\/localhost(?::3000)?\/og\.png/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Your site is taking shape/i);

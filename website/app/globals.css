@@ -534,7 +534,7 @@ h2 {
 
 .mode-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   border-top: 1px solid var(--ink);
   border-bottom: 1px solid var(--ink);
 }
@@ -582,11 +582,6 @@ h2 {
 
 .mode-full {
   background: var(--brass);
-}
-
-.mode-mammon h3,
-.mode-mammon .mode-card-head span {
-  color: var(--red);
 }
 
 .boundaries {

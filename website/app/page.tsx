@@ -43,12 +43,6 @@ const modes = [
     description:
       "The complete judgment: strongest extraction case, rebuttal, explicit position, and one useful action when it changes the outcome.",
   },
-  {
-    name: "Mammon",
-    marker: "Opt-in",
-    description:
-      "The strongest unrebutted case for accumulation, growth, control, lock-in, and cost shifting—kept inside factual, safety, and authority boundaries.",
-  },
 ];
 
 export default function Home() {
@@ -115,7 +109,7 @@ export default function Home() {
               />
             </div>
             <figcaption>
-              <span>The angel of late-stage capitalism</span>
+              <span>An investigator for hidden costs</span>
               <span className="mode-stamp">Full mode · Default</span>
             </figcaption>
           </figure>
@@ -219,7 +213,7 @@ export default function Home() {
           </div>
           <div className="modes-heading">
             <p className="kicker">How hard should he look?</p>
-            <h2 id="modes-title">Three lenses. One accountable user.</h2>
+            <h2 id="modes-title">Two lenses. One accountable user.</h2>
           </div>
           <div className="mode-grid">
             {modes.map((mode) => (
@@ -370,7 +364,7 @@ export default function Home() {
       <footer>
         <div>
           <a className="wordmark" href="#top">Necktie</a>
-          <p>The angel of late-stage capitalism for your AI agent.</p>
+          <p>Follow incentives. Find hidden costs. Take a side.</p>
         </div>
         <div className="footer-links">
           <a href={githubUrl}>GitHub</a>
