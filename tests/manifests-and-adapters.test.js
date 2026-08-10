@@ -30,7 +30,32 @@ test("Codex manifest relies on component discovery and keeps MCP optional", () =
   assert.equal(manifest.hooks, undefined);
   assert.equal(manifest.mcpServers, undefined);
   assert.equal(manifest.skills, "./skills/");
-  assert.equal(manifest.interface.shortDescription, "the angel of late-stage capitalism for your AI agent");
+  assert.equal(manifest.interface.shortDescription, "Opinionated judgment for incentives, power, and hidden costs");
+  assert.equal(manifest.interface.privacyPolicyURL, "https://github.com/gillcash/necktie/blob/main/PRIVACY.md");
+  assert.equal(manifest.interface.termsOfServiceURL, "https://github.com/gillcash/necktie/blob/main/TERMS.md");
+});
+
+test("marketplace copy describes utility without internal framing", () => {
+  const publicMetadataFiles = [
+    "package.json", "plugin.json", "plugin.yaml", "gemini-extension.json",
+    ".codex-plugin/plugin.json", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json",
+    ".devin-plugin/plugin.json", ".github/plugin/plugin.json", ".github/plugin/marketplace.json",
+    ".grok-plugin/marketplace.json", ".qoder-plugin/plugin.json", "skills/necktie/agents/openai.yaml",
+  ];
+
+  for (const relative of publicMetadataFiles) {
+    const copy = fs.readFileSync(path.join(root, relative), "utf8");
+    assert.doesNotMatch(copy, /angel|mammon/i, relative);
+  }
+});
+
+test("OpenAI submission materials contain the required review cases and public policies", () => {
+  const submission = fs.readFileSync(path.join(root, "docs", "openai-submission.md"), "utf8");
+  for (const id of ["P1", "P2", "P3", "P4", "P5", "N1", "N2", "N3"]) {
+    assert.match(submission, new RegExp(`^### ${id} —`, "m"), id);
+  }
+  assert.ok(fs.existsSync(path.join(root, "PRIVACY.md")));
+  assert.ok(fs.existsSync(path.join(root, "TERMS.md")));
 });
 
 test("static adapter generation targets Full and the package ships shared mode assets", () => {

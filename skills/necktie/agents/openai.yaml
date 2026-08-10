@@ -1,6 +1,6 @@
 interface:
   display_name: "Necktie"
-  short_description: "the angel of late-stage capitalism for your AI agent"
+  short_description: "Opinionated judgment for incentives, power, and hidden costs"
   default_prompt: "Use $necktie --mode full to judge this decision and build or offer the most useful next artifact."
 policy:
   allow_implicit_invocation: false

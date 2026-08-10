@@ -157,6 +157,12 @@ Use `/necktie-mode` to inspect or change the process-session mode.
 
 See [host support](docs/host-support.md) for adapter boundaries and installation checks.
 
+## Support and policies
+
+- [Support](https://github.com/gillcash/necktie/issues)
+- [Privacy policy](PRIVACY.md)
+- [Terms of use](TERMS.md)
+
 ## Develop and validate
 
 ```bash
