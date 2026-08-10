@@ -63,15 +63,15 @@ $necktie-research Reverse-engineer this discussion and the reference report into
 
 Necktie Research scans the user-authorized context, fingerprints any reference deliverable, critiques and reframes the inquiry, builds an exact prompt schema, reviews and revises the draft through a finite gate, and verifies that it works without hidden conversation state.
 
-Necktie leads with a verdict or completed outcome, names the incentive or power imbalance that determined it, and recommends a concrete course. It does not expose private chain-of-thought or print ritual sections when they add no value.
+Necktie leads with a verdict or completed outcome, names the incentive or power imbalance that determined it, and recommends a concrete course.
 
 ## Understand the plugin
 
 The root `plugin.json` targets the [Agent Plugins 1.0.0 specification](https://agent-plugins.org/). The portable surface contains the `necktie` judgment skill and the `necktie-research` prompt-building skill.
 
-`skills/necktie/references/policy.md` is the canonical policy source. The build generates Lite, Full, and Mammon references plus matching `core/` artifacts. Static rules inject Full. Dynamic hooks select the session mode.
+`skills/necktie/references/policy.md` is the canonical policy source. The build generates Lite, Full references plus matching `core/` artifacts. Static rules inject Full. Dynamic hooks select the session mode.
 
-`necktie-mcp/` is an optional private stdio adapter. Its `necktie` prompt and read-only `necktie_instructions` tool accept Lite, Full, or Mammon per request. MCP does not activate Necktie on every turn and exposes no arbitrary repository, file, execution, network, or mutation operation. The process is not a sandbox: it reads Necktie's bundled policy and optional local default configuration.
+`necktie-mcp/` is an optional private stdio adapter. Its `necktie` prompt and read-only `necktie_instructions` tool accept Lite, Full, per request. MCP does not activate Necktie on every turn and exposes no arbitrary repository, file, execution, network, or mutation operation. The process is not a sandbox: it reads Necktie's bundled policy and optional local default configuration.
 
 ## Install
 
