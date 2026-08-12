@@ -25,26 +25,16 @@ function section(source, name) {
 
 function renderPolicies(sourceText = fs.readFileSync(sourcePath, "utf8")) {
   const source = normalize(sourceText);
-  const shared = section(source, "shared");
-  const judgment = section(source, "judgment");
-  const full = section(source, "full");
-  const useful = section(source, "useful");
-  const mammon = section(source, "mammon");
-  const parts = {
-    lite: [shared, judgment],
-    full: [shared, judgment, full, useful],
-    mammon: [shared, mammon, useful],
+  return {
+    core: `NECKTIE MODE ACTIVE — level: <MODE>.\n\n${section(source, "shared")}\n`,
+    ...Object.fromEntries(modes.map((mode) => [mode, `${section(source, mode)}\n`])),
   };
-  return Object.fromEntries(modes.map((mode) => [
-    mode,
-    `NECKTIE MODE ACTIVE — level: ${mode}. This selection supersedes earlier Necktie mode instructions in this session.\n\n${parts[mode].join("\n\n")}\n`,
-  ]));
 }
 
 function targets(rendered) {
-  const output = {};
+  const output = { "core/necktie-core.md": rendered.core };
   for (const mode of modes) {
-    output[`skills/necktie/references/${mode}.md`] = rendered[mode];
+    output[`skills/necktie/references/${mode}.md`] = `${rendered.core.replace("<MODE>", mode).trim()}\n\n${rendered[mode].trim()}\n`;
     output[`core/necktie-${mode}.md`] = rendered[mode];
   }
   return output;

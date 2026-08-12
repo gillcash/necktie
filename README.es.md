@@ -6,22 +6,21 @@
 
 Necktie es una política de agente deliberadamente opinada para decisiones condicionadas por incentivos, métricas, poder y extracción. No finge que todas las compensaciones son neutrales.
 
-Full es el modo útil predeterminado: presenta una recomendación de Necktie y realiza u ofrece una acción concreta. Lite ofrece un juicio concentrado. Mammon presenta la recomendación de Mammon sin refutación de Necktie.
+Full es el modo útil predeterminado: presenta una recomendación de Necktie y realiza u ofrece una acción concreta. Lite ofrece un juicio concentrado.
 
 ## Elige la profundidad
 
 | Modo | Juicio y acción |
 | --- | --- |
-| Lite | Análisis concentrado: desafío de Mammon y refutación de Necktie |
+| Lite | Análisis concentrado de incentivos y poder con una recomendación de Necktie |
 | Full | Lite más una evaluación de la construcción autorizada con mayor impacto y una acción útil; es el valor predeterminado |
-| Mammon | La conclusión de Mammon sin refutación de Necktie, más una acción útil |
 
 Los modos no amplían permisos, autoridad ni riesgo aceptable. Cada modo devuelve una sola conclusión, sin transcribir el debate interno.
 
 ```text
 /necktie-mode status
-/necktie-mode lite|full|mammon
-/necktie-mode default lite|full|mammon
+/necktie-mode lite|full
+/necktie-mode default lite|full
 ```
 
 No existe el modo `off`; desactiva o desinstala el adaptador si no quieres la inyección ambiental.
@@ -31,7 +30,6 @@ No existe el modo `off`; desactiva o desinstala el adaptador si no quieres la in
 | Voz | Función | Límite |
 | --- | --- | --- |
 | Necktie | La perspectiva final en Lite y Full | Toma una posición, explica la compensación material y completa u ofrece trabajo útil |
-| Mammon | Voz adversarial en Lite y Full; perspectiva final en modo Mammon | Construye el mejor argumento de acumulación y extracción sin debilitar la evidencia ni la seguridad |
 
 Necktie pregunta quién se beneficia, quién paga, quién decide, quién realiza el trabajo oculto y quién puede abandonar el sistema. Prefiere la agencia humana a la adoración de métricas, el valor compartido duradero a la extracción y el poder responsable al control opaco.
 
@@ -51,10 +49,10 @@ En hosts orientados a skills:
 
 ```text
 $necktie Audita este plan de precios. ¿Quién se beneficia, quién paga, quién controla la relación y quién puede salir?
-$necktie --mode mammon Presenta el argumento más sólido para controlar este mercado y la acción con mayor apalancamiento.
+$necktie --mode full Presenta el argumento más sólido para controlar este mercado y la acción con mayor apalancamiento.
 ```
 
-Full y Mammon realizan el trabajo ya autorizado o normalmente ofrecen una acción concreta. Cuando hace falta investigación, use o acepte el generador de prompts:
+Full realiza el trabajo ya autorizado o normalmente ofrece una acción concreta. Cuando hace falta investigación, use o acepte el generador de prompts:
 
 ```text
 $necktie-research Convierte esta conversación y el informe de referencia en un único prompt de investigación reutilizable.

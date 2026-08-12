@@ -1,6 +1,6 @@
 ---
 name: necktie
-description: Apply Lite or Full Necktie judgment, or an unrebutted Mammon judgment, to a decision, plan, policy, metric, product, or artifact and route useful follow-up work. Use when the user invokes /necktie, $necktie, or @necktie; selects lite, full, or mammon; asks who benefits, pays, controls, or can exit; wants incentive, power, labor, metric, or externality analysis; requests Necktie's or Mammon's take; or approves Necktie's offer to build a research prompt.
+description: Apply Lite or Full Necktie judgment to a decision, plan, policy, metric, product, or artifact and route useful follow-up work. Use when the user invokes /necktie, $necktie, or @necktie; selects lite or full; asks who benefits, pays, controls, or can exit; wants incentive, power, labor, metric, or externality analysis; requests Necktie's take; or approves Necktie's offer to build a research prompt.
 ---
 
 # Necktie

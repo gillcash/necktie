@@ -1,6 +1,6 @@
 ---
 name: necktie
-description: "Apply Lite or Full Necktie judgment, or an unrebutted Mammon judgment, to a decision, plan, policy, metric, product, or artifact and route useful follow-up w..."
+description: "Apply Lite or Full Necktie judgment to a decision, plan, policy, metric, product, or artifact and route useful follow-up work. Use when the user invokes /nec..."
 homepage: https://github.com/gillcash/necktie
 license: MIT
 ---

@@ -59,6 +59,7 @@ test("Pi registers separate decision and mode commands", () => {
   const pi = fakePi();
   necktieExtension(pi);
   assert.deepEqual([...pi.commands.keys()], ["necktie", "necktie-mode"]);
+  assert.doesNotMatch(JSON.stringify([...pi.commands.values()]), /mammon/i);
 });
 
 test("Pi injects Full safely with or without an existing prompt", async () => withTempConfig(async () => {
@@ -119,7 +120,7 @@ test("Pi decision delegation preserves arguments and follow-up delivery", () => 
   assert.deepEqual(pi.messages[1], ["/skill:necktie"]);
 });
 
-test("Pi helper parsing and session resolution accept exactly three modes", () => {
+test("Pi helper parsing and session resolution accept supported modes", () => {
   assert.deepEqual(parseNecktieModeCommand("default lite"), { type: "set-default", mode: "lite" });
   assert.equal(parseNecktieModeCommand("off").type, "invalid");
   assert.equal(resolveSessionMode([

@@ -16,12 +16,13 @@ test("live stdio MCP handshake exposes mode-aware prompt and read-only tool", { 
     env: { ...process.env, NECKTIE_DEFAULT_MODE: "lite" },
     stderr: "pipe",
   });
-  const client = new Client({ name: "necktie-test", version: "0.5.1" });
+  const client = new Client({ name: "necktie-test", version: "0.5.2" });
   try {
     await client.connect(transport);
     const prompts = await client.listPrompts();
     assert.deepEqual(prompts.prompts.map((prompt) => prompt.name), ["necktie"]);
     assert.deepEqual(prompts.prompts[0].arguments[0].name, "mode");
+    assert.doesNotMatch(JSON.stringify(prompts), /mammon/i);
 
     const prompt = await client.getPrompt({ name: "necktie", arguments: { mode: "full" } });
     assert.equal(prompt.description, "Necktie full instructions");
@@ -33,6 +34,7 @@ test("live stdio MCP handshake exposes mode-aware prompt and read-only tool", { 
     const tools = await client.listTools();
     const tool = tools.tools.find((entry) => entry.name === "necktie_instructions");
     assert.ok(tool);
+    assert.doesNotMatch(JSON.stringify(tools), /mammon/i);
     assert.equal(tool.annotations.readOnlyHint, true);
     assert.equal(tool.annotations.openWorldHint, false);
 
@@ -46,7 +48,7 @@ test("live stdio MCP handshake exposes mode-aware prompt and read-only tool", { 
     assert.equal(omitted.structuredContent.mode, "lite");
     const invalid = await client.callTool({ name: "necktie_instructions", arguments: { mode: "off" } });
     assert.equal(invalid.isError, true);
-    assert.match(invalid.content[0].text, /Invalid arguments|validation|enum/i);
+    assert.match(invalid.content[0].text, /Invalid Necktie mode/i);
   } finally {
     await client.close();
   }

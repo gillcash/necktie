@@ -8,7 +8,7 @@
 
 Necktie is an opinionated agent policy for decisions shaped by incentives, metrics, power, and extraction. It does not pretend every tradeoff is neutral.
 
-Full is the useful default: it gives one Necktie judgment and completes or offers a concrete next action. Lite gives a focused Necktie judgment. Mammon returns Mammon's recommendation without a Necktie rebuttal. Full and Mammon can route accepted research-prompt work through a bounded prompt-reversal loop.
+Full is the useful default: it gives one Necktie judgment and completes or offers a concrete next action. Lite gives a focused Necktie judgment. Full can route accepted research-prompt work through a bounded prompt-reversal loop.
 
 ## Choose the depth
 
@@ -60,9 +60,9 @@ Necktie leads with a verdict or completed outcome, names the incentive or power 
 
 The root `plugin.json` targets the [Agent Plugins 1.0.0 specification](https://agent-plugins.org/). The portable surface contains the `necktie` judgment skill and the `necktie-research` prompt-building skill.
 
-`skills/necktie/references/policy.md` is the canonical policy source. The build generates Lite, Full references plus matching `core/` artifacts. Static rules inject Full. Dynamic hooks select the session mode.
+`skills/necktie/references/policy.md` is the canonical policy source. The build generates self-contained mode references plus one shared `core/` preamble and mode deltas. Static rules inject Full. Dynamic hooks compose the selected mode.
 
-`necktie-mcp/` is an optional private stdio adapter. Its `necktie` prompt and read-only `necktie_instructions` tool accept Lite, Full, per request. MCP does not activate Necktie on every turn and exposes no arbitrary repository, file, execution, network, or mutation operation. The process is not a sandbox: it reads Necktie's bundled policy and optional local default configuration.
+`necktie-mcp/` is an optional private stdio adapter. Its `necktie` prompt and read-only `necktie_instructions` tool accept a mode per request. MCP does not activate Necktie on every turn and exposes no arbitrary repository, file, execution, network, or mutation operation. The process is not a sandbox: it reads Necktie's bundled policy and optional local default configuration.
 
 ## Install
 

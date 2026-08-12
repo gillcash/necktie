@@ -21,6 +21,7 @@ test("skill frontmatter stays minimal and mode selection is one-shot", () => {
   const frontmatter = skill.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] || "";
   const keys = [...frontmatter.matchAll(/^([a-z_]+):/gm)].map((match) => match[1]).sort();
   assert.deepEqual(keys, ["description", "name"]);
+  assert.doesNotMatch(frontmatter, /mammon/i);
   assert.match(skill, /--mode lite/);
   assert.match(skill, /use it for this invocation only/i);
   assert.match(skill, /references\/.*lite\.md.*full\.md.*mammon\.md/s);
@@ -38,7 +39,7 @@ test("mode references preserve one conclusion with distinct final authority", ()
   for (const mode of ["lite", "full", "mammon"]) {
     const reference = fs.readFileSync(path.join(root, "skills", "necktie", "references", `${mode}.md`), "utf8");
     assert.match(reference, new RegExp(`level: ${mode}`, "i"));
-    assert.match(reference, /Do not reveal private chain-of-thought/i);
+    assert.match(reference, /Never narrate private analysis/i);
   }
   const full = fs.readFileSync(path.join(root, "skills", "necktie", "references", "full.md"), "utf8");
   const mammon = fs.readFileSync(path.join(root, "skills", "necktie", "references", "mammon.md"), "utf8");
@@ -49,6 +50,8 @@ test("mode references preserve one conclusion with distinct final authority", ()
 
 test("research skill uses a bounded, copy-ready prompt loop", () => {
   const skill = fs.readFileSync(path.join(root, "skills", "necktie-research", "SKILL.md"), "utf8");
+  const frontmatter = skill.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] || "";
+  assert.doesNotMatch(frontmatter, /mammon/i);
   const protocol = fs.readFileSync(path.join(root, "skills", "necktie-research", "references", "research-prompt-protocol.md"), "utf8");
   const openai = fs.readFileSync(path.join(root, "skills", "necktie-research", "agents", "openai.yaml"), "utf8");
   assert.match(skill, /discover, fingerprint, critique, blueprint, draft, review/i);
@@ -73,12 +76,26 @@ test("OpenClaw copy matches the skill and all generated references", () => {
   }
 });
 
-test("mode command templates expose Mammon through the shared selector and no off state", () => {
+test("command templates advertise only public modes and no off state", () => {
   const combined = [
+    fs.readFileSync(path.join(root, "commands", "necktie.toml"), "utf8"),
     fs.readFileSync(path.join(root, "commands", "necktie-mode.toml"), "utf8"),
+    fs.readFileSync(path.join(root, ".opencode", "command", "necktie.md"), "utf8"),
     fs.readFileSync(path.join(root, ".opencode", "command", "necktie-mode.md"), "utf8"),
   ].join("\n");
   assert.match(combined, /NECKTIE_MODE_COMMAND/);
-  assert.match(combined, /lite, full, or mammon/i);
-  assert.doesNotMatch(combined, /lite\|full\|mammon\|off/i);
+  assert.match(combined, /lite or full/i);
+  assert.doesNotMatch(combined, /mammon|lite\|full\|off/i);
+});
+
+test("public documentation does not advertise hidden modes", () => {
+  const files = [
+    "README.md", "README.es.md", "README.ko.md", "after-install.md",
+    "benchmarks/README.md", "docs/host-support.md",
+    "examples/kpi-data-reliability-rental-store.md",
+    "necktie-mcp/README.md", "necktie-mcp/package.json",
+  ];
+  for (const relative of files) {
+    assert.doesNotMatch(fs.readFileSync(path.join(root, relative), "utf8"), /mammon/i, relative);
+  }
 });

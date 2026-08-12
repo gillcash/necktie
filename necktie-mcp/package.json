@@ -1,7 +1,7 @@
 {
   "name": "necktie-mcp",
-  "version": "0.5.1",
-  "description": "Optional MCP adapter that serves Necktie's lite, full, or mammon instructions.",
+  "version": "0.5.2",
+  "description": "Optional MCP adapter that serves selected Necktie instructions.",
   "private": true,
   "type": "module",
   "license": "MIT",

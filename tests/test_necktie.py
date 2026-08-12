@@ -47,11 +47,11 @@ class HermesTests(unittest.TestCase):
         full = hermes.build_injected_context("full")
         mammon = hermes.build_injected_context("mammon")
         self.assertIn("level: lite", lite)
-        self.assertNotIn("Private ambition pass", lite)
-        self.assertIn("Private ambition pass", full)
+        self.assertNotIn("Ambition pass", lite)
+        self.assertIn("Ambition pass", full)
         self.assertIn("Useful action pass", full)
         self.assertIn("Mammon is the sole final perspective", mammon)
-        self.assertNotIn("Then rebut Mammon", mammon)
+        self.assertNotIn("Then rebut", mammon)
         with self.assertRaises(ValueError):
             hermes.build_injected_context("off")
 
@@ -112,13 +112,14 @@ class HermesTests(unittest.TestCase):
     def test_registers_two_skills_two_commands_and_two_hooks(self):
         class Context:
             def __init__(self):
-                self.skills, self.commands, self.hooks = [], [], []
+                self.skills, self.commands, self.command_metadata, self.hooks = [], [], {}, []
 
             def register_skill(self, name, path):
                 self.skills.append(name)
 
             def register_command(self, name, handler, **kwargs):
                 self.commands.append(name)
+                self.command_metadata[name] = kwargs
 
             def register_hook(self, name, handler):
                 self.hooks.append(name)
@@ -127,6 +128,8 @@ class HermesTests(unittest.TestCase):
         hermes.register(ctx)
         self.assertEqual(ctx.skills, ["necktie", "necktie-research"])
         self.assertEqual(ctx.commands, ["necktie", "necktie-mode"])
+        self.assertNotIn("mammon", json.dumps(ctx.command_metadata).lower())
+        self.assertNotIn("mammon", hermes.MODE_USAGE.lower())
         self.assertEqual(sorted(ctx.hooks), ["pre_gateway_dispatch", "pre_llm_call"])
 
     def test_python_and_javascript_resolvers_have_mode_parity(self):
@@ -167,7 +170,7 @@ class ResearchPromptLoopTests(unittest.TestCase):
         research_loop.record_verification(packet, "PASS", "Fresh-session simulation passed", "")
         self.assertEqual(packet["state"], "complete")
 
-    def test_mammon_origin_and_same_issue_circuit_breaker(self):
+    def test_hidden_origin_and_same_issue_circuit_breaker(self):
         packet = research_loop.new_packet("Build a market-control research brief", "deep", "mammon")
         self.advance_to_review(packet)
         for attempt in range(3):

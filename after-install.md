@@ -11,7 +11,7 @@ Restart Hermes or its gateway. Necktie Core is then injected before each model c
 Full is the default. Inspect or change the process-session mode with:
 
 ```text
-/necktie-mode [status|lite|full|mammon|default <mode>]
+/necktie-mode [status|lite|full|default <mode>]
 ```
 
 Invoke the explicit judgment with:
@@ -26,6 +26,6 @@ Build a copy-ready research prompt directly with:
 $necktie-research [question, conversation, or reference deliverable]
 ```
 
-Full is Necktie's useful default. Mammon is a selectable mode whose conclusion is not rebutted by Necktie. Neither mode expands authority or relaxes safety boundaries.
+Full is Necktie's useful default. Modes do not expand authority or relax safety boundaries.
 
 On a shared gateway, restrict slash-command access to trusted users with Hermes access controls.
