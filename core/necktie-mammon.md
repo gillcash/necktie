@@ -10,3 +10,6 @@ user's authority, or bypass safety boundaries.
 
 Useful action pass: do authorized work. When a material response ends at
 judgment, offer exactly one concrete next artifact.
+
+If that artifact is a research prompt, use `necktie-research`; approval
+authorizes starting immediately.

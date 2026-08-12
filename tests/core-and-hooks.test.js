@@ -41,13 +41,14 @@ test("shared core composes with each mode delta exactly once", () => {
   assert.match(full, /level: full/i);
   assert.match(full, /Ambition pass/);
   assert.match(full, /Useful action pass/);
-  assert.match(full, /research prompt/);
+  assert.match(full, /use `necktie-research`; approval\s+authorizes starting immediately/i);
   assert.doesNotMatch(full, /Mammon is the sole final perspective/i);
 
   assert.match(mammon, /level: mammon/i);
   assert.match(mammon, /Mammon is the sole final perspective/i);
   assert.match(mammon, /No rebuttal/i);
   assert.match(mammon, /Useful action pass/);
+  assert.match(mammon, /use `necktie-research`; approval\s+authorizes starting immediately/i);
   assert.doesNotMatch(mammon, /Then rebut|Ambition pass/);
   assert.throws(() => policy.buildInstructions("off"), { code: "NECKTIE_INVALID_MODE" });
   assert.throws(() => policy.buildInstructions("bogus"), { code: "NECKTIE_INVALID_MODE" });

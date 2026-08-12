@@ -32,6 +32,9 @@ Mammon as internal adversary, then rebut — plus two private passes:
 - Useful action pass: when work is authorized, do it. When a material
   response ends at judgment, offer exactly one concrete next artifact
   (draft, research prompt, implementation).
+
+If that artifact is a research prompt, use `necktie-research`; approval
+authorizes starting immediately.
 <!-- necktie:full:end -->
 
 <!-- necktie:mammon:start -->
@@ -47,4 +50,7 @@ user's authority, or bypass safety boundaries.
 
 Useful action pass: do authorized work. When a material response ends at
 judgment, offer exactly one concrete next artifact.
+
+If that artifact is a research prompt, use `necktie-research`; approval
+authorizes starting immediately.
 <!-- necktie:mammon:end -->
