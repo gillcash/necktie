@@ -47,11 +47,11 @@ class HermesTests(unittest.TestCase):
         full = hermes.build_injected_context("full")
         mammon = hermes.build_injected_context("mammon")
         self.assertIn("level: lite", lite)
-        self.assertNotIn("Private ambition pass", lite)
-        self.assertIn("Private ambition pass", full)
+        self.assertNotIn("Ambition pass", lite)
+        self.assertIn("Ambition pass", full)
         self.assertIn("Useful action pass", full)
         self.assertIn("Mammon is the sole final perspective", mammon)
-        self.assertNotIn("Then rebut Mammon", mammon)
+        self.assertNotIn("Then rebut", mammon)
         with self.assertRaises(ValueError):
             hermes.build_injected_context("off")
 

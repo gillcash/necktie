@@ -17,28 +17,38 @@ function temporary(prefix) {
   return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
 }
 
-test("generated modes compose the canonical policy exactly", () => {
+test("shared core composes with each mode delta exactly once", () => {
   assert.deepEqual(policy.MODES, ["lite", "full", "mammon"]);
   assert.equal(policy.DEFAULT_MODE, "full");
+  const core = fs.readFileSync(path.join(root, "core", "necktie-core.md"), "utf8");
+  assert.match(core, /level: <MODE>/);
+  for (const mode of policy.MODES) {
+    const delta = fs.readFileSync(path.join(root, "core", `necktie-${mode}.md`), "utf8");
+    assert.doesNotMatch(delta, /NECKTIE MODE ACTIVE|# Necktie Core/);
+  }
   const lite = policy.buildInstructions("lite");
   const full = policy.buildInstructions("full");
   const mammon = policy.buildInstructions("mammon");
+  for (const instructions of [lite, full, mammon]) {
+    assert.equal(instructions.match(/NECKTIE MODE ACTIVE/g)?.length, 1);
+    assert.doesNotMatch(instructions, /<MODE>/);
+  }
   assert.match(lite, /level: lite/i);
-  assert.match(lite, /privately consult Mammon/i);
-  assert.match(lite, /In Lite and Full, Mammon remains internal/i);
-  assert.doesNotMatch(lite, /Private ambition pass|Useful action pass|Mammon judgment/);
+  assert.match(lite, /Mammon is an internal adversary/i);
+  assert.match(lite, /Mammon stays internal/i);
+  assert.doesNotMatch(lite, /Ambition pass|Useful action pass|sole final perspective/i);
 
   assert.match(full, /level: full/i);
-  assert.match(full, /Private ambition pass/);
+  assert.match(full, /Ambition pass/);
   assert.match(full, /Useful action pass/);
-  assert.match(full, /necktie-research/);
+  assert.match(full, /research prompt/);
   assert.doesNotMatch(full, /Mammon is the sole final perspective/i);
 
   assert.match(mammon, /level: mammon/i);
   assert.match(mammon, /Mammon is the sole final perspective/i);
-  assert.match(mammon, /Do not perform or append Necktie's rebuttal/i);
+  assert.match(mammon, /No rebuttal/i);
   assert.match(mammon, /Useful action pass/);
-  assert.doesNotMatch(mammon, /Then rebut Mammon|Private ambition pass/);
+  assert.doesNotMatch(mammon, /Then rebut|Ambition pass/);
   assert.throws(() => policy.buildInstructions("off"), { code: "NECKTIE_INVALID_MODE" });
   assert.throws(() => policy.buildInstructions("bogus"), { code: "NECKTIE_INVALID_MODE" });
 });

@@ -144,9 +144,11 @@ def write_default_mode(mode: Any, env: dict[str, str] | None = None) -> dict[str
 
 
 def build_injected_context(mode: Any = None) -> str:
-    """Return the selected generated Necktie context."""
+    """Return the shared Necktie core plus the selected mode delta."""
     selected = resolve_mode(requested_mode=mode)["mode"] if mode is not None else resolve_mode()["mode"]
-    return (ROOT / "core" / f"necktie-{selected}.md").read_text(encoding="utf-8-sig").strip()
+    core = (ROOT / "core" / "necktie-core.md").read_text(encoding="utf-8-sig").strip()
+    delta = (ROOT / "core" / f"necktie-{selected}.md").read_text(encoding="utf-8-sig").strip()
+    return f"{core.replace('<MODE>', selected)}\n\n{delta}"
 
 
 def _pre_llm_call(session_id: str = "", **_: Any) -> dict[str, str]:

@@ -7,6 +7,7 @@ const test = require("node:test");
 
 const root = path.resolve(__dirname, "..");
 const { modes } = require(path.join(root, "scripts", "build-policy.js"));
+const policy = require(path.join(root, "lib", "necktie-policy.cjs"));
 const jsonFiles = [
   "package.json", "plugin.json", ".codex-plugin/plugin.json", ".claude-plugin/plugin.json",
   ".devin-plugin/plugin.json", ".qoder-plugin/plugin.json", ".github/plugin/plugin.json",
@@ -59,12 +60,12 @@ test("OpenAI submission materials contain the required review cases and public p
 });
 
 test("static adapter generation targets Full and the package ships shared mode assets", () => {
-  const full = fs.readFileSync(path.join(root, "core", "necktie-full.md"), "utf8").trim();
+  const full = policy.buildInstructions("full");
   assert.equal(fs.readFileSync(path.join(root, "AGENTS.md"), "utf8").trim(), full);
   assert.match(full, /level: full/i);
   assert.deepEqual(
     fs.readdirSync(path.join(root, "core")).sort(),
-    modes.map((mode) => `necktie-${mode}.md`).sort(),
+    ["necktie-core.md", ...modes.map((mode) => `necktie-${mode}.md`)].sort(),
   );
   const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   assert.ok(pkg.files.includes("lib/"));

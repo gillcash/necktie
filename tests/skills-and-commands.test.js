@@ -38,7 +38,7 @@ test("mode references preserve one conclusion with distinct final authority", ()
   for (const mode of ["lite", "full", "mammon"]) {
     const reference = fs.readFileSync(path.join(root, "skills", "necktie", "references", `${mode}.md`), "utf8");
     assert.match(reference, new RegExp(`level: ${mode}`, "i"));
-    assert.match(reference, /Do not reveal private chain-of-thought/i);
+    assert.match(reference, /Never narrate private analysis/i);
   }
   const full = fs.readFileSync(path.join(root, "skills", "necktie", "references", "full.md"), "utf8");
   const mammon = fs.readFileSync(path.join(root, "skills", "necktie", "references", "mammon.md"), "utf8");
