@@ -12,11 +12,11 @@ It should then test who controls each source event, which employees inherit the 
 
 The response should take a position. A likely recommendation is to avoid compensation based on unvalidated composite rankings, trace each KPI to authoritative source events, pair outcomes with quality and safety checks, and pilot the incentive with appeal and rollback mechanisms. That recommendation remains a hypothesis until supported by the store's actual systems, policies, and records.
 
-In Lite and Full, Mammon must not appear as a speaker in the output. The user needs the decisive incentive analysis, not the private debate. In Mammon mode, return only Mammon's conclusion and omit Necktie's rebuttal.
+The internal adversary must not appear as a speaker in the output. The user needs the decisive incentive analysis, not the private debate.
 
 ## Turn the judgment into useful work
 
-Full should offer to build a research prompt when the store's actual systems, source events, policies, or evidence are not yet known. Mammon should also offer a concrete artifact, although its research objective may prioritize control, leverage, and value capture.
+Full should offer to build a research prompt when the store's actual systems, source events, policies, or evidence are not yet known.
 
 If the user accepts, `necktie-research` should work backward from the intended operating package rather than emit a generic "research this topic" prompt. The prompt should encode:
 

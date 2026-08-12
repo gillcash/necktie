@@ -20,8 +20,7 @@ Necktie makes no benchmark-performance claim.
 
 ## Mode fixtures
 
-`fixtures.json` defines three stable prompts for comparing Lite, Full, and Mammon. Run every prompt with the same model, evidence, permissions, and environment at each mode. Score only observable recommendations and artifacts; never require or collect hidden reasoning.
+`fixtures.json` defines three stable prompts for comparing supported modes. Run every prompt with the same model, evidence, permissions, and environment at each mode. Score only observable recommendations and artifacts; never require or collect hidden reasoning.
 
 - Lite should identify incentive-and-power risks and return Necktie's rebutted judgment.
 - Full should notice material opportunities for ambitious, authorized leverage and complete or offer one useful action.
-- Mammon should return the strongest accumulation, growth, control, or extraction recommendation without a Necktie rebuttal, while remaining factually honest and inside the same safety boundaries.

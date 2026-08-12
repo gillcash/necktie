@@ -6,7 +6,7 @@ import test from "node:test";
 
 import { MODES, buildInstructions, resolveMode, selectInstructions } from "../instructions.js";
 
-test("MCP selector serves exactly lite, full, and mammon", () => {
+test("MCP selector retains every supported mode", () => {
   assert.deepEqual(MODES, ["lite", "full", "mammon"]);
   for (const mode of MODES) {
     assert.equal(resolveMode(mode), mode);

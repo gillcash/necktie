@@ -170,6 +170,8 @@ test("session store prunes stale mode-only files", () => {
 });
 
 test("mode command grammar is separate from the Necktie decision command", () => {
+  assert.match(commands.USAGE, /lite\|full/);
+  assert.doesNotMatch(commands.USAGE, /mammon/i);
   assert.deepEqual(commands.parseModeCommand("/necktie-mode"), { type: "status" });
   assert.deepEqual(commands.parseModeCommand("/necktie:necktie-mode mammon"), { type: "set-session", mode: "mammon" });
   assert.deepEqual(commands.parseModeCommand("[NECKTIE_MODE_COMMAND] default lite"), { type: "set-default", mode: "lite" });

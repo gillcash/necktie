@@ -1,5 +1,5 @@
 ---
-description: Inspect or change Necktie's lite, full, or mammon mode
+description: Inspect or change Necktie mode (lite or full)
 ---
 
 [NECKTIE_MODE_COMMAND] $ARGUMENTS

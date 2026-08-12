@@ -4,12 +4,12 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-import { MODES, selectInstructions } from "./instructions.js";
+import { selectInstructions } from "./instructions.js";
 
 const { version } = JSON.parse(await fs.promises.readFile(new URL("./package.json", import.meta.url), "utf8"));
 const server = new McpServer({ name: "necktie", version });
-const modeArg = z.enum(MODES).optional()
-  .describe("Necktie policy mode: lite, full, or mammon. Omit for the configured default.");
+const modeArg = z.string().optional()
+  .describe("Necktie policy mode. Omit for the configured default.");
 const select = (mode) => selectInstructions(mode, {
   onWarning: (warning) => process.stderr.write(`${warning}\n`),
 });
@@ -18,7 +18,7 @@ server.registerPrompt(
   "necktie",
   {
     title: "Necktie mode",
-    description: "Load Necktie's selected incentive, power, ambition, or Mammon instructions.",
+    description: "Load Necktie's selected incentive, power, and ambition instructions.",
     argsSchema: { mode: modeArg },
   },
   ({ mode }) => {
@@ -34,9 +34,9 @@ server.registerTool(
   "necktie_instructions",
   {
     title: "Necktie instructions",
-    description: "Return Necktie instructions for lite, full, or mammon mode. MCP does not activate them automatically.",
+    description: "Return the selected Necktie instructions. MCP does not activate them automatically.",
     inputSchema: { mode: modeArg },
-    outputSchema: { mode: z.enum(MODES), instructions: z.string() },
+    outputSchema: { mode: z.string(), instructions: z.string() },
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
   ({ mode }) => {
