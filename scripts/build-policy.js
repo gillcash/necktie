@@ -31,14 +31,10 @@ function renderPolicies(sourceText = fs.readFileSync(sourcePath, "utf8")) {
   };
 }
 
-function composePolicy(rendered, mode) {
-  return `${rendered.core.replace("<MODE>", mode).trim()}\n\n${rendered[mode].trim()}\n`;
-}
-
 function targets(rendered) {
   const output = { "core/necktie-core.md": rendered.core };
   for (const mode of modes) {
-    output[`skills/necktie/references/${mode}.md`] = composePolicy(rendered, mode);
+    output[`skills/necktie/references/${mode}.md`] = `${rendered.core.replace("<MODE>", mode).trim()}\n\n${rendered[mode].trim()}\n`;
     output[`core/necktie-${mode}.md`] = rendered[mode];
   }
   return output;
@@ -68,4 +64,4 @@ function run({ check = process.argv.includes("--check") } = {}) {
 
 if (require.main === module) run();
 
-module.exports = { composePolicy, modes, normalize, renderPolicies, run, section, targets };
+module.exports = { modes, normalize, renderPolicies, run, section, targets };
