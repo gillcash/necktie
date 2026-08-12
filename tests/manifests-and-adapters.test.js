@@ -14,16 +14,16 @@ const jsonFiles = [
   "gemini-extension.json", "pi-extension/package.json", "necktie-mcp/package.json",
 ];
 
-test("versioned manifests identify Necktie 0.5.1", () => {
+test("versioned manifests identify Necktie 0.5.2", () => {
   for (const relative of jsonFiles) {
     const value = JSON.parse(fs.readFileSync(path.join(root, relative), "utf8"));
-    assert.equal(value.version, "0.5.1", relative);
+    assert.equal(value.version, "0.5.2", relative);
     if (!["@gillcash/necktie-pi-extension", "necktie-mcp", "@gillcash/necktie"].includes(value.name)) {
       assert.equal(value.name, "necktie", relative);
     }
   }
-  assert.match(fs.readFileSync(path.join(root, "plugin.yaml"), "utf8"), /^version: 0\.5\.1$/m);
-  assert.match(fs.readFileSync(path.join(root, "NOTICE"), "utf8"), /^Necktie 0\.5\.1$/m);
+  assert.match(fs.readFileSync(path.join(root, "plugin.yaml"), "utf8"), /^version: 0\.5\.2$/m);
+  assert.match(fs.readFileSync(path.join(root, "NOTICE"), "utf8"), /^Necktie 0\.5\.2$/m);
 });
 
 test("Codex manifest relies on component discovery and keeps MCP optional", () => {
@@ -88,7 +88,7 @@ test("private MCP package keeps only required direct dependencies and a matching
   const lock = JSON.parse(fs.readFileSync(path.join(root, "necktie-mcp", "package-lock.json"), "utf8"));
   assert.deepEqual(Object.keys(manifest.dependencies).sort(), ["@modelcontextprotocol/sdk", "zod"]);
   assert.deepEqual(lock.packages[""].dependencies, manifest.dependencies);
-  assert.equal(lock.version, "0.5.1");
+  assert.equal(lock.version, "0.5.2");
 });
 
 test("CI checks clean generation on Ubuntu and Windows", () => {

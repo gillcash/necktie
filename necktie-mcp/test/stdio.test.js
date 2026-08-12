@@ -16,7 +16,7 @@ test("live stdio MCP handshake exposes mode-aware prompt and read-only tool", { 
     env: { ...process.env, NECKTIE_DEFAULT_MODE: "lite" },
     stderr: "pipe",
   });
-  const client = new Client({ name: "necktie-test", version: "0.5.1" });
+  const client = new Client({ name: "necktie-test", version: "0.5.2" });
   try {
     await client.connect(transport);
     const prompts = await client.listPrompts();

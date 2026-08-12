@@ -69,7 +69,7 @@ export default function Home() {
       <main id="main">
         <section className="hero" id="top" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <p className="eyebrow">Agent policy · MIT licensed · v0.5.1</p>
+            <p className="eyebrow">Agent policy · MIT licensed · v0.5.2</p>
             <h1 id="hero-title">
               He follows the money.
               <br />
