@@ -1,0 +1,232 @@
+:root {
+  --ink: #11100e;
+  --paper: #f3eee2;
+  --paper-bright: #fbf8ef;
+  --brass: #b38a45;
+  --brass-dark: #715428;
+  --red: #8d302c;
+  --line: rgb(17 16 14 / 28%);
+  --display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --page: min(1160px, calc(100% - 48px));
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 17px/1.55 var(--display);
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-color: var(--brass);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+h1, h2, h3, p, figure {
+  margin-top: 0;
+}
+
+h1, h2, h3 {
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+}
+
+h2 {
+  font-size: clamp(3rem, 6.5vw, 6.4rem);
+}
+
+.caption, .masthead, .button, .ledger-number, .evidence-copy a,
+.mode-card-head span, .mcp-note span, .install-picker label,
+.install-footer p, .footer-links, .case-file::after {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.eyebrow, .kicker, .button, .evidence-warning, .evidence-copy a,
+.section-label, .evidence-stamp, .mcp-note span, .footer-proof {
+  font-weight: 700;
+}
+
+.eyebrow, .kicker, .button {
+  font-size: 0.72rem;
+}
+
+.masthead, .hero, .method, .modes, .boundaries, footer {
+  width: var(--page);
+  margin: 0 auto;
+}
+
+.masthead, footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+}
+
+.masthead {
+  min-height: 76px;
+  align-items: center;
+  border-bottom: 1px solid var(--ink);
+  font-size: 0.7rem;
+}
+
+.wordmark {
+  width: max-content;
+  font: 700 1.35rem/1.55 var(--display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.wordmark, .masthead nav a, .github-link, .button {
+  text-decoration: none;
+}
+
+.masthead nav, .hero-actions, .footer-links, .install-footer {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.masthead nav {
+  gap: 1.75rem;
+}
+
+.github-link, .footer-proof {
+  justify-self: end;
+}
+
+.button {
+  min-height: 50px;
+  padding: 0.85rem 1.15rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  border: 1px solid transparent;
+}
+
+.button-solid {
+  background: var(--ink);
+  color: var(--paper-bright);
+}
+
+.button-solid:hover {
+  background: var(--brass-dark);
+}
+
+.masthead nav a:hover, .github-link:hover, .button-text:hover {
+  color: var(--brass-dark);
+}
+
+.section-label, .case-file-topline, .mode-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.section-label {
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--line);
+}
+
+footer {
+  padding: 3rem 0;
+  gap: 3rem;
+  align-items: end;
+  border-top: 1px solid var(--ink);
+}
+
+footer > div:first-child p {
+  max-width: 330px;
+  margin: 1rem 0 0;
+}
+
+.footer-proof {
+  margin: 0;
+  color: var(--red);
+}
+
+:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 4px;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  left: 1rem;
+  top: 1rem;
+  padding: 0.7rem 1rem;
+  background: var(--paper-bright);
+  border: 2px solid var(--ink);
+  transform: translateY(-180%);
+  font: 0.75rem var(--mono);
+  text-transform: uppercase;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+@media (max-width: 900px) {
+  :root {
+    --page: min(100% - 32px, 720px);
+  }
+  .masthead, footer {
+    grid-template-columns: 1fr auto;
+  }
+  .masthead nav {
+    display: none;
+  }
+  .footer-proof {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 620px) {
+  body {
+    font-size: 16px;
+  }
+  .hero-actions, .install-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .button {
+    width: 100%;
+  }
+  footer {
+    grid-template-columns: 1fr;
+  }
+  .footer-links {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

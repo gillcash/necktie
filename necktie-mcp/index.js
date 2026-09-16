@@ -4,15 +4,17 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-import { selectInstructions } from "./instructions.js";
+import policy from "../lib/necktie-policy.cjs";
 
 const { version } = JSON.parse(await fs.promises.readFile(new URL("./package.json", import.meta.url), "utf8"));
 const server = new McpServer({ name: "necktie", version });
 const modeArg = z.string().optional()
   .describe("Necktie policy mode. Omit for the configured default.");
-const select = (mode) => selectInstructions(mode, {
-  onWarning: (warning) => process.stderr.write(`${warning}\n`),
-});
+const select = (requestedMode) => {
+  const { mode, warnings } = policy.resolveMode({ requestedMode });
+  for (const warning of warnings) process.stderr.write(`${warning}\n`);
+  return { mode, instructions: policy.buildInstructions(mode) };
+};
 
 server.registerPrompt(
   "necktie",

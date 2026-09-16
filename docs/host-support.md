@@ -51,3 +51,26 @@ The explicit decision skill also accepts `$necktie --mode lite|full <decision>` 
 A plugin cannot create a lifecycle event or state primitive that the host does not expose. Static rules provide Full only while the host reads the rule. MCP provides retrieval, not automatic activation. Session files used by lifecycle adapters contain only the selected mode, are keyed by a hash of host/session identity, and expire opportunistically using file age.
 
 Necktie must return one user-facing conclusion on every host. Modes never broaden permissions, authority, or acceptable risk.
+
+## Source map
+
+| Responsibility | Source and callers |
+| --- | --- |
+| Policy text | `skills/necktie/references/policy.md` → `scripts/build-adapters.js` → shared mode references, static host rules, and standalone OpenClaw packages |
+| Mode precedence and configuration | `lib/necktie-policy.cjs`; used by the JavaScript adapters and MCP |
+| Command parsing, execution, and response text | `lib/necktie-command.cjs`; shared by lifecycle hooks, OpenCode, and Pi |
+| Session storage | `lib/necktie-session.cjs` for hooks and OpenCode; Pi uses native session entries |
+| Atomic JSON writes | `lib/necktie-json.cjs`; shared by configuration and session storage |
+| Hermes | `__init__.py` registers host commands and hooks; `necktie_policy.py` resolves modes, stores defaults, and reads the same generated policy text |
+| Research loop | `skills/necktie-research/scripts/research_prompt_loop.py` parses CLI commands; `research_state.py` validates packets, saves them, and enforces bounded transitions |
+| Website | `website/` contains the static page, styles, assets, and dependency-free build and local preview commands |
+
+Edit policy and research sources under `skills/`, then run `npm run build:adapters`.
+The generator builds all expected outputs in memory before writing them, so one
+pass repairs drift without reading stale generated policies. `--check` reports
+missing, changed, and obsolete outputs without changing files. Generated copies
+remain committed because hosts install from Git and OpenClaw skills travel alone.
+
+Run `npm test` for adapter, MCP, Python, generator, and website checks.
+JavaScript and Python retain native configuration implementations so installing
+the Hermes adapter does not require Node merely to resolve a mode.

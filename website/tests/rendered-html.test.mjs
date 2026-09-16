@@ -1,93 +1,77 @@
 import assert from "node:assert/strict";
-import { access, readFile } from "node:fs/promises";
-import test from "node:test";
+import { readFile } from "node:fs/promises";
+import { after, test } from "node:test";
+import { build, serve } from "../site.mjs";
 
-async function render(headers = {}) {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
-  const { default: worker } = await import(workerUrl.href);
+const server = await serve(0);
+const origin = `http://127.0.0.1:${server.address().port}`;
+after(() => new Promise((done) => server.close(done)));
+const html = await (await fetch(origin)).text();
 
-  return worker.fetch(
-    new Request("http://localhost/", {
-      headers: { accept: "text/html", ...headers },
-    }),
-    {
-      ASSETS: {
-        fetch: async () => new Response("Not found", { status: 404 }),
-      },
-    },
-    {
-      waitUntil() {},
-      passThroughOnException() {},
-    },
-  );
-}
+test("serves the complete page, metadata, navigation and assets without scripts", async () => {
+  for (const text of [
+    "Necktie — Follow the money", "He follows the money.", "He finds the hidden cost.",
+    "He takes a side.", "Who benefits?", "Who pays?", "Who decides?", "Who can leave?",
+    "What disappears from the metric?", "No benchmark-performance claim yet.",
+    "Opinionated, not arbitrary.", "Two lenses. One accountable user.",
+  ]) assert.ok(html.includes(text), text);
+  assert.match(html, /<html lang="en">/);
+  assert.match(html, /name="viewport"/);
+  assert.match(html, /property="og:image" content="https?:\/\//);
+  assert.match(html, /name="twitter:card" content="summary_large_image"/);
+  assert.doesNotMatch(html, /<script\b|\{\{SITE_ORIGIN\}\}/);
 
-test("server-renders the complete Necktie homepage", async () => {
-  const response = await render();
-  assert.equal(response.status, 200);
-  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
-
-  const html = await response.text();
-  assert.match(html, /<title>Necktie — Follow the money<\/title>/i);
-  assert.match(html, /He follows the money\./);
-  assert.match(html, /He finds the hidden cost\./);
-  assert.match(html, /He takes a side\./);
-  assert.match(html, /Who benefits\?/);
-  assert.match(html, /Who pays\?/);
-  assert.match(html, /Who decides\?/);
-  assert.match(html, /Who can leave\?/);
-  assert.match(html, /What disappears from the metric\?/);
-  assert.match(html, /No benchmark-performance claim yet\./);
-  assert.match(html, /Lite/);
-  assert.match(html, /Full/);
-  assert.doesNotMatch(html, /mammon|angel/i);
-  assert.match(html, /Opinionated, not arbitrary\./);
-  assert.match(html, /href="#method"[^>]*>See the method/);
-  assert.match(html, /http:\/\/localhost(?::3000)?\/og\.png/);
-  assert.doesNotMatch(
-    html,
-    /Case 001|Support operations|A concrete judgment|One metric\. Four hidden costs\.|tickets closed per hour|Fast closure|Cherry-picking|Workers \+ customers|Do not rank people this way|href="#judgment"|id="judgment"/,
-  );
-  assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Your site is taking shape/i);
+  for (const [, id] of html.matchAll(/href="#([^"]+)"/g)) assert.ok(html.includes(`id="${id}"`), id);
+  for (const [, path] of html.matchAll(/(?:href|src)="(\/[^"#]*)"/g)) {
+    const response = await fetch(origin + path);
+    assert.equal(response.status, 200, path);
+    assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(new URL("../dist" + path, import.meta.url)));
+  }
+  const hosting = JSON.parse(await readFile(new URL("../dist/.openai/hosting.json", import.meta.url)));
+  assert.equal(hosting.static.directory, "dist");
+  assert.equal(hosting.static.not_found_handling, "none");
+  const manifest = await (await fetch(origin + "/site.webmanifest")).json();
+  for (const icon of manifest.icons) assert.equal((await fetch(origin + icon.src)).status, 200, icon.src);
 });
 
-test("ships six native, script-free install choices", async () => {
-  const response = await render();
-  const html = await response.text();
-
-  assert.equal((html.match(/name="host"/g) ?? []).length, 6);
-  assert.match(html, /id="host-codex"[^>]*checked=""/);
-  assert.match(html, /codex plugin add necktie@necktie/);
-  assert.match(html, /\/plugin install necktie@necktie/);
-  assert.match(html, /copilot plugin install necktie@necktie/);
-  assert.match(html, /gemini extensions install https:\/\/github\.com\/gillcash\/necktie/);
-  assert.match(html, /pi install git:github\.com\/gillcash\/necktie/);
-  assert.match(html, /@gillcash\/necktie/);
-  assert.doesNotMatch(html, /<script[^>]+src=["'][^"']*(analytics|tracking|pixel)/i);
+test("all six labelled native radio choices retain their install instructions", () => {
+  assert.equal((html.match(/name="host"/g) || []).length, 6);
+  assert.equal((html.match(/type="radio" checked/g) || []).length, 1);
+  for (const [host, command] of Object.entries({
+    codex: "codex plugin add necktie@necktie",
+    claude: "/plugin install necktie@necktie",
+    copilot: "copilot plugin install necktie@necktie",
+    gemini: "gemini extensions install https://github.com/gillcash/necktie",
+    pi: "pi install git:github.com/gillcash/necktie",
+    opencode: "@gillcash/necktie",
+  })) {
+    assert.match(html, new RegExp(`<label><input id="host-${host}"[^>]+>[^<]+</label>\\s*<section class="install-panel"`));
+    assert.ok(html.includes(command), host);
+    assert.ok(html.includes(`id="${host}-panel-title"`), host);
+  }
 });
 
-test("rejects a malformed metadata host without failing the page", async () => {
-  const response = await render({
-    "x-forwarded-host": "attacker.example/path",
-    "x-forwarded-proto": "javascript",
-  });
-  assert.equal(response.status, 200);
-
-  const html = await response.text();
-  assert.match(html, /http:\/\/localhost:3000\/og\.png/);
-  assert.doesNotMatch(html, /attacker\.example|javascript:/);
+test("preview allows public assets, supports HEAD, and hides private or unknown paths", async () => {
+  const head = await fetch(origin, { method: "HEAD" });
+  assert.equal(head.status, 200);
+  assert.match(head.headers.get("content-type"), /^text\/html/);
+  assert.equal(await head.text(), "");
+  assert.equal((await fetch(origin, { method: "POST" })).status, 405);
+  for (const path of ["/.openai/hosting.json", "/package.json", "/%2e%2e/package.json", "/missing", "/styles/"]) {
+    assert.equal((await fetch(origin + path)).status, 404, path);
+  }
 });
 
-test("removes unused starter machinery", async () => {
-  const [packageJson, page] = await Promise.all([
-    readFile(new URL("../package.json", import.meta.url), "utf8"),
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-  ]);
-
-  assert.doesNotMatch(packageJson, /react-loading-skeleton|drizzle|tailwind/);
-  assert.doesNotMatch(page, /SkeletonPreview|codex-preview/);
-  await assert.rejects(access(new URL("../app/_sites-preview/", import.meta.url)));
-  await assert.rejects(access(new URL("../db/", import.meta.url)));
-  await assert.rejects(access(new URL("../examples/", import.meta.url)));
+test("build accepts a public origin and rejects unsafe metadata URLs before changing output", async () => {
+  try {
+    await build("https://necktie.example");
+    const built = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
+    assert.equal((built.match(/https:\/\/necktie.example\/og\.png/g) || []).length, 2);
+    for (const url of ["javascript:alert(1)", "file:///tmp/page", "https://user:secret@example.com", "https://example.com/path", "https://example.com/?query=1", "https://example.com/#fragment", "https://bad\"host/"]) {
+      await assert.rejects(build(url));
+    }
+    assert.equal(await readFile(new URL("../dist/index.html", import.meta.url), "utf8"), built);
+  } finally {
+    await build();
+  }
 });

@@ -7,7 +7,6 @@
 /.openclaw/skills/** text eol=lf
 /.qoder/rules/necktie.md text eol=lf
 /.windsurf/rules/necktie.md text eol=lf
-/core/*.md text eol=lf
 /skills/necktie/references/*.md text eol=lf
 /skills/necktie-research/references/*.md text eol=lf
 /skills/necktie-research/scripts/*.py text eol=lf
