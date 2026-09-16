@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11100e">
+  <meta name="color-scheme" content="light">
+  <title>Necktie — Follow the money</title>
+  <meta name="description" content="An opinionated policy for AI agents that tests incentives, metrics, power, extraction, and hidden costs—then takes a side.">
+  <meta name="application-name" content="Necktie">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Necktie — Follow the money">
+  <meta property="og:description" content="An opinionated policy for AI agents that tests incentives, metrics, power, extraction, and hidden costs—then takes a side.">
+  <meta property="og:site_name" content="Necktie">
+  <meta property="og:image" content="{{SITE_ORIGIN}}/og.png">
+  <meta property="og:image:width" content="1729">
+  <meta property="og:image:height" content="910">
+  <meta property="og:image:alt" content="Necktie — follow the money">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Necktie — Follow the money">
+  <meta name="twitter:description" content="An opinionated policy for AI agents that tests incentives, metrics, power, extraction, and hidden costs—then takes a side.">
+  <meta name="twitter:image" content="{{SITE_ORIGIN}}/og.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/styles/base.css">
+  <link rel="stylesheet" href="/styles/content.css">
+  <link rel="stylesheet" href="/styles/install.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="masthead">
+    <a class="wordmark" href="#top" aria-label="Necktie home">Necktie</a>
+    <nav aria-label="Primary navigation">
+      <a href="#method">Method</a>
+      <a href="#modes">Modes</a>
+      <a href="#install">Install</a>
+    </nav>
+    <a class="github-link" href="https://github.com/gillcash/necktie">GitHub <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div>
+        <p class="eyebrow caption">Agent policy · MIT licensed · v0.6.0</p>
+        <h1 id="hero-title">He follows the money.<br>He finds the hidden cost.<br><em>He takes a side.</em></h1>
+        <p class="hero-deck">Necktie is an opinionated policy for AI agents. It tests incentives, metrics, power, extraction, and who gets stuck with the bill—then gives you a usable judgment.</p>
+        <div class="hero-actions" aria-label="Get started">
+          <a class="button button-solid" href="#install">Install Necktie</a>
+          <a class="button button-text" href="#method">See the method <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+      <figure class="case-file">
+        <div class="case-file-topline caption">
+          <span>Exhibit A</span>
+          <span>Witness / Investigator</span>
+        </div>
+        <div class="portrait-frame">
+          <img src="/necktie.png" width="955" height="955" alt="Necktie, a stern suited mascot with a long black tie" fetchpriority="high">
+        </div>
+        <figcaption>
+          <span>An investigator for hidden costs</span>
+          <span class="mode-stamp caption">Full mode · Default</span>
+        </figcaption>
+      </figure>
+    </section>
+    <section class="method" id="method" aria-labelledby="method-title">
+      <div class="method-intro">
+        <div class="section-label caption">
+          <span>Method</span>
+          <span>Five questions</span>
+        </div>
+        <p class="kicker caption">Follow the money</p>
+        <h2 id="method-title">Ask what the dashboard leaves out.</h2>
+        <p>Necktie treats metrics as evidence, never as truth. These questions expose the transfers and incentives hiding behind a clean number.</p>
+      </div>
+      <ol class="question-ledger">
+        {{QUESTIONS}}
+      </ol>
+    </section>
+    <section class="evidence" aria-labelledby="evidence-title">
+      <div>
+        <p class="evidence-stamp caption">Evidence standard</p>
+        <h2 id="evidence-title">Evidence, not a scoreboard.</h2>
+      </div>
+      <div class="evidence-copy">
+        <p class="evidence-warning caption">No benchmark-performance claim yet.</p>
+        <p>The public harness measures observable decision quality—not whether a model repeats the right political vocabulary. Prompts, fixtures, scoring, failures, and limits stay inspectable.</p>
+        <a href="https://github.com/gillcash/necktie/blob/main/benchmarks/README.md">Inspect the benchmark contract <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+    <section class="modes" id="modes" aria-labelledby="modes-title">
+      <div class="section-label caption">
+        <span>Operating modes</span>
+        <span>Choose deliberately</span>
+      </div>
+      <div class="modes-heading">
+        <p class="kicker caption">How hard should he look?</p>
+        <h2 id="modes-title">Two lenses. One accountable user.</h2>
+      </div>
+      <div class="mode-grid">
+        <article class="mode-card">
+          <div class="mode-card-head">
+            <h3>Lite</h3>
+            <span>Focused</span>
+          </div>
+          <p>A compact incentives-and-power check for routine work where the full treatment would add more ceremony than value.</p>
+        </article>
+        <article class="mode-card mode-full">
+          <div class="mode-card-head">
+            <h3>Full</h3>
+            <span>Default</span>
+          </div>
+          <p>The complete judgment: strongest extraction case, rebuttal, explicit position, and one useful action when it changes the outcome.</p>
+        </article>
+      </div>
+    </section>
+    <section class="boundaries" aria-labelledby="boundaries-title">
+      <div class="boundaries-title">
+        <p class="kicker caption">Trust &amp; boundaries</p>
+        <h2 id="boundaries-title">Opinionated, not arbitrary.</h2>
+        <p>Necktie can make the tradeoff visible. You retain authority over the legitimate value choice—and over every permission the agent receives.</p>
+      </div>
+      <div class="boundary-columns">
+        <div>
+          <h3>He does</h3>
+          <ul>
+            <li>
+              Take a position when the evidence supports one
+            </li>
+            <li>
+              Expose hidden costs, labor, and externalities
+            </li>
+            <li>
+              Respect the user’s scope and decision authority
+            </li>
+            <li>
+              Turn material judgment into one useful action
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3>He does not</h3>
+          <ul>
+            <li>
+              Invent ideological conflict for rhetorical effect
+            </li>
+            <li>
+              Reveal private chain-of-thought or internal debate
+            </li>
+            <li>
+              Expand permissions beyond the user’s request
+            </li>
+            <li>
+              Treat a metric as the whole truth
+            </li>
+          </ul>
+        </div>
+      </div>
+      <p class="mcp-note"><span>Optional private MCP</span> Read-only policy access. No arbitrary repository, file, execution, network, or mutation operation.</p>
+    </section>
+    <section class="install" id="install" aria-labelledby="install-title">
+      <div class="install-heading">
+        <div class="section-label caption">
+          <span>Install desk</span>
+          <span>Six supported hosts</span>
+        </div>
+        <p class="kicker caption">Put him in the room</p>
+        <h2 id="install-title">Install Necktie.</h2>
+        <p>Node.js is required for hosts that run the lifecycle hook. Review third-party hooks before trusting them.</p>
+      </div>
+      <fieldset class="install-picker">
+        <legend>Choose your host</legend>
+        {{INSTALL}}
+      </fieldset>
+      <div class="install-footer">
+        <a class="button button-paper" href="https://github.com/gillcash/necktie#install">Read every install option <span aria-hidden="true">↗</span></a>
+        <p>Free software · MIT license · No analytics</p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div>
+      <a class="wordmark" href="#top">Necktie</a>
+      <p>Follow incentives. Find hidden costs. Take a side.</p>
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/gillcash/necktie">GitHub</a>
+      <a href="https://github.com/gillcash/necktie/blob/main/LICENSE">MIT license</a>
+      <a href="https://github.com/gillcash/necktie/issues">Issues</a>
+    </div>
+    <p class="footer-proof caption">No benchmark-performance claim.</p>
+  </footer>
+</body>
+</html>

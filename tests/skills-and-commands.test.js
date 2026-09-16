@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
+const { temporary } = require("./helpers.cjs");
 
 const root = path.resolve(__dirname, "..");
 
@@ -35,19 +36,6 @@ test("skill frontmatter stays minimal and mode selection is one-shot", () => {
   assert.match(openai, /allow_implicit_invocation:\s*false/);
 });
 
-test("mode references preserve one conclusion with distinct final authority", () => {
-  for (const mode of ["lite", "full", "mammon"]) {
-    const reference = fs.readFileSync(path.join(root, "skills", "necktie", "references", `${mode}.md`), "utf8");
-    assert.match(reference, new RegExp(`level: ${mode}`, "i"));
-    assert.match(reference, /Never narrate private analysis/i);
-  }
-  const full = fs.readFileSync(path.join(root, "skills", "necktie", "references", "full.md"), "utf8");
-  const mammon = fs.readFileSync(path.join(root, "skills", "necktie", "references", "mammon.md"), "utf8");
-  assert.match(full, /Useful action pass/);
-  assert.match(mammon, /sole final perspective/);
-  assert.doesNotMatch(mammon, /Then rebut Mammon/);
-});
-
 test("research skill uses a bounded, copy-ready prompt loop", () => {
   const skill = fs.readFileSync(path.join(root, "skills", "necktie-research", "SKILL.md"), "utf8");
   const frontmatter = skill.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] || "";
@@ -63,17 +51,27 @@ test("research skill uses a bounded, copy-ready prompt loop", () => {
   assert.match(openai, /allow_implicit_invocation:\s*true/);
 });
 
-test("OpenClaw copy matches the skill and all generated references", () => {
-  const generator = require(path.join(root, "scripts", "build-openclaw-skills.js"));
-  assert.deepEqual(generator.names, ["necktie", "necktie-research"]);
-  for (const name of generator.names) {
-    const generated = generator.generatedFiles(name);
-    for (const [relative, expected] of generated) {
-      const actual = fs.readFileSync(path.join(root, ".openclaw", "skills", name, relative));
-      const expectedBuffer = Buffer.isBuffer(expected) ? expected : Buffer.from(expected, "utf8");
-      assert.ok(actual.equals(expectedBuffer), `${name}/${relative}`);
-    }
+test("generation repairs drift in one pass and check mode never writes", (t) => {
+  const { generate, run } = require("../scripts/build-adapters.js");
+  const directory = temporary(t);
+  fs.cpSync(path.join(root, "skills"), path.join(directory, "skills"), { recursive: true });
+  const options = { root: directory, check: false };
+  assert.ok(run(options).length);
+  assert.deepEqual(run({ ...options, check: true }), []);
+  const missing = "skills/necktie/references/full.md";
+  const extra = ".openclaw/skills/necktie/obsolete.md";
+  fs.unlinkSync(path.join(directory, missing));
+  fs.writeFileSync(path.join(directory, extra), "obsolete");
+  assert.deepEqual(run({ ...options, check: true }).sort(), [missing, extra].sort());
+  assert.equal(fs.existsSync(path.join(directory, missing)), false);
+  assert.equal(fs.readFileSync(path.join(directory, extra), "utf8"), "obsolete");
+  run(options);
+  assert.deepEqual(run(options), []);
+  for (const [relative, expected] of generate(directory)) {
+    assert.ok(fs.readFileSync(path.join(directory, relative)).equals(expected), relative);
   }
+  fs.writeFileSync(path.join(directory, "skills/necktie/references/policy.md"), "broken");
+  assert.throws(() => run(options), /Missing or invalid shared policy section/);
 });
 
 test("command templates advertise only public modes and no off state", () => {

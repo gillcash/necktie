@@ -60,7 +60,7 @@ Necktie leads with a verdict or completed outcome, names the incentive or power 
 
 The root `plugin.json` targets the [Agent Plugins 1.0.0 specification](https://agent-plugins.org/). The portable surface contains the `necktie` judgment skill and the `necktie-research` prompt-building skill.
 
-`skills/necktie/references/policy.md` is the canonical policy source. The build generates self-contained mode references plus one shared `core/` preamble and mode deltas. Static rules inject Full. Dynamic hooks compose the selected mode.
+`skills/necktie/references/policy.md` is the canonical policy source. The build generates self-contained mode references shared by skills and runtime adapters. Static rules inject Full; dynamic hooks load the selected reference.
 
 `necktie-mcp/` is an optional private stdio adapter. Its `necktie` prompt and read-only `necktie_instructions` tool accept a mode per request. MCP does not activate Necktie on every turn and exposes no arbitrary repository, file, execution, network, or mutation operation. The process is not a sandbox: it reads Necktie's bundled policy and optional local default configuration.
 
@@ -166,6 +166,8 @@ python C:/Users/you/.codex/skills/.system/plugin-creator/scripts/validate_plugin
 ```
 
 `skills/necktie/references/policy.md` is the source for generated instruction artifacts and static adapters. Do not edit generated copies directly.
+
+The [source map](docs/host-support.md#source-map) connects each entry point to its shared policy, command, and storage code. `npm test` also builds and checks the dependency-free website.
 
 ## License
 

@@ -1,0 +1,179 @@
+.install {
+  --line: rgb(243 238 226 / 35%);
+  padding: clamp(5rem, 10vw, 9rem) max(24px, calc((100% - 1160px) / 2));
+  background: var(--ink);
+  color: var(--paper-bright);
+}
+
+.install-heading {
+  max-width: 850px;
+  margin-bottom: 4rem;
+}
+
+.install-heading .kicker {
+  margin-top: 4rem;
+  color: var(--brass);
+}
+
+.install-heading h2 {
+  margin-bottom: 1.5rem;
+}
+
+.install-heading > p:last-child {
+  max-width: 620px;
+  color: #cec5b4;
+  font-size: 1.1rem;
+}
+
+.install-picker {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.install-picker legend, .install-picker input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.install-picker label {
+  grid-row: 1;
+  padding: 1rem 0.55rem;
+  border-block: 1px solid var(--line);
+  border-right: 1px solid rgb(243 238 226 / 20%);
+  color: #aaa293;
+  cursor: pointer;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.install-picker label:last-of-type {
+  border-right: 0;
+}
+
+.install-picker label:hover {
+  color: var(--paper-bright);
+}
+
+.install-picker label:has(:focus-visible) {
+  outline: 3px solid var(--paper-bright);
+  outline-offset: -3px;
+}
+
+.install-picker label:has(:checked) {
+  background: var(--brass);
+  color: var(--ink);
+}
+
+.install-panel {
+  grid-area: 2 / 1 / auto / -1;
+  min-height: 310px;
+  padding: clamp(2rem, 5vw, 4rem) 0;
+  display: none;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(3rem, 7vw, 7rem);
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+}
+
+.install-picker label:has(:checked) + .install-panel {
+  display: grid;
+}
+
+.panel-count {
+  margin-bottom: 1.25rem;
+  color: var(--brass);
+}
+
+.install-panel h3 {
+  margin-bottom: 1rem;
+  font-size: clamp(2.6rem, 5vw, 5rem);
+}
+
+.install-panel > div > p:last-child {
+  max-width: 430px;
+  margin-bottom: 0;
+  color: #c8c0af;
+}
+
+.install-panel pre {
+  max-width: 100%;
+  margin: 0;
+  padding: 1.6rem;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  background: #090908;
+  color: #e6d6b4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: clamp(0.72rem, 1.4vw, 0.92rem)/1.8 var(--mono);
+}
+
+.install-panel code {
+  font: inherit;
+}
+
+.install-footer {
+  margin-top: 2.5rem;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.button-paper {
+  border-color: currentColor;
+  background: var(--paper-bright);
+  color: var(--ink);
+}
+
+.button-paper:hover {
+  background: var(--brass);
+}
+
+.install-footer p {
+  margin: 0;
+  color: #aaa293;
+}
+
+@media (max-width: 620px) {
+  .install-picker {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .install-picker label {
+    grid-row: auto;
+  }
+  .install-picker label:nth-of-type(even) {
+    border-right: 0;
+  }
+  .install-picker label:nth-of-type(n + 3) {
+    border-top: 0;
+  }
+  .install-panel {
+    grid-row: 4;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  .skip-link, .masthead nav, .hero-actions, .install-picker label {
+    display: none;
+  }
+  .install-picker {
+    display: block;
+  }
+  .install-panel {
+    display: grid;
+    break-inside: avoid;
+  }
+  body, .install {
+    background: white;
+    color: black;
+  }
+}
