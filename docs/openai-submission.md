@@ -1,5 +1,7 @@
 # OpenAI plugin submission
 
+This document records the historical v0.5.1 skills-only submission. Current releases also include native runtime hooks for supported hosts; see [host support](host-support.md) and the [privacy policy](../PRIVACY.md) for their behavior.
+
 ## Submission type
 
 Skills only. Do not include the optional MCP adapter or a backend service.
