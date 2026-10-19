@@ -25,9 +25,9 @@ test("versioned manifests identify Necktie 0.6.0", () => {
   assert.match(fs.readFileSync(path.join(root, "NOTICE"), "utf8"), /^Necktie 0\.6\.0$/m);
 });
 
-test("Codex manifest relies on component discovery and keeps MCP optional", () => {
+test("Codex manifest registers lifecycle hooks and keeps MCP optional", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, ".codex-plugin", "plugin.json"), "utf8"));
-  assert.equal(manifest.hooks, undefined);
+  assert.equal(manifest.hooks, "./hooks/claude-codex-hooks.json");
   assert.equal(manifest.mcpServers, undefined);
   assert.equal(manifest.skills, "./skills/");
   assert.equal(manifest.interface.shortDescription, "Opinionated judgment for incentives, power, and hidden costs");

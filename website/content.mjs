@@ -5,7 +5,7 @@ const hosts = [
   ["copilot", "Copilot CLI", "GitHub Copilot CLI", "Install through Copilot’s plugin marketplace.", "copilot plugin marketplace add gillcash/necktie\ncopilot plugin install necktie@necktie"],
   ["gemini", "Gemini CLI", "Gemini CLI", "Install the extension directly from the public repository.", "gemini extensions install https://github.com/gillcash/necktie"],
   ["pi", "Pi", "Pi", "Install the repository as a Pi package.", "pi install git:github.com/gillcash/necktie"],
-  ["opencode", "OpenCode", "OpenCode", "Add the published package to your OpenCode configuration.", "{ \"plugin\": [\"@gillcash/necktie\"] }"],
+  ["opencode", "OpenCode", "OpenCode", "Add the published package to your OpenCode 2 configuration. OpenCode 1.18.29+ uses the legacy plugin key.", "{ \"plugins\": [\"@gillcash/necktie\"] }"],
 ];
 const questions = [
   ["Who benefits?", "Name the people who gain money, time, control, or optionality."],

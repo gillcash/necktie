@@ -8,13 +8,17 @@ Use this document to select and verify a Necktie adapter. Every adapter preserve
 | --- | --- | --- |
 | Lifecycle hook | Claude Code, Codex, GitHub Copilot CLI, Qoder | Injects the selected policy. Session and default commands work when the host supplies prompt hooks and stable session identity. |
 | Model-call hook | Hermes Agent | Injects before each model call; `/necktie-mode` uses process-session state. |
-| Chat transform | OpenCode | Appends the selected policy each turn; mode changes apply to the next transform. |
+| Session hooks / chat transform | OpenCode 2 / OpenCode 1.18.29+ | Appends the selected policy to each turn and compaction in v2, or each chat transform in v1; mode changes remain scoped to the session. |
 | Agent-start transform | Pi | Stores session mode in native session entries and appends the selected policy before each run. |
 | Persistent context | Gemini, Antigravity, CodeWhale, and static-rule hosts | Loads Full from `AGENTS.md` or a host-specific rule. No persistent session selector is available. |
 | Skill package | Devin, Swival, OpenClaw, Grok Build | Uses Full unless ambient host context selects a mode; `$necktie --mode <mode>` is a one-shot override. |
 | MCP adapter | Any MCP client | Selects a policy per prompt/tool request; it has no session mode and cannot guarantee per-turn injection. |
 
 Copilot clients that ignore additional context from `userPromptSubmitted` may not apply a switch until their next supported instruction injection. The command still records the session selection. Do not claim immediate switching on a host that does not expose the necessary injection point.
+
+Claude Code and Codex explicitly load `hooks/claude-codex-hooks.json`. There is no `hooks/hooks.json`: Gemini auto-discovers that path, but its lifecycle events differ from Claude/Codex events. Gemini uses the static Full context selected by `gemini-extension.json` instead.
+
+The root `plugin.json` omits the Agent Plugins `$schema` so hosts do not bypass native hooks by selecting a skills-only loader. OpenCode 2 uses the `plugins` key and local directory paths; OpenCode 1.18.29+ uses the legacy `plugin` key. The same adapter exports v2 `id`/`setup` and v1 `server()` entry points.
 
 ## Mode interface
 
@@ -60,6 +64,7 @@ Necktie must return one user-facing conclusion on every host. Modes never broade
 | Mode precedence and configuration | `lib/necktie-policy.cjs`; used by the JavaScript adapters and MCP |
 | Command parsing, execution, and response text | `lib/necktie-command.cjs`; shared by lifecycle hooks, OpenCode, and Pi |
 | Session storage | `lib/necktie-session.cjs` for hooks and OpenCode; Pi uses native session entries |
+| OpenCode | `.opencode/plugins/index.js` exposes the dual-API adapter in `necktie.mjs`; npm exports point to the same adapter |
 | Atomic JSON writes | `lib/necktie-json.cjs`; shared by configuration and session storage |
 | Hermes | `__init__.py` registers host commands and hooks; `necktie_policy.py` resolves modes, stores defaults, and reads the same generated policy text |
 | Research loop | `skills/necktie-research/scripts/research_prompt_loop.py` parses CLI commands; `research_state.py` validates packets, saves them, and enforces bounded transitions |
