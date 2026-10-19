@@ -17,6 +17,7 @@ const jsonFiles = [
   "necktie-mcp/package-lock.json",
   "pi-extension/package.json",
   "plugin.json",
+  "website/package.json",
 ];
 
 function readVersion(relative) {
