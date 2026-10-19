@@ -84,7 +84,7 @@ Abra `/hooks`, revise y autorice los hooks, y después inicie una tarea nueva.
 | --- | --- |
 | GitHub Copilot CLI | `copilot plugin marketplace add gillcash/necktie`, después `copilot plugin install necktie@necktie` |
 | Pi | `pi install git:github.com/gillcash/necktie` |
-| OpenCode | `{"plugin":["@gillcash/necktie"]}` |
+| OpenCode 2 | `{"plugins":["@gillcash/necktie"]}`; OpenCode 1.18.29+: `{"plugin":["@gillcash/necktie"]}` |
 | Gemini CLI | `gemini extensions install https://github.com/gillcash/necktie` |
 | Antigravity | `agy plugin install https://github.com/gillcash/necktie` |
 | Hermes | `hermes plugins install gillcash/necktie --enable` |
@@ -92,6 +92,8 @@ Abra `/hooks`, revise y autorice los hooks, y después inicie una tarea nueva.
 | Grok Build | `grok plugin install gillcash/necktie --trust` |
 | Swival | `swival skills add --global https://github.com/gillcash/necktie` |
 | OpenClaw | `clawhub install necktie` |
+
+Si Hermes rechaza el esquema de `plugin.json`, use la [instalación manual con el cargador nativo](README.md#hermes-agent).
 
 Consulte [la documentación de hosts](docs/host-support.md) para los límites y las comprobaciones de instalación.
 

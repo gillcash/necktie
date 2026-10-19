@@ -84,7 +84,7 @@ codex plugin add necktie@necktie
 | --- | --- |
 | GitHub Copilot CLI | `copilot plugin marketplace add gillcash/necktie` 후 `copilot plugin install necktie@necktie` |
 | Pi | `pi install git:github.com/gillcash/necktie` |
-| OpenCode | `{"plugin":["@gillcash/necktie"]}` |
+| OpenCode 2 | `{"plugins":["@gillcash/necktie"]}`; OpenCode 1.18.29+: `{"plugin":["@gillcash/necktie"]}` |
 | Gemini CLI | `gemini extensions install https://github.com/gillcash/necktie` |
 | Antigravity | `agy plugin install https://github.com/gillcash/necktie` |
 | Hermes | `hermes plugins install gillcash/necktie --enable` |
@@ -92,6 +92,8 @@ codex plugin add necktie@necktie
 | Grok Build | `grok plugin install gillcash/necktie --trust` |
 | Swival | `swival skills add --global https://github.com/gillcash/necktie` |
 | OpenClaw | `clawhub install necktie` |
+
+Hermes가 `plugin.json` 스키마를 거부하면 [기본 로더를 사용하는 수동 설치 방법](README.md#hermes-agent)을 따르십시오.
 
 어댑터 경계와 설치 검사는 [호스트 문서](docs/host-support.md)를 참조하십시오.
 

@@ -62,8 +62,25 @@ test("hook payloads use each host's native shape", (t) => {
   }
 });
 
+test("host manifests load lifecycle hooks explicitly without Gemini auto-discovery", () => {
+  assert.equal(json("plugin.json").$schema, undefined);
+  assert.equal(fs.existsSync(path.join(root, "hooks/hooks.json")), false);
+  for (const manifestFile of [".claude-plugin/plugin.json", ".codex-plugin/plugin.json"]) {
+    const manifest = json(manifestFile);
+    assert.equal(manifest.skills, "./skills/", manifestFile);
+    assert.equal(manifest.hooks, "./hooks/claude-codex-hooks.json", manifestFile);
+    assert.ok(fs.existsSync(path.resolve(root, manifest.hooks)), manifestFile);
+  }
+  const gemini = json("gemini-extension.json");
+  assert.equal(gemini.contextFileName, "AGENTS.md");
+  assert.match(fs.readFileSync(path.join(root, gemini.contextFileName), "utf8"), /NECKTIE MODE ACTIVE/);
+  assert.equal(gemini.hooks, undefined);
+  assert.equal(json(".github/plugin/plugin.json").hooks, "hooks/copilot-hooks.json");
+  assert.equal(json(".qoder-plugin/plugin.json").hooks, "./hooks/qoder-hooks.json");
+});
+
 test("hook manifests cover session, prompt, subagent, Copilot, and Qoder events", () => {
-  const hooks = json("hooks/hooks.json").hooks;
+  const hooks = json("hooks/claude-codex-hooks.json").hooks;
   assert.deepEqual(Object.keys(hooks).sort(), ["SessionStart", "SubagentStart", "UserPromptSubmit"]);
   assert.match(hooks.UserPromptSubmit[0].hooks[0].command, /necktie-context\.js/);
   const copilot = json("hooks/copilot-hooks.json").hooks;
@@ -74,14 +91,15 @@ test("hook manifests cover session, prompt, subagent, Copilot, and Qoder events"
   assert.equal(qoder.PreToolUse[0].matcher, "task|Task");
 });
 
-test("shared hook command resolves Claude, Codex, and Gemini roots", (t) => {
-  const command = json("hooks/hooks.json").hooks.SessionStart[0].hooks[0].command;
-  for (const host of ["gemini", "claude", "codex"]) {
+test("manifest-selected hook command resolves Claude and Codex roots", (t) => {
+  for (const host of ["claude", "codex"]) {
+    const manifest = json(`.${host}-plugin/plugin.json`);
+    const command = json(manifest.hooks).hooks.SessionStart[0].hooks[0].command;
     const session_id = `test-${process.pid}-${Date.now()}-${host}`;
     t.after(() => fs.rmSync(sessions.statePath(host, session_id), { force: true }));
     const env = childEnvironment();
     if (host === "codex") env.PLUGIN_DATA = path.join(root, ".test-data");
-    const replaced = command.replaceAll(host === "gemini" ? "${extensionPath}" : "${CLAUDE_PLUGIN_ROOT}", root);
+    const replaced = command.replaceAll("${CLAUDE_PLUGIN_ROOT}", root);
     const result = execSync(replaced, { encoding: "utf8", env, input: JSON.stringify({ session_id }) });
     const context = host === "claude" ? result : JSON.parse(result).hookSpecificOutput.additionalContext;
     assert.match(context, /level: full/i);

@@ -11,6 +11,7 @@
   "license": "MIT",
   "keywords": ["incentives", "power", "externalities", "opinionated-agent"],
   "skills": "./skills/",
+  "hooks": "./hooks/claude-codex-hooks.json",
   "interface": {
     "displayName": "Necktie",
     "shortDescription": "Opinionated judgment for incentives, power, and hidden costs",

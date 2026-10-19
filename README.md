@@ -58,7 +58,7 @@ Necktie leads with a verdict or completed outcome, names the incentive or power 
 
 ## Understand the plugin
 
-The root `plugin.json` targets the [Agent Plugins 1.0.0 specification](https://agent-plugins.org/). The portable surface contains the `necktie` judgment skill and the `necktie-research` prompt-building skill.
+The portable surface contains the `necktie` judgment skill and the `necktie-research` prompt-building skill. Host-specific manifests register lifecycle hooks. The root `plugin.json` intentionally omits the Agent Plugins `$schema`: some hosts otherwise select a skills-only loader and skip those hooks.
 
 `skills/necktie/references/policy.md` is the canonical policy source. The build generates self-contained mode references shared by skills and runtime adapters. Static rules inject Full; dynamic hooks load the selected reference.
 
@@ -101,17 +101,21 @@ pi install git:github.com/gillcash/necktie
 
 ### OpenCode
 
-Use the published package:
+For OpenCode 2, use the published package:
 
 ```json
-{ "plugin": ["@gillcash/necktie"] }
+{ "plugins": ["@gillcash/necktie"] }
 ```
 
-Or use a checkout:
+Or point at a checkout's plugin directory:
 
 ```json
-{ "plugin": ["./.opencode/plugins/necktie.mjs"] }
+{ "plugins": ["./.opencode/plugins"] }
 ```
+
+OpenCode 2 requires a directory for local plugins. Opening this checkout needs no explicit entry: OpenCode discovers `.opencode/plugins/index.js` automatically.
+
+OpenCode 1.18.29 and later also support the adapter through the legacy key: `{ "plugin": ["@gillcash/necktie"] }`, or `{ "plugin": ["./.opencode/plugins/necktie.mjs"] }` for a checkout. Earlier OpenCode 1 versions are not supported by the dual-API entry point.
 
 ### Gemini CLI and Antigravity
 
@@ -120,10 +124,19 @@ gemini extensions install https://github.com/gillcash/necktie
 agy plugin install https://github.com/gillcash/necktie
 ```
 
+Gemini loads Full through `AGENTS.md`. The Claude/Codex hook map lives at `hooks/claude-codex-hooks.json`, outside Gemini's auto-discovered `hooks/hooks.json` path; it does not register Gemini lifecycle hooks or persistent mode switching.
+
 ### Hermes Agent
 
 ```bash
 hermes plugins install gillcash/necktie --enable
+```
+
+If the installer reports `plugin.json declares an unsupported or missing Agent Plugins schema`, use Hermes' native `plugin.yaml` loader while the [installer fix](https://github.com/NousResearch/hermes-agent/pull/125937) is pending:
+
+```bash
+git clone https://github.com/gillcash/necktie.git ~/.hermes/plugins/necktie
+hermes plugins enable necktie
 ```
 
 Restart Hermes. It injects the selected policy before each model call and registers the `necktie` and `necktie-mode` commands.
