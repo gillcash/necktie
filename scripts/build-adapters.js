@@ -38,18 +38,13 @@ function generate(root = ROOT) {
     const frontmatter = skill.match(/^---\n([\s\S]*?)\n---\n?/);
     const description = frontmatter?.[1].match(/^description:\s*(.+)$/m)?.[1];
     if (!description) throw new Error(`skills/${name}/SKILL.md has no description frontmatter`);
-    const short = description.length <= 160 ? description : `${description.slice(0, 157).trimEnd()}...`;
+    if (description.length > 1024) throw new Error(`skills/${name}/SKILL.md description exceeds the 1024-character Agent Skills limit`);
     const target = `.openclaw/skills/${name}`;
-    generated.set(`${target}/SKILL.md`, `---\nname: ${name}\ndescription: "${short.replaceAll('"', "'")}"\nhomepage: https://github.com/gillcash/necktie\nlicense: MIT\n---\n${skill.slice(frontmatter[0].length)}`);
+    generated.set(`${target}/SKILL.md`, `---\nname: ${name}\ndescription: ${JSON.stringify(description)}\nhomepage: https://github.com/gillcash/necktie\nlicense: MIT\n---\n${skill.slice(frontmatter[0].length)}`);
     for (const child of ["references", "scripts"]) {
       const sourceDir = `skills/${name}/${child}`;
-      const files = new Set([
-        ...filesUnder(path.join(root, sourceDir)),
-        ...[...generated.keys()].filter((file) => file.startsWith(`${sourceDir}/`)).map((file) => file.slice(sourceDir.length + 1)),
-      ]);
-      for (const file of files) {
-        const relative = `${sourceDir}/${file}`;
-        generated.set(`${target}/${child}/${file}`, generated.get(relative) ?? read(relative));
+      for (const file of filesUnder(path.join(root, sourceDir))) {
+        generated.set(`${target}/${child}/${file}`, read(`${sourceDir}/${file}`));
       }
     }
   }

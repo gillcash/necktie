@@ -49,7 +49,7 @@ async function server() {
     config: async (config) => {
       config.command ||= {};
       for (const { name, ...command } of readCommands()) {
-        config.command[name] = command;
+        config.command[name] ??= command;
       }
       config.skills ||= {};
       config.skills.paths ||= [];

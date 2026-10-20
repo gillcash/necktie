@@ -3,30 +3,36 @@
 
 const path = require("node:path");
 
-const { buildInstructions } = require("../lib/necktie-policy.cjs");
+const { buildInstructions, buildReminder } = require("../lib/necktie-policy.cjs");
 
 function pluginRoot(env = process.env) {
   return env.PLUGIN_ROOT || env.CLAUDE_PLUGIN_ROOT || path.resolve(__dirname, "..");
 }
 
-function host(env = process.env) {
-  const compatibilityRoot = env.CLAUDE_PLUGIN_ROOT || "";
-  if (env.COPILOT_PLUGIN_DATA || compatibilityRoot.includes(".vscode/agent-plugins")) return "copilot";
-  if (env.QODER_SESSION_ID) return "qoder";
-  if (env.PLUGIN_ROOT || env.PLUGIN_DATA) return "codex";
-  return "claude";
+const HOSTS = new Set(["claude", "codex", "copilot", "qoder"]);
+
+function isVsCodePluginRoot(root = "") {
+  return /[\\/]\.vscode[^\\/]*[\\/]agent-plugins(?:[\\/]|$)/i.test(root);
 }
 
-function evaluate(event, env = process.env, explicitHost = "") {
+// VS Code runs the Claude manifest's hooks, so the claude host still checks for a VS Code plugin root.
+function resolveHost(hint = "", env = process.env) {
+  const named = HOSTS.has(hint) ? hint : "claude";
+  if (named === "claude" && (env.COPILOT_PLUGIN_DATA || isVsCodePluginRoot(env.CLAUDE_PLUGIN_ROOT))) return "copilot";
+  return named;
+}
+
+function evaluate(env = process.env, hint = "", mode = "full") {
+  const policy = buildInstructions({ root: pluginRoot(env) });
   return {
-    context: buildInstructions({ root: pluginRoot(env) }),
-    host: explicitHost || host(env),
+    context: mode === "reminder" ? buildReminder() : policy,
+    host: resolveHost(hint, env),
   };
 }
 
 function hostPayload(event, context, detectedHost) {
   if (detectedHost === "copilot") return { additionalContext: context };
-  if (detectedHost === "codex" || detectedHost === "qoder" || detectedHost === "gemini" || event === "SubagentStart") {
+  if (detectedHost === "codex" || detectedHost === "qoder" || event === "SubagentStart") {
     return { hookSpecificOutput: { hookEventName: event, additionalContext: context } };
   }
   return context;
@@ -61,14 +67,12 @@ function readHookInput(stream = process.stdin, timeoutMs = 1000) {
   });
 }
 
-// Manifest launchers call main() from `node -e` without a catch, so it must never reject.
+// Callers run main() without a catch, so it must never reject.
 async function main(argv = process.argv.slice(2), env = process.env, options = {}) {
   try {
     const event = argv[0] || "SessionStart";
-    const hint = argv[1] || "";
-    const explicitHost = hint === "copilot" || hint === "qoder" ? hint : hint ? "gemini" : "";
-    if (!options.input) await readHookInput(options.stdin || process.stdin, options.timeoutMs || 1000);
-    const evaluated = evaluate(event, env, explicitHost);
+    await readHookInput(options.stdin || process.stdin, options.timeoutMs || 1000);
+    const evaluated = evaluate(env, argv[1], argv[2]);
     const result = hostPayload(event, evaluated.context, evaluated.host);
     process.stdout.write(typeof result === "string" ? result : JSON.stringify(result));
     return result;
@@ -82,9 +86,9 @@ if (require.main === module) main();
 
 module.exports = {
   evaluate,
-  host,
   hostPayload,
   main,
   pluginRoot,
   readHookInput,
+  resolveHost,
 };

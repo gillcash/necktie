@@ -26,7 +26,7 @@ For OpenCode 2:
 { "plugins": ["@gillcash/necktie"] }
 ```
 
-Hosts using lifecycle hooks require Node.js. Review and trust hooks when prompted, then restart the host.
+Hosts using lifecycle hooks require Node.js 22 or later. Hermes and the research controller require Python 3.10 or later. Review and trust hooks when prompted, then restart the host.
 
 ## Use
 

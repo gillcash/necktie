@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 import necktiePlugin from "../.opencode/plugins/necktie.mjs";
 import helpers from "./helpers.cjs";
 
@@ -33,6 +35,23 @@ test("OpenCode V1 registers one command without replacing host configuration", a
   assert.equal(config.skills.paths.length, 2);
   assert.equal(path.basename(config.skills.paths[1]), "skills");
   assert.equal(plugin["command.execute.before"], undefined);
+});
+
+test("Node loads the OpenCode directory entry as ES module syntax without a reparse warning", () => {
+  const result = spawnSync(process.execPath, ["--input-type=module", "-e", 'const { default: plugin } = await import("./.opencode/plugins/index.js"); console.log(plugin.id);'], {
+    cwd: fileURLToPath(new URL("..", import.meta.url)), encoding: "utf8",
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout.trim(), "necktie");
+  assert.doesNotMatch(result.stderr, /MODULE_TYPELESS_PACKAGE_JSON/);
+});
+
+test("OpenCode V1 keeps a user-defined necktie command", async () => {
+  const plugin = await necktiePlugin.server();
+  const userCommand = { template: "my own necktie command" };
+  const config = { command: { necktie: userCommand } };
+  await plugin.config(config);
+  assert.equal(config.command.necktie, userCommand);
 });
 
 test("OpenCode V1 injects the sole policy into empty and existing system prompts", async () => {
@@ -150,7 +169,11 @@ test("OpenCode directory and npm entry points expose exactly one dual API plugin
     assert.equal(typeof module.default.server, "function");
     assert.equal(typeof module.default.setup, "function");
   }
-  const config = JSON.parse(fs.readFileSync(new URL("../opencode.json", import.meta.url), "utf8"));
-  assert.equal(config.plugin, undefined);
-  assert.equal(config.plugins, undefined);
+  for (const relative of ["../opencode.json", "../.opencode/opencode.json"]) {
+    const file = new URL(relative, import.meta.url);
+    if (!fs.existsSync(file)) continue;
+    const config = JSON.parse(fs.readFileSync(file, "utf8"));
+    assert.equal(config.plugin, undefined, relative);
+    assert.equal(config.plugins, undefined, relative);
+  }
 });

@@ -24,7 +24,7 @@ The loop is complete only when the final prompt:
 - appears in one copy-ready text block;
 - has no unresolved critical or major review finding.
 
-Use a maximum of three revision passes at `standard` depth and five at `deep`. Stop earlier on approval. Block when the same material issue survives three reviews or when progress requires unavailable evidence, new authority, or a material user choice.
+Use a maximum of three revision passes at `standard` depth and five at `deep`. Stop earlier on approval. Block when the same material issue is flagged three times across reviews and verifications, or when progress requires unavailable evidence, new authority, or a material user choice.
 
 ## Phase 1 — Discover context
 

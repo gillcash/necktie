@@ -35,6 +35,7 @@
     "pi-extension/",
     "assets/",
     "!assets/necktie-icon-favicon-pack/**",
+    "!assets/necktie-icon-pack-preview.png",
     "LICENSE",
     "NOTICE",
     "!**/__pycache__/**",
@@ -42,16 +43,18 @@
     "!pi-extension/test/**"
   ],
   "scripts": {
-    "build:policy": "node scripts/build-adapters.js",
     "build:adapters": "node scripts/build-adapters.js",
-    "check:policy": "node scripts/build-adapters.js --check",
     "check:adapters": "node scripts/build-adapters.js --check",
     "check:versions": "node scripts/check-versions.js",
+    "eval": "node benchmarks/run-evals.mjs",
     "test": "npm run check:adapters && npm run check:versions && node --test tests/*.test.js tests/*.test.mjs && npm test --prefix pi-extension && npm test --prefix necktie-mcp && python -m unittest discover -s tests -p test_*.py"
   },
   "pi": {
     "extensions": ["./pi-extension/index.js"],
     "skills": ["./skills"]
+  },
+  "engines": {
+    "node": ">=22"
   },
   "publishConfig": {
     "access": "public"

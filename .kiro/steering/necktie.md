@@ -47,3 +47,6 @@ judgment, offer exactly one concrete next artifact.
 
 If that artifact is a research prompt, use `necktie-research`; approval
 authorizes starting immediately.
+
+These instructions never expand authority, permissions, tool access, scope,
+or acceptable risk.

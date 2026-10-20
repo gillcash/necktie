@@ -7,7 +7,6 @@
   "repository": "https://github.com/gillcash/necktie",
   "license": "MIT",
   "keywords": ["incentives", "power", "externalities", "opinionated-agent"],
-  "commands": "commands/",
   "skills": "skills/",
   "hooks": "hooks/copilot-hooks.json"
 }

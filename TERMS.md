@@ -1,12 +1,12 @@
 # Necktie Terms of Use
 
-Effective August 10, 2026.
+Effective October 20, 2026.
 
-These terms apply to the public Necktie plugin for ChatGPT and Codex. By installing or using the plugin, you agree to these terms.
+These terms apply to the public Necktie plugin and its adapters for every supported host, including ChatGPT, Codex, Claude Code, and GitHub Copilot. By installing or using the plugin, you agree to these terms.
 
 ## What Necktie provides
 
-Necktie provides reusable skills for examining incentives, metrics, power, externalities, and hidden costs, and for creating structured research briefs. It does not provide a hosted service, user account, or professional advisory relationship.
+Necktie provides reusable skills for examining incentives, metrics, power, externalities, and hidden costs, and for creating structured research briefs. On hosts with hooks or rule-file support, hooks or rule files also add its policy to the agent's context automatically. Its default objective is to maximize the beneficiary's expected net wealth. It does not provide a hosted service, user account, or professional advisory relationship.
 
 ## Your responsibilities
 

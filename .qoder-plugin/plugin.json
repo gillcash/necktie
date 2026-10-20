@@ -8,6 +8,5 @@
   "license": "MIT",
   "keywords": ["incentives", "power", "externalities", "opinionated-agent"],
   "skills": "./skills/",
-  "rules": "./.qoder/rules/",
   "hooks": "./hooks/qoder-hooks.json"
 }

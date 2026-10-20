@@ -9,6 +9,9 @@ node_modules/
 __pycache__/
 .necktie/
 
+# Behavioral eval reports
+benchmarks/results/
+
 # one-off social/announcement art, not repo content
 announce-*.png
 necktie-*.gif
