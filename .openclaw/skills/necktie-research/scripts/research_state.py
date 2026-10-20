@@ -112,6 +112,11 @@ def revision_count(packet: dict) -> int:
             + sum(check["result"] == "FAIL" for check in packet["verification_history"]))
 
 
+def issue_count(packet: dict, signature: str) -> int:
+    return (sum(review["decision"] == "REVISE" and review["issue_signature"] == signature for review in packet["review_history"])
+            + sum(check["result"] == "FAIL" and check["issue_signature"] == signature for check in packet["verification_history"]))
+
+
 def _record(packet: dict, kind: str, value: str, reason: str, signature: str) -> None:
     phase, field = ("review", "decision") if kind == "review" else ("verify", "result")
     if packet["state"] != phase:
@@ -129,11 +134,10 @@ def _record(packet: dict, kind: str, value: str, reason: str, signature: str) ->
     revisions, limit = revision_count(packet), REVISION_LIMITS[packet["depth"]]
     if value == "BLOCK":
         breaker = "reviewer-blocked"
-    elif value == "REVISE":
-        if len(records) >= 3 and all(r["decision"] == "REVISE" and r["issue_signature"] == signature for r in records[-3:]):
-            breaker = "same-issue-three-times"
-        elif revisions > limit:
-            breaker = "revision-limit-exceeded"
+    elif value in {"REVISE", "FAIL"} and issue_count(packet, signature) >= 3:
+        breaker = "same-issue-three-times"
+    elif value == "REVISE" and revisions > limit:
+        breaker = "revision-limit-exceeded"
     elif value == "FAIL" and revisions > limit:
         breaker = "verification-failed-after-revision-limit"
     packet["state"] = "blocked" if breaker else OUTCOMES[kind][value]

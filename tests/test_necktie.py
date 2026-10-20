@@ -126,6 +126,22 @@ class ResearchPromptLoopTests(unittest.TestCase):
         research_loop.record_review(packet, "BLOCK", "Evidence unavailable", "")
         self.assertEqual(packet["circuit_breaker"], "reviewer-blocked")
 
+    def test_same_issue_breaker_counts_reviews_and_verifications(self):
+        packet = self.packet()
+        for _ in range(2):
+            research_loop.record_review(packet, "REVISE", "Missing schema", "schema-gap")
+            research_loop.transition(packet, "review", "revised")
+        research_loop.record_review(packet, "APPROVE", "Schema added", "")
+        research_loop.record_verification(packet, "FAIL", "Schema still missing", "schema-gap")
+        self.assertEqual((packet["state"], packet["circuit_breaker"]), ("blocked", "same-issue-three-times"))
+        packet = self.packet()
+        for signature in ("schema-gap", "source-gap"):
+            research_loop.record_review(packet, "REVISE", "Fix", signature)
+            research_loop.transition(packet, "review", "revised")
+        research_loop.record_review(packet, "APPROVE", "Fixed", "")
+        research_loop.record_verification(packet, "FAIL", "Sources missing", "source-gap")
+        self.assertEqual((packet["state"], packet["circuit_breaker"]), ("revise", None))
+
     def test_invalid_packets_and_decisions_do_not_mutate_state(self):
         for key, value in (("state", []), ("goal", ""), ("depth", "off"), ("review_history", [None]),
                            ("review_history", [{"decision": "REVISE"}]), ("verification_history", [{"result": []}])):
