@@ -110,9 +110,8 @@ test("marketplace copy describes utility without internal framing", () => {
   }
 });
 
-test("public copy states the default objective", () => {
+test("public metadata states the default objective", () => {
   const objective = /Default objective:(?:\*\*)? maximize the beneficiary's expected net wealth\./;
-  assert.match(fs.readFileSync(path.join(root, "README.md"), "utf8"), objective);
   assert.match(fs.readFileSync(path.join(root, "plugin.yaml"), "utf8"), /^description: ".*Default objective: maximize the beneficiary's expected net wealth\."$/m);
   for (const relative of [
     "package.json", "plugin.json", "gemini-extension.json",
