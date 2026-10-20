@@ -150,7 +150,11 @@ test("OpenCode directory and npm entry points expose exactly one dual API plugin
     assert.equal(typeof module.default.server, "function");
     assert.equal(typeof module.default.setup, "function");
   }
-  const config = JSON.parse(fs.readFileSync(new URL("../opencode.json", import.meta.url), "utf8"));
-  assert.equal(config.plugin, undefined);
-  assert.equal(config.plugins, undefined);
+  for (const relative of ["../opencode.json", "../.opencode/opencode.json"]) {
+    const file = new URL(relative, import.meta.url);
+    if (!fs.existsSync(file)) continue;
+    const config = JSON.parse(fs.readFileSync(file, "utf8"));
+    assert.equal(config.plugin, undefined, relative);
+    assert.equal(config.plugins, undefined, relative);
+  }
 });
