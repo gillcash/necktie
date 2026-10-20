@@ -8,7 +8,7 @@ const { temporary } = require("./helpers.cjs");
 const policy = require("../lib/necktie-policy.cjs");
 
 test("the only policy preserves the decision objective, accounting, and handoff rules", () => {
-  assert.deepEqual(Object.keys(policy), ["buildInstructions"]);
+  assert.deepEqual(Object.keys(policy), ["buildInstructions", "buildReminder"]);
   const instructions = policy.buildInstructions();
   assert.equal(instructions.match(/NECKTIE ACTIVE/g)?.length, 1);
   assert.match(instructions, /Let Necktie decide/);

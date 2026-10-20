@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/necktie-context.js\" UserPromptSubmit claude",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/necktie-context.js\" UserPromptSubmit claude reminder",
             "additionalContextLimit": 2400
           }
         ]

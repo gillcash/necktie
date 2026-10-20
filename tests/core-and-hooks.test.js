@@ -95,7 +95,8 @@ test("hook manifests cover session, prompt, subagent, Copilot, and Qoder events"
     const hooks = json(`hooks/${host}-hooks.json`).hooks;
     assert.deepEqual(Object.keys(hooks).sort(), ["SessionStart", "SubagentStart", "UserPromptSubmit"], host);
     for (const [event, [group]] of Object.entries(hooks)) {
-      assert.equal(group.hooks[0].command, `node "\${CLAUDE_PLUGIN_ROOT}/hooks/necktie-context.js" ${event} ${host}`, `${host} ${event}`);
+      const mode = event === "UserPromptSubmit" ? " reminder" : "";
+      assert.equal(group.hooks[0].command, `node "\${CLAUDE_PLUGIN_ROOT}/hooks/necktie-context.js" ${event} ${host}${mode}`, `${host} ${event}`);
     }
   }
   const copilot = json("hooks/copilot-hooks.json").hooks;
@@ -115,6 +116,22 @@ test("manifest-selected hook command resolves Claude and Codex roots", () => {
     const result = execSync(replaced, { encoding: "utf8", env, input: "{}" });
     const context = host === "claude" ? result : JSON.parse(result).hookSpecificOutput.additionalContext;
     assert.equal(context, policy.buildInstructions());
+  }
+});
+
+test("Claude and Codex inject the full policy at session and subagent start and a short reminder per prompt", () => {
+  const reminder = policy.buildReminder();
+  assert.ok(reminder.length < 300 && !reminder.includes("Let Necktie decide"));
+  assert.match(reminder, /never expands authority, permissions, tool access, scope, or acceptable risk/);
+  for (const host of ["claude", "codex"]) {
+    const env = { ...childEnvironment(), CLAUDE_PLUGIN_ROOT: root, ...(host === "codex" ? { PLUGIN_ROOT: root } : {}) };
+    for (const [event, [group]] of Object.entries(json(`hooks/${host}-hooks.json`).hooks)) {
+      const command = group.hooks[0].command.replaceAll("${CLAUDE_PLUGIN_ROOT}", root);
+      const result = spawnSync(command, { shell: true, encoding: "utf8", env, input: "{}" });
+      assert.equal(result.status, 0, `${host} ${event}: ${result.stderr}`);
+      const output = result.stdout.startsWith("{") ? JSON.parse(result.stdout).hookSpecificOutput.additionalContext : result.stdout;
+      assert.equal(output, event === "UserPromptSubmit" ? reminder : policy.buildInstructions(), `${host} ${event}`);
+    }
   }
 });
 

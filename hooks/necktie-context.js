@@ -3,7 +3,7 @@
 
 const path = require("node:path");
 
-const { buildInstructions } = require("../lib/necktie-policy.cjs");
+const { buildInstructions, buildReminder } = require("../lib/necktie-policy.cjs");
 
 function pluginRoot(env = process.env) {
   return env.PLUGIN_ROOT || env.CLAUDE_PLUGIN_ROOT || path.resolve(__dirname, "..");
@@ -22,9 +22,10 @@ function resolveHost(hint = "", env = process.env) {
   return named;
 }
 
-function evaluate(env = process.env, hint = "") {
+function evaluate(env = process.env, hint = "", mode = "full") {
+  const policy = buildInstructions({ root: pluginRoot(env) });
   return {
-    context: buildInstructions({ root: pluginRoot(env) }),
+    context: mode === "reminder" ? buildReminder() : policy,
     host: resolveHost(hint, env),
   };
 }
@@ -71,7 +72,7 @@ async function main(argv = process.argv.slice(2), env = process.env, options = {
   try {
     const event = argv[0] || "SessionStart";
     await readHookInput(options.stdin || process.stdin, options.timeoutMs || 1000);
-    const evaluated = evaluate(env, argv[1]);
+    const evaluated = evaluate(env, argv[1], argv[2]);
     const result = hostPayload(event, evaluated.context, evaluated.host);
     process.stdout.write(typeof result === "string" ? result : JSON.stringify(result));
     return result;

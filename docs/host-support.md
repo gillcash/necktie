@@ -4,7 +4,7 @@
 
 | Adapter | Hosts | Activation |
 | --- | --- | --- |
-| Lifecycle hooks | Claude Code, Codex, Copilot CLI, Qoder | Bundled policy is added through native instruction events. |
+| Lifecycle hooks | Claude Code, Codex, Copilot CLI, Qoder | Claude Code and Codex add the full policy at session start (including resume, clear, and compaction) and subagent start, plus a one-sentence reminder with each prompt. Copilot CLI adds it at session start. Qoder adds it with each prompt and at subagent start. |
 | Model-call hook | Hermes | Bundled policy is added before each model call. |
 | Chat/session hooks | OpenCode 2 and OpenCode 1.18.29+ | Bundled policy is appended to context; v2 also preserves it during compaction. |
 | Agent-start hook | Pi | Bundled policy is appended before each run. |
