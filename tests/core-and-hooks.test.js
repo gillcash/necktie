@@ -82,8 +82,8 @@ test("hook manifests cover session, prompt, subagent, Copilot, and Qoder events"
   const copilot = json("hooks/copilot-hooks.json").hooks;
   assert.deepEqual(Object.keys(copilot), ["sessionStart"]);
   const qoder = json("hooks/qoder-hooks.json").hooks;
-  assert.ok(qoder.UserPromptSubmit);
-  assert.equal(qoder.PreToolUse[0].matcher, "task|Task");
+  assert.deepEqual(Object.keys(qoder).sort(), ["SubagentStart", "UserPromptSubmit"]);
+  assert.equal(qoder.SubagentStart[0].matcher, undefined);
 });
 
 test("manifest-selected hook command resolves Claude and Codex roots", () => {
@@ -110,6 +110,23 @@ test("Qoder plugin hooks resolve the script from QODER_PLUGIN_ROOT, not the proj
     const result = spawnSync(shellCommand, { shell: true, cwd: project, encoding: "utf8", env, input: "{}" });
     assert.equal(result.status, 0, `${event}: ${result.stderr}`);
     assert.equal(JSON.parse(result.stdout).hookSpecificOutput.additionalContext, policy.buildInstructions(), event);
+  }
+});
+
+test("Qoder manifest commands emit context for the event that invoked them", (t) => {
+  const project = temporary(t);
+  const env = { ...childEnvironment(), QODER_PLUGIN_ROOT: root, QODER_SESSION_ID: "session" };
+  for (const [event, [group]] of Object.entries(json("hooks/qoder-hooks.json").hooks)) {
+    const command = group.hooks[0].command;
+    const shellCommand = process.platform === "win32" ? command.replaceAll("${QODER_PLUGIN_ROOT}", root) : command;
+    const result = spawnSync(shellCommand, {
+      shell: true, cwd: project, encoding: "utf8", env,
+      input: JSON.stringify({ hook_event_name: event }),
+    });
+    assert.equal(result.status, 0, `${event}: ${result.stderr}`);
+    const output = JSON.parse(result.stdout).hookSpecificOutput;
+    assert.equal(output.hookEventName, event, event);
+    assert.equal(output.additionalContext, policy.buildInstructions(), event);
   }
 });
 
