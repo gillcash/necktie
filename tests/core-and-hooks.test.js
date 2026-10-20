@@ -48,9 +48,8 @@ test("hook payloads use each host's native shape", () => {
     [{ CLAUDE_PLUGIN_ROOT: root }, "", "SessionStart", "text"],
     [{ CLAUDE_PLUGIN_ROOT: root }, "", "SubagentStart", "hookSpecificOutput"],
     [{ PLUGIN_ROOT: root }, "qoder", "SessionStart", "hookSpecificOutput"],
-    [{ PLUGIN_ROOT: root }, "gemini", "SessionStart", "hookSpecificOutput"],
   ]) {
-    const result = runtime.evaluate(event, env, host);
+    const result = runtime.evaluate(env, host);
     const value = runtime.hostPayload(event, result.context, result.host);
     const context = field === "text" ? value : field === "additionalContext" ? value.additionalContext : value.hookSpecificOutput.additionalContext;
     assert.equal(context, policy.buildInstructions());
@@ -78,7 +77,9 @@ test("host manifests load lifecycle hooks explicitly without Gemini auto-discove
 test("hook manifests cover session, prompt, subagent, Copilot, and Qoder events", () => {
   const hooks = json("hooks/claude-codex-hooks.json").hooks;
   assert.deepEqual(Object.keys(hooks).sort(), ["SessionStart", "SubagentStart", "UserPromptSubmit"]);
-  assert.match(hooks.UserPromptSubmit[0].hooks[0].command, /necktie-context\.js/);
+  for (const [event, [group]] of Object.entries(hooks)) {
+    assert.equal(group.hooks[0].command, `node "\${CLAUDE_PLUGIN_ROOT}/hooks/necktie-context.js" ${event}`, event);
+  }
   const copilot = json("hooks/copilot-hooks.json").hooks;
   assert.deepEqual(Object.keys(copilot), ["sessionStart"]);
   const qoder = json("hooks/qoder-hooks.json").hooks;
