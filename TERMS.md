@@ -6,7 +6,7 @@ These terms apply to the public Necktie plugin and its adapters for every suppor
 
 ## What Necktie provides
 
-Necktie provides reusable skills for examining incentives, metrics, power, externalities, and hidden costs, and for creating structured research briefs. On supported hosts, hooks or rule files also add its policy to the agent's context automatically. Its default objective is to maximize the beneficiary's expected net wealth. It does not provide a hosted service, user account, or professional advisory relationship.
+Necktie provides reusable skills for examining incentives, metrics, power, externalities, and hidden costs, and for creating structured research briefs. On hosts with hooks or rule-file support, hooks or rule files also add its policy to the agent's context automatically. Its default objective is to maximize the beneficiary's expected net wealth. It does not provide a hosted service, user account, or professional advisory relationship.
 
 ## Your responsibilities
 
