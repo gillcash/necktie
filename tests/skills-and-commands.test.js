@@ -28,7 +28,7 @@ test("skill frontmatter stays minimal and mode selection is one-shot", () => {
   assert.match(skill, /references\/.*lite\.md.*full\.md.*mammon\.md/s);
   assert.match(skill, /never expands authority, permissions, tool access/i);
   assert.match(skill, /do not invent an `off` mode/i);
-  assert.match(skill, /only Mammon's conclusion without a Necktie rebuttal/i);
+  assert.match(skill, /In Mammon mode, return only Mammon's conclusion without a Necktie rebuttal/i);
   assert.match(skill, /necktie-research\/SKILL\.md/);
 
   const openai = fs.readFileSync(path.join(root, "skills", "necktie", "agents", "openai.yaml"), "utf8");
@@ -47,6 +47,8 @@ test("research skill uses a bounded, copy-ready prompt loop", () => {
   assert.match(protocol, /reference output/i);
   assert.match(protocol, /KPI research prompt checklist/i);
   assert.match(protocol, /maximum of three revision passes.*five at `deep`/i);
+  assert.match(protocol, /For Mammon-origin prompts, preserve the beneficiary's wealth-accumulation objective and the Mammon policy's binding safeguards/i);
+  assert.match(protocol, /Do not weaken evidence standards or conceal downside risk/i);
   assert.match(openai, /\$necktie-research/);
   assert.match(openai, /allow_implicit_invocation:\s*true/);
 });
