@@ -1,6 +1,6 @@
 {
   "name": "necktie-mcp",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Optional MCP adapter for Necktie instructions.",
   "private": true,
   "type": "module",
