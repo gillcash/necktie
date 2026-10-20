@@ -1,6 +1,6 @@
 {
   "name": "necktie",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "Necktie agent plugin.",
   "contextFileName": "AGENTS.md"
 }
