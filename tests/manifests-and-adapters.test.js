@@ -84,6 +84,22 @@ test("marketplace copy describes utility without internal framing", () => {
   }
 });
 
+test("public copy states the default objective", () => {
+  const objective = /Default objective:(?:\*\*)? maximize the beneficiary's expected net wealth\./;
+  assert.match(fs.readFileSync(path.join(root, "README.md"), "utf8"), objective);
+  assert.match(fs.readFileSync(path.join(root, "plugin.yaml"), "utf8"), /^description: ".*Default objective: maximize the beneficiary's expected net wealth\."$/m);
+  for (const relative of [
+    "package.json", "plugin.json", "gemini-extension.json",
+    ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json", ".codex-plugin/plugin.json",
+    ".devin-plugin/plugin.json", ".github/plugin/plugin.json", ".github/plugin/marketplace.json",
+    ".grok-plugin/marketplace.json", ".qoder-plugin/plugin.json",
+  ]) {
+    const manifest = JSON.parse(fs.readFileSync(path.join(root, relative), "utf8"));
+    const descriptions = [manifest.description, manifest.interface?.longDescription, ...(manifest.plugins || []).map((plugin) => plugin.description)];
+    for (const description of descriptions.filter((value) => value !== undefined)) assert.match(description, objective, relative);
+  }
+});
+
 test("OpenAI submission materials contain the required review cases and public policies", () => {
   const submission = fs.readFileSync(path.join(root, "docs", "openai-submission.md"), "utf8");
   for (const id of ["P1", "P2", "P3", "P4", "P5", "N1", "N2", "N3"]) {

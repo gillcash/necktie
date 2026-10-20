@@ -1,6 +1,6 @@
 {
   "name": "necktie",
   "version": "0.7.0",
-  "description": "Necktie agent plugin.",
+  "description": "Necktie agent plugin. Default objective: maximize the beneficiary's expected net wealth.",
   "contextFileName": "AGENTS.md"
 }

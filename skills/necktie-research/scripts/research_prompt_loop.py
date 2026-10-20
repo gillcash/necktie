@@ -21,6 +21,7 @@ def build_parser() -> argparse.ArgumentParser:
     initialize.add_argument("--goal", required=True)
     initialize.add_argument("--depth", choices=sorted(REVISION_LIMITS), default="standard")
     initialize.add_argument("--output", dest="file", type=Path, required=True)
+    initialize.add_argument("--force", action="store_true", help="replace an existing run packet")
     parsers = {name: commands.add_parser(name, help=help_text) for name, help_text in {
         "transition": "advance to an allowed phase",
         "review": "record a frozen-draft review decision",
@@ -42,7 +43,10 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv=None) -> int:
     options = vars(build_parser().parse_args(argv))
     command, path = options.pop("command"), options.pop("file")
+    force = options.pop("force", False)
     try:
+        if command == "init" and path.exists() and not force:
+            raise LoopError(f"{path} already exists; pass --force to replace it")
         packet = new_packet(**options) if command == "init" else load_packet(path)
         if command == "show":
             print(json.dumps(packet, indent=2, ensure_ascii=False))

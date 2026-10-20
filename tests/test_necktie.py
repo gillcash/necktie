@@ -4,6 +4,8 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -178,6 +180,55 @@ class ResearchPromptLoopTests(unittest.TestCase):
             self.assertEqual(len(packet["history"]), 9)
             self.assertEqual(run("transition", "--file", str(path), "--to", "review").returncode, 2)
             self.assertEqual(path.read_bytes(), before)
+
+    def test_init_refuses_to_replace_an_existing_packet_without_force(self):
+        with tempfile.TemporaryDirectory() as directory:
+            copied = Path(directory) / "scripts"
+            shutil.copytree(SCRIPTS, copied, ignore=shutil.ignore_patterns("__pycache__"))
+            path = Path(directory) / "packet.json"
+            def run(*args):
+                return subprocess.run([sys.executable, str(copied / "research_prompt_loop.py"), *args], cwd=directory, capture_output=True, text=True)
+            self.assertEqual(run("init", "--goal", "First run", "--output", str(path)).returncode, 0)
+            self.assertEqual(run("transition", "--file", str(path), "--to", "discover").returncode, 0)
+            before = path.read_bytes()
+            refused = run("init", "--goal", "Second run", "--output", str(path))
+            self.assertEqual(refused.returncode, 2)
+            self.assertIn("--force", refused.stderr)
+            self.assertEqual(path.read_bytes(), before)
+            self.assertEqual(run("init", "--goal", "Second run", "--output", str(path), "--force").returncode, 0)
+            replaced = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual((replaced["goal"], replaced["state"], len(replaced["history"])), ("Second run", "intake", 1))
+            self.assertNotEqual(replaced["run_id"], json.loads(before)["run_id"])
+
+    def test_documented_controller_commands_run_from_a_user_project(self):
+        for skill in (ROOT / "skills" / "necktie-research", ROOT / ".openclaw" / "skills" / "necktie-research"):
+            with self.subTest(skill=skill.relative_to(ROOT).as_posix()), tempfile.TemporaryDirectory() as directory:
+                installed = Path(directory) / "plugin cache" / skill.name
+                shutil.copytree(skill, installed, ignore=shutil.ignore_patterns("__pycache__"))
+                project = Path(directory) / "project"
+                project.mkdir()
+                text = (installed / "SKILL.md").read_text(encoding="utf-8")
+                block = re.search(r"```text\n([^`]*research_prompt_loop\.py[^`]*)```", text).group(1)
+
+                def resolve(token):
+                    if token == "<python>":
+                        return sys.executable
+                    return str(installed / token.removeprefix("<skill-dir>/")) if token.startswith("<skill-dir>/") else token
+
+                init, transition, review, verify = ([resolve(token) for token in shlex.split(line)] for line in block.splitlines() if line.strip())
+                controller, packet = init[:2], ".necktie/research-prompt.json"
+                self.assertTrue(all(argv[:2] == controller for argv in (transition, review, verify)))
+                steps = [init, transition,
+                         *([*controller, "transition", "--file", packet, "--to", state]
+                           for state in ("fingerprint", "critique", "blueprint", "draft", "review")),
+                         review,
+                         [*controller, "transition", "--file", packet, "--to", "review"],
+                         [*controller, "review", "--file", packet, "--decision", "APPROVE", "--reason", "Revised"],
+                         verify]
+                for argv in steps:
+                    result = subprocess.run(argv, cwd=project, capture_output=True, text=True)
+                    self.assertEqual(result.returncode, 0, f"{argv[2:]}: {result.stderr}")
+                self.assertEqual(json.loads((project / packet).read_text(encoding="utf-8"))["state"], "complete")
 
 
 if __name__ == "__main__":

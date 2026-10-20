@@ -80,11 +80,10 @@ test("hook manifests cover session, prompt, subagent, Copilot, and Qoder events"
   assert.deepEqual(Object.keys(hooks).sort(), ["SessionStart", "SubagentStart", "UserPromptSubmit"]);
   assert.match(hooks.UserPromptSubmit[0].hooks[0].command, /necktie-context\.js/);
   const copilot = json("hooks/copilot-hooks.json").hooks;
-  assert.ok(copilot.sessionStart);
-  assert.ok(copilot.userPromptSubmitted);
+  assert.deepEqual(Object.keys(copilot), ["sessionStart"]);
   const qoder = json("hooks/qoder-hooks.json").hooks;
-  assert.ok(qoder.UserPromptSubmit);
-  assert.equal(qoder.PreToolUse[0].matcher, "task|Task");
+  assert.deepEqual(Object.keys(qoder).sort(), ["SubagentStart", "UserPromptSubmit"]);
+  assert.equal(qoder.SubagentStart[0].matcher, undefined);
 });
 
 test("manifest-selected hook command resolves Claude and Codex roots", () => {
@@ -97,6 +96,37 @@ test("manifest-selected hook command resolves Claude and Codex roots", () => {
     const result = execSync(replaced, { encoding: "utf8", env, input: "{}" });
     const context = host === "claude" ? result : JSON.parse(result).hookSpecificOutput.additionalContext;
     assert.equal(context, policy.buildInstructions());
+  }
+});
+
+test("Qoder plugin hooks resolve the script from QODER_PLUGIN_ROOT, not the project directory", (t) => {
+  const project = temporary(t);
+  const env = { ...childEnvironment(), QODER_PLUGIN_ROOT: root, QODER_SESSION_ID: "session" };
+  for (const [event, [group]] of Object.entries(json("hooks/qoder-hooks.json").hooks)) {
+    const command = group.hooks[0].command;
+    assert.doesNotMatch(command, /NECKTIE_DIR/, event);
+    assert.match(command, /^node "\$\{QODER_PLUGIN_ROOT\}\/hooks\/necktie-context\.js" /, event);
+    const shellCommand = process.platform === "win32" ? command.replaceAll("${QODER_PLUGIN_ROOT}", root) : command;
+    const result = spawnSync(shellCommand, { shell: true, cwd: project, encoding: "utf8", env, input: "{}" });
+    assert.equal(result.status, 0, `${event}: ${result.stderr}`);
+    assert.equal(JSON.parse(result.stdout).hookSpecificOutput.additionalContext, policy.buildInstructions(), event);
+  }
+});
+
+test("Qoder manifest commands emit context for the event that invoked them", (t) => {
+  const project = temporary(t);
+  const env = { ...childEnvironment(), QODER_PLUGIN_ROOT: root, QODER_SESSION_ID: "session" };
+  for (const [event, [group]] of Object.entries(json("hooks/qoder-hooks.json").hooks)) {
+    const command = group.hooks[0].command;
+    const shellCommand = process.platform === "win32" ? command.replaceAll("${QODER_PLUGIN_ROOT}", root) : command;
+    const result = spawnSync(shellCommand, {
+      shell: true, cwd: project, encoding: "utf8", env,
+      input: JSON.stringify({ hook_event_name: event }),
+    });
+    assert.equal(result.status, 0, `${event}: ${result.stderr}`);
+    const output = JSON.parse(result.stdout).hookSpecificOutput;
+    assert.equal(output.hookEventName, event, event);
+    assert.equal(output.additionalContext, policy.buildInstructions(), event);
   }
 });
 
@@ -119,6 +149,25 @@ test("hook exits when stdin never closes", async () => {
   });
   assert.equal(code, 0);
   assert.equal(Buffer.concat(output).toString("utf8"), policy.buildInstructions());
+});
+
+test("manifest launchers fail like the direct hook when the policy is unreadable", (t) => {
+  const broken = temporary(t);
+  for (const relative of ["hooks/necktie-context.js", "lib/necktie-policy.cjs"]) {
+    fs.mkdirSync(path.join(broken, path.dirname(relative)), { recursive: true });
+    fs.copyFileSync(path.join(root, relative), path.join(broken, relative));
+  }
+  const env = { ...childEnvironment(), CLAUDE_PLUGIN_ROOT: broken };
+  const outcome = (result) => [result.status, result.stdout, result.stderr];
+  const direct = spawnSync(process.execPath, [path.join(broken, "hooks/necktie-context.js"), "SessionStart"], { encoding: "utf8", env, input: "{}" });
+  assert.deepEqual(outcome(direct), [0, "", ""]);
+  for (const [event, [group]] of Object.entries(json("hooks/claude-codex-hooks.json").hooks)) {
+    const command = group.hooks[0].command.replaceAll("${CLAUDE_PLUGIN_ROOT}", broken);
+    for (const [host, hostEnv] of [["claude", env], ["codex", { ...env, PLUGIN_ROOT: broken, PLUGIN_DATA: path.join(broken, "data") }]]) {
+      const launched = spawnSync(command, { shell: true, encoding: "utf8", env: hostEnv, input: "{}" });
+      assert.deepEqual(outcome(launched), outcome(direct), `${host} ${event}`);
+    }
+  }
 });
 
 test("a policy read failure does not block the host", (t) => {

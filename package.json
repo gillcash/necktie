@@ -1,6 +1,7 @@
 {
   "name": "@gillcash/necktie",
   "version": "0.7.0",
+  "description": "Necktie agent plugin. Default objective: maximize the beneficiary's expected net wealth.",
   "keywords": ["agent-plugin", "incentives", "power", "externalities", "opinionated-agent", "research-prompts"],
   "license": "MIT",
   "author": {

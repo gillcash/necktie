@@ -37,13 +37,13 @@ Freeze the draft before each review. Return `APPROVE`, `REVISE`, or `BLOCK` inte
 
 Lead the handoff with the final prompt in one `text` code block. Then list only material usage instructions, assumed inputs, and unresolved limitations. Save the prompt to a file only when the user requests a file or the surrounding task already authorizes artifact creation.
 
-For an audit trail or resumable run, use:
+For an audit trail or resumable run, run the bundled controller from the user's project directory. Replace `<skill-dir>` with the directory that contains this `SKILL.md`, and `<python>` with a Python 3 command (`python3`; on Windows, `py -3` or `python`):
 
 ```text
-python skills/necktie-research/scripts/research_prompt_loop.py init --goal "..." --depth standard --output .necktie/research-prompt.json
-python skills/necktie-research/scripts/research_prompt_loop.py transition --file .necktie/research-prompt.json --to discover --note "Candidate context located"
-python skills/necktie-research/scripts/research_prompt_loop.py review --file .necktie/research-prompt.json --decision REVISE --reason "Output schema is underspecified" --issue-signature schema-gap
-python skills/necktie-research/scripts/research_prompt_loop.py verify --file .necktie/research-prompt.json --result PASS --reason "Fresh-session completeness check passed"
+<python> "<skill-dir>/scripts/research_prompt_loop.py" init --goal "..." --depth standard --output .necktie/research-prompt.json
+<python> "<skill-dir>/scripts/research_prompt_loop.py" transition --file .necktie/research-prompt.json --to discover --note "Candidate context located"
+<python> "<skill-dir>/scripts/research_prompt_loop.py" review --file .necktie/research-prompt.json --decision REVISE --reason "Output schema is underspecified" --issue-signature schema-gap
+<python> "<skill-dir>/scripts/research_prompt_loop.py" verify --file .necktie/research-prompt.json --result PASS --reason "Fresh-session completeness check passed"
 ```
 
-The controller records phase decisions, not private reasoning. Persistence is optional; the bounded process is not.
+`init` refuses to replace an existing packet; pass `--force` only when the user wants to discard it. The controller records phase decisions, not private reasoning. Persistence is optional; the bounded process is not.

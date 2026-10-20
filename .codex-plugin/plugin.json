@@ -1,7 +1,7 @@
 {
   "name": "necktie",
   "version": "0.7.0",
-  "description": "Necktie agent plugin.",
+  "description": "Necktie agent plugin. Default objective: maximize the beneficiary's expected net wealth.",
   "author": {
     "name": "gillcash",
     "url": "https://github.com/gillcash"
@@ -15,7 +15,7 @@
   "interface": {
     "displayName": "Necktie",
     "shortDescription": "Necktie decision support",
-    "longDescription": "Necktie agent plugin.",
+    "longDescription": "Necktie agent plugin. Default objective: maximize the beneficiary's expected net wealth. Necktie ranks feasible moves by captured value after costs and obligations, breaks near-ties toward more capture, identifies who pays, and discloses material downsides.",
     "developerName": "gillcash",
     "category": "Productivity",
     "capabilities": ["Decision support", "Research-prompt construction"],
