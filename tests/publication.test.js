@@ -54,6 +54,17 @@ test("publication verification retries registry visibility and fails after twelv
   }
 });
 
+test("the test workflow pins actions to commit SHAs and reads with a read-only token", () => {
+  const testWorkflow = fs.readFileSync(path.join(__dirname, "../.github/workflows/test.yml"), "utf8").replace(/\r\n/g, "\n");
+  const uses = [...testWorkflow.matchAll(/^\s+- uses: (\S+)(.*)$/gm)];
+  assert.ok(uses.length >= 3);
+  for (const [, action, comment] of uses) {
+    assert.match(action, /^[\w.-]+\/[\w.-]+@[0-9a-f]{40}$/, action);
+    assert.match(comment, /^ # v\d+\.\d+\.\d+$/, action);
+  }
+  assert.match(testWorkflow, /^permissions:\n  contents: read$/m);
+});
+
 test("only a dependency-free job that follows verification can request an OIDC token", () => {
   const { verify, publish, ...others } = jobs();
   assert.deepEqual(Object.keys(others), []);
