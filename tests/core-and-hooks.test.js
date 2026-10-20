@@ -80,8 +80,7 @@ test("hook manifests cover session, prompt, subagent, Copilot, and Qoder events"
   assert.deepEqual(Object.keys(hooks).sort(), ["SessionStart", "SubagentStart", "UserPromptSubmit"]);
   assert.match(hooks.UserPromptSubmit[0].hooks[0].command, /necktie-context\.js/);
   const copilot = json("hooks/copilot-hooks.json").hooks;
-  assert.ok(copilot.sessionStart);
-  assert.ok(copilot.userPromptSubmitted);
+  assert.deepEqual(Object.keys(copilot), ["sessionStart"]);
   const qoder = json("hooks/qoder-hooks.json").hooks;
   assert.ok(qoder.UserPromptSubmit);
   assert.equal(qoder.PreToolUse[0].matcher, "task|Task");
