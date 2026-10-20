@@ -25,7 +25,7 @@ test("live MCP exposes one argument-free prompt and a strictly validated read-on
     env: { ...process.env, NECKTIE_DEFAULT_MODE: "lite", APPDATA: directory, XDG_CONFIG_HOME: directory },
     stderr: "pipe",
   });
-  const client = new Client({ name: "necktie-test", version: "0.6.2" });
+  const client = new Client({ name: "necktie-test", version: "0.7.0" });
   try {
     await client.connect(transport);
     const prompts = await client.listPrompts();
