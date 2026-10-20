@@ -148,6 +148,8 @@ test("package exposes the OpenCode adapter and uses generated-policy checks", ()
   assert.equal(pkg.scripts["build:adapters"], "node scripts/build-adapters.js");
   assert.equal(pkg.scripts["check:adapters"], "node scripts/build-adapters.js --check");
   assert.match(pkg.scripts.test, /^npm run check:adapters && /);
+  assert.deepEqual(pkg.engines, { node: ">=22" });
+  assert.equal(pkg.type, undefined);
 });
 
 test("npm package keeps the logo and leaves out the icon pack preview", () => {

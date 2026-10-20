@@ -60,6 +60,8 @@ Every adapter uses the same policy. Previous selectors and configuration no long
 
 ## Develop
 
+Development and the test suite require Node.js 22 or later and Python 3.10 or later.
+
 ```bash
 npm ci --prefix necktie-mcp
 npm run build:adapters

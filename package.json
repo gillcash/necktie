@@ -52,6 +52,9 @@
     "extensions": ["./pi-extension/index.js"],
     "skills": ["./skills"]
   },
+  "engines": {
+    "node": ">=22"
+  },
   "publishConfig": {
     "access": "public"
   }
