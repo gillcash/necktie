@@ -46,4 +46,4 @@ python skills/necktie-research/scripts/research_prompt_loop.py review --file .ne
 python skills/necktie-research/scripts/research_prompt_loop.py verify --file .necktie/research-prompt.json --result PASS --reason "Fresh-session completeness check passed"
 ```
 
-The controller records phase decisions, not private reasoning. Persistence is optional; the bounded process is not.
+`init` refuses to replace an existing packet; pass `--force` only when the user wants to discard it. The controller records phase decisions, not private reasoning. Persistence is optional; the bounded process is not.

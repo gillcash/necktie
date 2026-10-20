@@ -179,6 +179,25 @@ class ResearchPromptLoopTests(unittest.TestCase):
             self.assertEqual(run("transition", "--file", str(path), "--to", "review").returncode, 2)
             self.assertEqual(path.read_bytes(), before)
 
+    def test_init_refuses_to_replace_an_existing_packet_without_force(self):
+        with tempfile.TemporaryDirectory() as directory:
+            copied = Path(directory) / "scripts"
+            shutil.copytree(SCRIPTS, copied, ignore=shutil.ignore_patterns("__pycache__"))
+            path = Path(directory) / "packet.json"
+            def run(*args):
+                return subprocess.run([sys.executable, str(copied / "research_prompt_loop.py"), *args], cwd=directory, capture_output=True, text=True)
+            self.assertEqual(run("init", "--goal", "First run", "--output", str(path)).returncode, 0)
+            self.assertEqual(run("transition", "--file", str(path), "--to", "discover").returncode, 0)
+            before = path.read_bytes()
+            refused = run("init", "--goal", "Second run", "--output", str(path))
+            self.assertEqual(refused.returncode, 2)
+            self.assertIn("--force", refused.stderr)
+            self.assertEqual(path.read_bytes(), before)
+            self.assertEqual(run("init", "--goal", "Second run", "--output", str(path), "--force").returncode, 0)
+            replaced = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual((replaced["goal"], replaced["state"], len(replaced["history"])), ("Second run", "intake", 1))
+            self.assertNotEqual(replaced["run_id"], json.loads(before)["run_id"])
+
 
 if __name__ == "__main__":
     unittest.main()
