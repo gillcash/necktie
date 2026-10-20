@@ -6,6 +6,8 @@
 
 <p align="center"><em>He follows the money. He finds the hidden cost. He takes a side.</em></p>
 
+[Grok bot](https://x.ai/bot/Pk932QIzxkYs8bQJVB8Je)
+
 ## Install
 
 | Host | Install |
