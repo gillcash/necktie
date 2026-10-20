@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import shlex
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -155,6 +156,17 @@ class ResearchPromptLoopTests(unittest.TestCase):
             with self.assertRaises(research_loop.LoopError):
                 research_loop.record_review(packet, decision, reason, signature)
             self.assertEqual(json.dumps(packet), before)
+
+    @unittest.skipIf(os.name == "nt", "POSIX permission bits")
+    def test_saves_keep_the_packet_file_mode(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "packet.json"
+            packet = self.packet()
+            research_loop.save_packet(target, packet)
+            self.assertEqual(stat.S_IMODE(target.stat().st_mode), 0o600)
+            target.chmod(0o640)
+            research_loop.save_packet(target, research_loop.load_packet(target))
+            self.assertEqual(stat.S_IMODE(target.stat().st_mode), 0o640)
 
     def test_failed_atomic_writes_preserve_old_file_and_cleanup(self):
         with tempfile.TemporaryDirectory() as directory:

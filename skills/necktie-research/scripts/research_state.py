@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import stat
 from tempfile import mkstemp
 import uuid
 
@@ -83,6 +84,10 @@ def load_packet(path: Path) -> dict:
 
 
 def save_packet(path: Path, packet: dict) -> None:
+    """Atomically replace the packet, keeping an existing file's permission bits.
+
+    New packets are created owner-only. Nothing is locked, so only one writer may update a packet at a time.
+    """
     validate_packet(packet)
     packet["updated_at"] = utc_now()
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -92,6 +97,8 @@ def save_packet(path: Path, packet: dict) -> None:
         with os.fdopen(descriptor, "w", encoding="utf-8") as temporary:
             json.dump(packet, temporary, indent=2, ensure_ascii=False)
             temporary.write("\n")
+        with suppress(FileNotFoundError):
+            os.chmod(pending, stat.S_IMODE(path.stat().st_mode))
         pending.replace(path)
     finally:
         with suppress(OSError):

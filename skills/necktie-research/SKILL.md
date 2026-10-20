@@ -44,4 +44,4 @@ For an audit trail or resumable run, run the bundled controller from the user's 
 <python> "<skill-dir>/scripts/research_prompt_loop.py" verify --file .necktie/research-prompt.json --result PASS --reason "Fresh-session completeness check passed"
 ```
 
-`init` refuses to replace an existing packet; pass `--force` only when the user wants to discard it. The controller records phase decisions, not private reasoning. Persistence is optional; the bounded process is not.
+`init` refuses to replace an existing packet; pass `--force` only when the user wants to discard it. Run one controller command at a time per packet, because the controller does not lock the file. The controller records phase decisions, not private reasoning. Persistence is optional; the bounded process is not.
