@@ -100,6 +100,20 @@ test("manifest-selected hook command resolves Claude and Codex roots", () => {
   }
 });
 
+test("Qoder plugin hooks resolve the script from QODER_PLUGIN_ROOT, not the project directory", (t) => {
+  const project = temporary(t);
+  const env = { ...childEnvironment(), QODER_PLUGIN_ROOT: root, QODER_SESSION_ID: "session" };
+  for (const [event, [group]] of Object.entries(json("hooks/qoder-hooks.json").hooks)) {
+    const command = group.hooks[0].command;
+    assert.doesNotMatch(command, /NECKTIE_DIR/, event);
+    assert.match(command, /^node "\$\{QODER_PLUGIN_ROOT\}\/hooks\/necktie-context\.js" /, event);
+    const shellCommand = process.platform === "win32" ? command.replaceAll("${QODER_PLUGIN_ROOT}", root) : command;
+    const result = spawnSync(shellCommand, { shell: true, cwd: project, encoding: "utf8", env, input: "{}" });
+    assert.equal(result.status, 0, `${event}: ${result.stderr}`);
+    assert.equal(JSON.parse(result.stdout).hookSpecificOutput.additionalContext, policy.buildInstructions(), event);
+  }
+});
+
 test("hook input tolerates BOM and invalid JSON", async () => {
   for (const [input, expected] of [["\uFEFF{}", {}], ["not json", {}], ["", {}]]) {
     assert.deepEqual(await runtime.readHookInput(Readable.from([input])), expected);

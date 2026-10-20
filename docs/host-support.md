@@ -20,7 +20,7 @@ Installation commands for primary hosts are in the [README](../README.md). Addit
 | Grok Build | `grok plugin install gillcash/necktie --trust` |
 | Swival | `swival skills add --global https://github.com/gillcash/necktie` |
 | OpenClaw | `clawhub install necktie` or copy `.openclaw/skills/necktie/` |
-| Qoder | `.qoder/rules/necktie.md` and optional `hooks/qoder-hooks.json` |
+| Qoder | `.qoder/rules/necktie.md`; for settings-level hooks, copy the `hooks` object from `hooks/qoder-hooks.json` and replace `${QODER_PLUGIN_ROOT}` with the absolute path to this checkout |
 | Cursor | `.cursor/rules/necktie.mdc` |
 | Windsurf | `.windsurf/rules/necktie.md` |
 | Cline | `.clinerules/necktie.md` |
