@@ -37,7 +37,7 @@ git clone https://github.com/gillcash/necktie.git ~/.hermes/plugins/necktie
 hermes plugins enable necktie
 ```
 
-Claude and Codex explicitly load `hooks/claude-codex-hooks.json`. There is no `hooks/hooks.json`, because Gemini auto-discovers that path with a different event contract. Gemini reads `AGENTS.md` instead. The root `plugin.json` omits the Agent Plugins schema to preserve native hook loading.
+Claude and Codex explicitly load `hooks/claude-hooks.json` and `hooks/codex-hooks.json`, and each hook passes its host name to `hooks/necktie-context.js`. VS Code runs the Claude manifest's hooks; the script recognizes VS Code agent-plugin roots with either path separator. There is no `hooks/hooks.json`, because Gemini auto-discovers that path with a different event contract. Gemini reads `AGENTS.md` instead. The root `plugin.json` omits the Agent Plugins schema to preserve native hook loading.
 
 ## Verify
 

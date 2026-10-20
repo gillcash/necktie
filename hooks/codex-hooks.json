@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/necktie-context.js\" SessionStart",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/necktie-context.js\" SessionStart codex",
             "additionalContextLimit": 2400
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/necktie-context.js\" SubagentStart",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/necktie-context.js\" SubagentStart codex",
             "additionalContextLimit": 2400
           }
         ]
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/necktie-context.js\" UserPromptSubmit",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/necktie-context.js\" UserPromptSubmit codex",
             "additionalContextLimit": 2400
           }
         ]

@@ -11,7 +11,7 @@
   "license": "MIT",
   "keywords": ["incentives", "power", "externalities", "opinionated-agent"],
   "skills": "./skills/",
-  "hooks": "./hooks/claude-codex-hooks.json",
+  "hooks": "./hooks/codex-hooks.json",
   "interface": {
     "displayName": "Necktie",
     "shortDescription": "Necktie decision support",

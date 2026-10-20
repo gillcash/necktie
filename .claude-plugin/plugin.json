@@ -11,5 +11,5 @@
   "license": "MIT",
   "commands": "./commands/",
   "skills": "./skills/",
-  "hooks": "./hooks/claude-codex-hooks.json"
+  "hooks": "./hooks/claude-hooks.json"
 }

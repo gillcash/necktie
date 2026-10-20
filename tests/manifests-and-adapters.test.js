@@ -62,7 +62,7 @@ test("release checks reject plugin and tag mismatches", (t) => {
 
 test("Codex manifest registers lifecycle hooks and keeps MCP optional", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, ".codex-plugin", "plugin.json"), "utf8"));
-  assert.equal(manifest.hooks, "./hooks/claude-codex-hooks.json");
+  assert.equal(manifest.hooks, "./hooks/codex-hooks.json");
   assert.equal(manifest.mcpServers, undefined);
   assert.equal(manifest.skills, "./skills/");
   assert.equal(manifest.interface.shortDescription, "Necktie decision support");

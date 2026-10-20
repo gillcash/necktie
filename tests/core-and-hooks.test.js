@@ -29,7 +29,7 @@ test("hooks ignore legacy settings and commands without changing existing state"
   const before = [fs.readFileSync(config, "utf8"), fs.readFileSync(session, "utf8")];
   const env = { ...childEnvironment(), PLUGIN_ROOT: root, PLUGIN_DATA: directory, APPDATA: directory, XDG_CONFIG_HOME: directory, NECKTIE_DEFAULT_MODE: "lite" };
   for (const input of [null, {}, { prompt: "/necktie-mode default full", session_id: "one" }]) {
-    const result = spawnSync(process.execPath, [path.join(root, "hooks/necktie-context.js"), "UserPromptSubmit"], {
+    const result = spawnSync(process.execPath, [path.join(root, "hooks/necktie-context.js"), "UserPromptSubmit", "codex"], {
       encoding: "utf8", env, input: JSON.stringify(input),
     });
     assert.equal(result.status, 0, result.stderr);
@@ -43,10 +43,11 @@ test("hooks ignore legacy settings and commands without changing existing state"
 
 test("hook payloads use each host's native shape", () => {
   for (const [env, host, event, field] of [
-    [{ PLUGIN_ROOT: root, PLUGIN_DATA: "data" }, "", "SessionStart", "hookSpecificOutput"],
+    [{ PLUGIN_ROOT: root, PLUGIN_DATA: "data" }, "codex", "SessionStart", "hookSpecificOutput"],
     [{ PLUGIN_ROOT: root }, "copilot", "SessionStart", "additionalContext"],
+    [{ CLAUDE_PLUGIN_ROOT: root }, "claude", "SessionStart", "text"],
+    [{ CLAUDE_PLUGIN_ROOT: root }, "claude", "SubagentStart", "hookSpecificOutput"],
     [{ CLAUDE_PLUGIN_ROOT: root }, "", "SessionStart", "text"],
-    [{ CLAUDE_PLUGIN_ROOT: root }, "", "SubagentStart", "hookSpecificOutput"],
     [{ PLUGIN_ROOT: root }, "qoder", "SessionStart", "hookSpecificOutput"],
   ]) {
     const result = runtime.evaluate(env, host);
@@ -57,14 +58,29 @@ test("hook payloads use each host's native shape", () => {
   }
 });
 
+test("the Claude manifest's hooks recognize VS Code plugin roots on any platform", () => {
+  for (const vscodeRoot of [
+    "/home/u/.vscode/agent-plugins/necktie",
+    "C:\\Users\\u\\.vscode\\agent-plugins\\necktie",
+    "C:\\Users\\u\\.VSCode-Insiders\\agent-plugins\\necktie",
+    "/home/u/.vscode-server/agent-plugins/necktie",
+  ]) {
+    const result = runtime.evaluate({ PLUGIN_ROOT: root, CLAUDE_PLUGIN_ROOT: vscodeRoot }, "claude");
+    assert.deepEqual(runtime.hostPayload("SessionStart", result.context, result.host), { additionalContext: policy.buildInstructions() }, vscodeRoot);
+  }
+  for (const [hint, otherRoot] of [["claude", "C:\\Users\\u\\.claude\\plugins\\necktie"], ["codex", "C:\\Users\\u\\.vscode\\agent-plugins\\necktie"]]) {
+    assert.notEqual(runtime.evaluate({ PLUGIN_ROOT: root, CLAUDE_PLUGIN_ROOT: otherRoot }, hint).host, "copilot", `${hint} ${otherRoot}`);
+  }
+});
+
 test("host manifests load lifecycle hooks explicitly without Gemini auto-discovery", () => {
   assert.equal(json("plugin.json").$schema, undefined);
   assert.equal(fs.existsSync(path.join(root, "hooks/hooks.json")), false);
-  for (const manifestFile of [".claude-plugin/plugin.json", ".codex-plugin/plugin.json"]) {
-    const manifest = json(manifestFile);
-    assert.equal(manifest.skills, "./skills/", manifestFile);
-    assert.equal(manifest.hooks, "./hooks/claude-codex-hooks.json", manifestFile);
-    assert.ok(fs.existsSync(path.resolve(root, manifest.hooks)), manifestFile);
+  for (const host of ["claude", "codex"]) {
+    const manifest = json(`.${host}-plugin/plugin.json`);
+    assert.equal(manifest.skills, "./skills/", host);
+    assert.equal(manifest.hooks, `./hooks/${host}-hooks.json`, host);
+    assert.ok(fs.existsSync(path.resolve(root, manifest.hooks)), host);
   }
   const gemini = json("gemini-extension.json");
   assert.equal(gemini.contextFileName, "AGENTS.md");
@@ -75,10 +91,12 @@ test("host manifests load lifecycle hooks explicitly without Gemini auto-discove
 });
 
 test("hook manifests cover session, prompt, subagent, Copilot, and Qoder events", () => {
-  const hooks = json("hooks/claude-codex-hooks.json").hooks;
-  assert.deepEqual(Object.keys(hooks).sort(), ["SessionStart", "SubagentStart", "UserPromptSubmit"]);
-  for (const [event, [group]] of Object.entries(hooks)) {
-    assert.equal(group.hooks[0].command, `node "\${CLAUDE_PLUGIN_ROOT}/hooks/necktie-context.js" ${event}`, event);
+  for (const host of ["claude", "codex"]) {
+    const hooks = json(`hooks/${host}-hooks.json`).hooks;
+    assert.deepEqual(Object.keys(hooks).sort(), ["SessionStart", "SubagentStart", "UserPromptSubmit"], host);
+    for (const [event, [group]] of Object.entries(hooks)) {
+      assert.equal(group.hooks[0].command, `node "\${CLAUDE_PLUGIN_ROOT}/hooks/necktie-context.js" ${event} ${host}`, `${host} ${event}`);
+    }
   }
   const copilot = json("hooks/copilot-hooks.json").hooks;
   assert.deepEqual(Object.keys(copilot), ["sessionStart"]);
@@ -162,9 +180,9 @@ test("manifest launchers fail like the direct hook when the policy is unreadable
   const outcome = (result) => [result.status, result.stdout, result.stderr];
   const direct = spawnSync(process.execPath, [path.join(broken, "hooks/necktie-context.js"), "SessionStart"], { encoding: "utf8", env, input: "{}" });
   assert.deepEqual(outcome(direct), [0, "", ""]);
-  for (const [event, [group]] of Object.entries(json("hooks/claude-codex-hooks.json").hooks)) {
-    const command = group.hooks[0].command.replaceAll("${CLAUDE_PLUGIN_ROOT}", broken);
-    for (const [host, hostEnv] of [["claude", env], ["codex", { ...env, PLUGIN_ROOT: broken, PLUGIN_DATA: path.join(broken, "data") }]]) {
+  for (const [host, hostEnv] of [["claude", env], ["codex", { ...env, PLUGIN_ROOT: broken, PLUGIN_DATA: path.join(broken, "data") }]]) {
+    for (const [event, [group]] of Object.entries(json(`hooks/${host}-hooks.json`).hooks)) {
+      const command = group.hooks[0].command.replaceAll("${CLAUDE_PLUGIN_ROOT}", broken);
       const launched = spawnSync(command, { shell: true, encoding: "utf8", env: hostEnv, input: "{}" });
       assert.deepEqual(outcome(launched), outcome(direct), `${host} ${event}`);
     }
