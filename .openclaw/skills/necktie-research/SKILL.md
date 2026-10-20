@@ -1,6 +1,6 @@
 ---
 name: necktie-research
-description: "Build a self-contained, copy-ready research prompt through a bounded prompt-reversal, critique, schema, review, and verification loop. Use when the user invo..."
+description: "Build a self-contained, copy-ready research prompt through a bounded prompt-reversal, critique, schema, review, and verification loop. Use when the user invokes $necktie-research; asks for a deep-research prompt, research brief, controlling brief, or reusable prompt; wants to reverse-engineer a successful conversation or deliverable into one prompt; or accepts Necktie's offer to draft a research prompt."
 homepage: https://github.com/gillcash/necktie
 license: MIT
 ---

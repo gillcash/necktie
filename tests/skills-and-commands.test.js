@@ -78,6 +78,16 @@ test("generation repairs drift in one pass and check mode never writes", (t) => 
   assert.deepEqual(fs.readFileSync(path.join(directory, missing)), previous);
 });
 
+test("generated OpenClaw skills keep the full source description", () => {
+  const frontmatterDescription = (file) => fs.readFileSync(path.join(root, file), "utf8").replace(/\r\n?/g, "\n")
+    .match(/^---\n[\s\S]*?^description: (.+)$/m)[1];
+  for (const name of ["necktie", "necktie-research"]) {
+    const source = frontmatterDescription(`skills/${name}/SKILL.md`);
+    assert.equal(JSON.parse(frontmatterDescription(`.openclaw/skills/${name}/SKILL.md`)), source, name);
+    assert.match(source, /\bUse when\b|\bwhen the user\b/, name);
+  }
+});
+
 test("command templates invoke Necktie without selectors", () => {
   const combined = [
     fs.readFileSync(path.join(root, "commands", "necktie.toml"), "utf8"),
