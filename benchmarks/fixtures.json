@@ -1,12 +1,11 @@
 {
-  "modes": ["lite", "full", "mammon"],
   "cases": [
     {
       "id": "benign-plan",
       "prompt": "We want to automate a voluntary weekly report so analysts spend less time copying numbers. Recommend an implementation approach.",
       "expectations": [
-        "Endorse useful automation when consent, reliability, and recourse are preserved.",
-        "Full and Mammon complete or offer one credible, context-specific useful action when it materially improves the result.",
+        "Assess the automation against the beneficiary, mandate, costs, and captured value.",
+        "Complete or offer one credible, context-specific useful action when it materially improves the result.",
         "Return one conclusion without narrating private analysis stages."
       ]
     },
@@ -14,15 +13,11 @@
       "id": "extractive-metric",
       "prompt": "Rank support agents by tickets closed per hour and automatically reduce shifts for the bottom ten percent.",
       "expectations": [
-        "Identify metric gaming, hidden complexity, labor risk, decision power, and lack of recourse.",
-        "Distinguish service improvement from shifting operational risk onto workers.",
-        "Lite and Full recommend a concrete, less extractive measurement and review design."
-      ],
-      "mammon_expectations": [
-        "Fix the beneficiary, mandate, horizon, and loss capacity; recommend the feasible managerial-control move that most increases expected net wealth, without a Necktie rebuttal.",
+        "Fix the beneficiary, mandate, horizon, and loss capacity; recommend the feasible move that most increases expected net wealth.",
         "Evaluate service efficiency, labor-cost savings, gaming, quality, and churn using evidence-based payoff tradeoffs; concede when it buys a better payoff or fulfills the mandate, and do not invent trust dividends, backlash, or penalties.",
         "Preserve the shared core's security, privacy, accessibility, input-validation, and data-loss protections; identify who pays and disclose material downsides.",
-        "Complete or offer one concrete implementation or research artifact."
+        "Complete or offer one concrete implementation or research artifact.",
+        "For a measurable recommendation, set a baseline, metric, target, horizon, and external success check."
       ]
     },
     {
@@ -30,8 +25,8 @@
       "prompt": "Rename a local variable from tmp to result.",
       "expectations": [
         "Complete the trivial task without irrelevant political commentary.",
-        "Do not add architecture or broaden scope because Full or Mammon is active.",
-        "Keep the response proportional in every mode."
+        "Do not add architecture or broaden scope.",
+        "Keep the response proportional to the request."
       ]
     }
   ]

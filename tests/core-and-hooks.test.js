@@ -1,51 +1,47 @@
 "use strict";
 
 const assert = require("node:assert/strict");
-const { execSync, spawn } = require("node:child_process");
+const { execSync, spawn, spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
+const { Readable } = require("node:stream");
 const test = require("node:test");
 const { temporary } = require("./helpers.cjs");
-const sessions = require("../lib/necktie-session.cjs");
+const policy = require("../lib/necktie-policy.cjs");
 const runtime = require("../hooks/necktie-context.js");
 const root = path.resolve(__dirname, "..");
 const json = (file) => JSON.parse(fs.readFileSync(path.join(root, file), "utf8"));
 
-function fixture(t) {
-  const directory = temporary(t);
-  const configPath = path.join(directory, "config.json");
-  const options = { sessionOptions: { stateDirectory: path.join(directory, "state") }, configOptions: { configPath } };
-  const env = { PLUGIN_ROOT: root, PLUGIN_DATA: directory };
-  return { directory, configPath, options, env,
-    evaluate: (prompt, session_id = "one", event = "UserPromptSubmit") =>
-      runtime.evaluate(event, env, "", { session_id, prompt }, options),
-  };
-}
-
 function childEnvironment() {
-  const env = { ...process.env, NECKTIE_DEFAULT_MODE: "full" };
-  for (const key of ["CODEX_THREAD_ID", "CLAUDE_SESSION_ID", "COPILOT_SESSION_ID", "QODER_SESSION_ID", "PLUGIN_ROOT", "PLUGIN_DATA", "COPILOT_PLUGIN_DATA"]) delete env[key];
+  const env = { ...process.env };
+  for (const key of ["CODEX_THREAD_ID", "CLAUDE_SESSION_ID", "COPILOT_SESSION_ID", "QODER_SESSION_ID", "PLUGIN_ROOT", "CLAUDE_PLUGIN_ROOT", "PLUGIN_DATA", "COPILOT_PLUGIN_DATA"]) delete env[key];
   return env;
 }
 
-test("hook mode commands isolate sessions and preserve default-only semantics", (t) => {
-  const { evaluate, configPath } = fixture(t);
-  assert.equal(evaluate("", "one", "SessionStart").resolution.mode, "full");
-  const switched = evaluate("/necktie-mode lite");
-  assert.equal(switched.resolution.mode, "lite");
-  assert.match(switched.message, /for this session/);
-  assert.match(switched.context, /level: lite/i);
-  assert.equal(evaluate("ordinary request", "two").resolution.mode, "full");
-  assert.equal(evaluate("/necktie-mode default mammon").resolution.mode, "lite");
-  assert.equal(JSON.parse(fs.readFileSync(configPath, "utf8")).defaultMode, "mammon");
-  assert.match(evaluate("/necktie-mode status").message, /current lite; configured default mammon/);
-  const invalid = evaluate("/necktie-mode off");
-  assert.match(invalid.message, /^Usage:/);
-  assert.equal(invalid.resolution.mode, "lite");
+test("hooks ignore legacy settings and commands without changing existing state", (t) => {
+  const directory = temporary(t);
+  const settings = path.join(directory, "necktie");
+  fs.mkdirSync(settings);
+  const config = path.join(settings, "config.json");
+  const session = path.join(settings, "session.json");
+  fs.writeFileSync(config, '{"defaultMode":"lite","keep":true}');
+  fs.writeFileSync(session, '{"mode":"full"}');
+  const before = [fs.readFileSync(config, "utf8"), fs.readFileSync(session, "utf8")];
+  const env = { ...childEnvironment(), PLUGIN_ROOT: root, PLUGIN_DATA: directory, APPDATA: directory, XDG_CONFIG_HOME: directory, NECKTIE_DEFAULT_MODE: "lite" };
+  for (const input of [null, {}, { prompt: "/necktie-mode default full", session_id: "one" }]) {
+    const result = spawnSync(process.execPath, [path.join(root, "hooks/necktie-context.js"), "UserPromptSubmit"], {
+      encoding: "utf8", env, input: JSON.stringify(input),
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stderr, "");
+    assert.equal(JSON.parse(result.stdout).hookSpecificOutput.additionalContext, policy.buildInstructions());
+  }
+  assert.deepEqual(fs.readdirSync(directory), ["necktie"]);
+  assert.deepEqual(fs.readdirSync(settings).sort(), ["config.json", "session.json"]);
+  assert.deepEqual([fs.readFileSync(config, "utf8"), fs.readFileSync(session, "utf8")], before);
 });
 
-test("hook payloads use each host's native shape", (t) => {
-  const { options } = fixture(t);
+test("hook payloads use each host's native shape", () => {
   for (const [env, host, event, field] of [
     [{ PLUGIN_ROOT: root, PLUGIN_DATA: "data" }, "", "SessionStart", "hookSpecificOutput"],
     [{ PLUGIN_ROOT: root }, "copilot", "SessionStart", "additionalContext"],
@@ -54,10 +50,10 @@ test("hook payloads use each host's native shape", (t) => {
     [{ PLUGIN_ROOT: root }, "qoder", "SessionStart", "hookSpecificOutput"],
     [{ PLUGIN_ROOT: root }, "gemini", "SessionStart", "hookSpecificOutput"],
   ]) {
-    const result = runtime.evaluate(event, env, host, { session_id: field }, options);
+    const result = runtime.evaluate(event, env, host);
     const value = runtime.hostPayload(event, result.context, result.host);
     const context = field === "text" ? value : field === "additionalContext" ? value.additionalContext : value.hookSpecificOutput.additionalContext;
-    assert.match(context, /level: full/i);
+    assert.equal(context, policy.buildInstructions());
     if (value.hookSpecificOutput) assert.equal(value.hookSpecificOutput.hookEventName, event);
   }
 });
@@ -73,7 +69,7 @@ test("host manifests load lifecycle hooks explicitly without Gemini auto-discove
   }
   const gemini = json("gemini-extension.json");
   assert.equal(gemini.contextFileName, "AGENTS.md");
-  assert.match(fs.readFileSync(path.join(root, gemini.contextFileName), "utf8"), /NECKTIE MODE ACTIVE/);
+  assert.match(fs.readFileSync(path.join(root, gemini.contextFileName), "utf8"), /NECKTIE ACTIVE/);
   assert.equal(gemini.hooks, undefined);
   assert.equal(json(".github/plugin/plugin.json").hooks, "hooks/copilot-hooks.json");
   assert.equal(json(".qoder-plugin/plugin.json").hooks, "./hooks/qoder-hooks.json");
@@ -91,49 +87,30 @@ test("hook manifests cover session, prompt, subagent, Copilot, and Qoder events"
   assert.equal(qoder.PreToolUse[0].matcher, "task|Task");
 });
 
-test("manifest-selected hook command resolves Claude and Codex roots", (t) => {
+test("manifest-selected hook command resolves Claude and Codex roots", () => {
   for (const host of ["claude", "codex"]) {
     const manifest = json(`.${host}-plugin/plugin.json`);
     const command = json(manifest.hooks).hooks.SessionStart[0].hooks[0].command;
-    const session_id = `test-${process.pid}-${Date.now()}-${host}`;
-    t.after(() => fs.rmSync(sessions.statePath(host, session_id), { force: true }));
     const env = childEnvironment();
     if (host === "codex") env.PLUGIN_DATA = path.join(root, ".test-data");
     const replaced = command.replaceAll("${CLAUDE_PLUGIN_ROOT}", root);
-    const result = execSync(replaced, { encoding: "utf8", env, input: JSON.stringify({ session_id }) });
+    const result = execSync(replaced, { encoding: "utf8", env, input: "{}" });
     const context = host === "claude" ? result : JSON.parse(result).hookSpecificOutput.additionalContext;
-    assert.match(context, /level: full/i);
+    assert.equal(context, policy.buildInstructions());
   }
 });
 
-test("hook write failures preserve active instructions and report diagnostics", (t) => {
-  const { directory, options, evaluate, configPath } = fixture(t);
-  options.configOptions.configPath = directory;
-  const failedDefault = evaluate("/necktie-mode default mammon");
-  assert.match(failedDefault.message, /Failed to save Necktie default/);
-  assert.equal(failedDefault.resolution.mode, "full");
-  assert.match(failedDefault.context, /level: full/i);
-
-  const blockedState = path.join(directory, "state-file");
-  fs.writeFileSync(blockedState, "keep");
-  options.sessionOptions.stateDirectory = blockedState;
-  options.configOptions.configPath = configPath;
-  for (const [command, diagnostic] of [["lite", /Failed to save Necktie session mode/], ["default mammon", /Failed to initialize Necktie session mode/]]) {
-    const result = evaluate(`/necktie-mode ${command}`, "fresh-session");
-    assert.match(result.message, diagnostic);
-    assert.match(result.resolution.warnings.join("\n"), /Could not persist Necktie session mode/);
-    assert.match(result.context, /level: full/i);
-    assert.equal(fs.existsSync(configPath), false);
+test("hook input tolerates BOM and invalid JSON", async () => {
+  for (const [input, expected] of [["\uFEFF{}", {}], ["not json", {}], ["", {}]]) {
+    assert.deepEqual(await runtime.readHookInput(Readable.from([input])), expected);
   }
 });
 
-test("hook exits when stdin never closes", async (t) => {
-  const sessionId = `timeout-${Date.now()}`;
-  t.after(() => fs.rmSync(sessions.statePath("claude", sessionId), { force: true }));
+test("hook exits when stdin never closes", async () => {
   const child = spawn(process.execPath, [path.join(root, "hooks/necktie-context.js"), "UserPromptSubmit"], {
     cwd: root, env: { ...childEnvironment(), CLAUDE_PLUGIN_ROOT: root }, stdio: ["pipe", "pipe", "pipe"],
   });
-  child.stdin.write(JSON.stringify({ session_id: sessionId, prompt: "/necktie-mode lite" }));
+  child.stdin.write('{"prompt":"/necktie-mode lite"}');
   const output = [];
   child.stdout.on("data", (chunk) => output.push(chunk));
   const code = await new Promise((resolve, reject) => {
@@ -141,5 +118,13 @@ test("hook exits when stdin never closes", async (t) => {
     child.on("exit", (value) => { clearTimeout(timer); resolve(value); });
   });
   assert.equal(code, 0);
-  assert.match(Buffer.concat(output).toString("utf8"), /level: lite/i);
+  assert.equal(Buffer.concat(output).toString("utf8"), policy.buildInstructions());
+});
+
+test("a policy read failure does not block the host", (t) => {
+  const result = spawnSync(process.execPath, [path.join(root, "hooks/necktie-context.js"), "SessionStart"], {
+    encoding: "utf8", env: { ...childEnvironment(), PLUGIN_ROOT: temporary(t) }, input: "{}",
+  });
+  assert.equal(result.status, 0);
+  assert.equal(result.stdout, "");
 });

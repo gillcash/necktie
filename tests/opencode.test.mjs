@@ -3,7 +3,6 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import necktiePlugin from "../.opencode/plugins/necktie.mjs";
-import sessions from "../lib/necktie-session.cjs";
 import helpers from "./helpers.cjs";
 
 async function v2Harness() {
@@ -22,85 +21,75 @@ async function v2Harness() {
   return { commands, skills, hooks, prompts };
 }
 
-async function fixture(t, api = "v1") {
-  const configHome = helpers.isolatedConfig(t);
-  const sessionID = `opencode-${process.pid}-${Date.now()}`;
-  const plugin = api === "v1" ? await necktiePlugin.server() : await v2Harness();
-  for (const id of [sessionID, `${sessionID}-other`]) t.after(() => fs.rmSync(sessions.statePath("opencode", id), { force: true }));
-  return { configHome, sessionID, plugin,
-    command: (args) => api === "v1"
-      ? plugin["command.execute.before"]({ command: "necktie-mode", arguments: args, sessionID })
-      : plugin.commands.get("necktie-mode").execute({ sessionID, prompt: { text: args }, delivery: "queue" }),
-    context: async (id = sessionID, system = []) => {
-      if (api === "v1") {
-        const output = { system };
-        await plugin["experimental.chat.system.transform"]({ sessionID: id }, output);
-        return output.system[0];
-      }
-      const event = { sessionID: id, system: system.map((text) => ({ type: "text", text })) };
-      await plugin.hooks.get("context")(event);
-      return event.system.map((part) => part.text).join("\n\n");
-    },
-  };
-}
-
-test("OpenCode V1 registers commands and a single skill path", async () => {
+test("OpenCode V1 registers one command without replacing host configuration", async () => {
   const plugin = await necktiePlugin.server();
-  const config = {};
+  const existing = { template: "existing command" };
+  const config = { command: { existing }, skills: { paths: ["host-skills"] } };
   await plugin.config(config);
   await plugin.config(config);
-  assert.deepEqual(Object.keys(config.command).sort(), ["necktie", "necktie-mode"]);
-  assert.equal(config.skills.paths.length, 1);
-  assert.equal(path.basename(config.skills.paths[0]), "skills");
+  assert.deepEqual(Object.keys(config.command).sort(), ["existing", "necktie"]);
+  assert.equal(config.command.existing, existing);
+  assert.deepEqual(config.skills.paths.slice(0, 1), ["host-skills"]);
+  assert.equal(config.skills.paths.length, 2);
+  assert.equal(path.basename(config.skills.paths[1]), "skills");
+  assert.equal(plugin["command.execute.before"], undefined);
+});
+
+test("OpenCode V1 injects the sole policy into empty and existing system prompts", async () => {
+  const plugin = await necktiePlugin.server();
+  const empty = { system: [] };
+  await plugin["experimental.chat.system.transform"]({}, empty);
+  assert.equal(empty.system.length, 1);
+  assert.match(empty.system[0], /^NECKTIE ACTIVE\./);
+  assert.match(empty.system[0], /Let Necktie decide/);
+
+  const existing = { system: ["first", "base"] };
+  await plugin["experimental.chat.system.transform"]({ sessionID: "another-session" }, existing);
+  assert.deepEqual(existing.system, ["first", `base\n\n${empty.system[0]}`]);
 });
 
 for (const api of ["v1", "v2"]) {
-test(`OpenCode ${api} injects Full, switches sessions independently, and consumes command messages once`, async (t) => {
-  const { command, context, sessionID } = await fixture(t, api);
-  assert.match(await context(sessionID, ["base"]), /^base\n\nNECKTIE MODE ACTIVE.*level: full/is);
-  await command("lite");
-  const switched = await context();
-  assert.match(switched, /mode set to lite for this session/i);
-  assert.match(switched, /level: lite/i);
-  assert.doesNotMatch(await context(), /mode set to lite for this session/i);
-  assert.match(await context(`${sessionID}-other`), /level: full/i);
-});
+  test(`OpenCode ${api} ignores legacy settings without reading or changing them`, async (t) => {
+    const directory = helpers.isolatedConfig(t);
+    const legacy = path.join(directory, "necktie");
+    const settings = path.join(legacy, "config.json");
+    fs.mkdirSync(legacy);
+    fs.writeFileSync(settings, '{"defaultMode":"lite","keep":"untouched"}');
+    process.env.NECKTIE_DEFAULT_MODE = "lite";
+    const originalRead = fs.readFileSync;
+    const originalWrite = fs.writeFileSync;
+    const guard = (file) => assert.ok(!path.resolve(String(file)).startsWith(`${legacy}${path.sep}`), "legacy settings must not be accessed");
+    fs.readFileSync = (file, ...args) => { guard(file); return originalRead(file, ...args); };
+    fs.writeFileSync = (file, ...args) => { guard(file); return originalWrite(file, ...args); };
+    t.after(() => { fs.readFileSync = originalRead; fs.writeFileSync = originalWrite; });
 
-test(`OpenCode ${api} default writes preserve selected and fresh sessions`, async (t) => {
-  const { command, context, configHome, sessionID } = await fixture(t, api);
-  await command("default mammon");
-  assert.match(await context(), /Current session remains full.*level: full/is);
-  assert.match(await context(`${sessionID}-other`), /level: mammon/i);
-  await command("lite");
-  await command("default mammon");
-  assert.match(await context(), /Current session remains lite.*level: lite/is);
-  assert.equal(JSON.parse(fs.readFileSync(path.join(configHome, "necktie/config.json"), "utf8")).defaultMode, "mammon");
-  process.env.NECKTIE_DEFAULT_MODE = "full";
-  await command("default lite");
-  assert.match(await context(), /NECKTIE_DEFAULT_MODE keeps the effective default at full.*level: lite/is);
-});
-
-test(`OpenCode ${api} status and invalid commands do not create session state`, async (t) => {
-  const { command, context, sessionID } = await fixture(t, api);
-  for (const [args, expected] of [["status", /current full; configured default full/], ["off", /^Usage:/]]) {
-    await command(args);
-    const output = await context();
-    assert.match(output, expected);
-    assert.match(output, /level: full/i);
-    assert.equal(fs.existsSync(sessions.statePath("opencode", sessionID)), false);
-  }
-});
+    let policy;
+    if (api === "v1") {
+      const plugin = await necktiePlugin.server();
+      const output = { system: [] };
+      await plugin["experimental.chat.system.transform"]({ sessionID: "legacy-session" }, output);
+      policy = output.system[0];
+    } else {
+      const plugin = await v2Harness();
+      const event = { sessionID: "legacy-session", system: [] };
+      await plugin.hooks.get("context")(event);
+      policy = event.system[0].text;
+    }
+    assert.match(policy, /^NECKTIE ACTIVE\./);
+    assert.match(policy, /Let Necktie decide/);
+    assert.equal(originalRead(settings, "utf8"), '{"defaultMode":"lite","keep":"untouched"}');
+  });
 }
 
-test("OpenCode V2 registers usable skills and preserves command text, attachments, and delivery", async (t) => {
-  const { plugin, sessionID, context } = await fixture(t, "v2");
-  assert.deepEqual([...plugin.commands.keys()].sort(), ["necktie", "necktie-mode"]);
+test("OpenCode V2 registers usable skills and preserves command text, attachments, and delivery", async () => {
+  const plugin = await v2Harness();
+  assert.deepEqual([...plugin.commands.keys()], ["necktie"]);
   assert.deepEqual([...plugin.skills.keys()].sort(), ["necktie", "necktie-research"]);
   assert.deepEqual([...plugin.hooks.keys()].sort(), ["compaction", "context"]);
   for (const skill of plugin.skills.values()) {
     assert.ok(fs.existsSync(skill.path));
     assert.equal(skill.name, skill.id);
-    assert.ok(skill.description.length > 40);
+    assert.ok(skill.description.length > 0);
     assert.match(skill.content, /^\s*# Necktie/);
     assert.doesNotMatch(skill.content, /^---/);
   }
@@ -111,48 +100,45 @@ test("OpenCode V2 registers usable skills and preserves command text, attachment
     skills: [{ mention: "$necktie", name: "necktie" }],
     model: { providerID: "test", id: "test-model" },
   };
-  await plugin.commands.get("necktie").execute({ sessionID, prompt, delivery: "steer" });
+  const original = structuredClone(prompt);
+  await plugin.commands.get("necktie").execute({ sessionID: "session", prompt, delivery: "steer" });
   assert.equal(plugin.prompts.length, 1);
   const sent = plugin.prompts[0];
-  assert.equal(sent.sessionID, sessionID);
+  assert.equal(sent.sessionID, "session");
   assert.equal(sent.delivery, "steer");
   assert.equal(sent.model, prompt.model);
   assert.deepEqual(sent.files, [{ url: "file:///README.md", mime: "text/plain" }]);
   assert.deepEqual(sent.agents, [{ name: "build" }]);
   assert.deepEqual(sent.skills, [{ name: "necktie" }]);
-  assert.match(sent.text, /Use \$necktie on: review \$& and \$` literally/);
-  assert.equal(prompt.files[0].mention, "@readme");
-  assert.match(await context(), /level: full/i);
-  assert.equal(fs.existsSync(sessions.statePath("opencode", sessionID)), false);
+  assert.ok(sent.text.includes(prompt.text));
+  assert.doesNotMatch(sent.text, /\$ARGUMENTS/);
+  assert.deepEqual(prompt, original);
+
+  await plugin.commands.get("necktie").execute({ sessionID: "session", prompt: { text: "" }, delivery: "queue" });
+  assert.equal(plugin.prompts[1].delivery, "queue");
+  assert.equal(plugin.prompts[1].files, undefined);
+  assert.equal(plugin.prompts[1].agents, undefined);
+  assert.equal(plugin.prompts[1].skills, undefined);
 });
 
-test("OpenCode V2 compaction preserves existing parts and pending command results", async (t) => {
-  const { plugin, sessionID, command, context } = await fixture(t, "v2");
-  await command("mammon");
-  const existing = { type: "text", text: "original", cache: { type: "ephemeral" } };
-  const event = { sessionID, system: [existing], messages: [{ role: "user" }], tools: {} };
-  await plugin.hooks.get("compaction")(event);
-  assert.equal(event.system[0], existing);
-  assert.deepEqual(event.system[0], { type: "text", text: "original", cache: { type: "ephemeral" } });
-  assert.equal(event.system.length, 2);
-  assert.equal(event.system[1].type, "text");
-  assert.match(event.system[1].text, /level: mammon/i);
-  assert.doesNotMatch(event.system[1].text, /mode set to mammon/i);
-  assert.deepEqual(event.messages, [{ role: "user" }]);
-  assert.deepEqual(event.tools, {});
-  assert.match(await context(), /mode set to mammon for this session/i);
-  assert.doesNotMatch(await context(), /mode set to mammon for this session/i);
-});
-
-test("OpenCode V1 and V2 share session modes", async (t) => {
-  const { plugin, sessionID, context } = await fixture(t, "v2");
-  const v1 = await necktiePlugin.server();
-  await v1["command.execute.before"]({ sessionID, command: "necktie-mode", arguments: "lite" });
-  assert.match(await context(), /level: lite/i);
-  await plugin.commands.get("necktie-mode").execute({ sessionID, prompt: { text: "mammon" }, delivery: "queue" });
-  const output = { system: [] };
-  await v1["experimental.chat.system.transform"]({ sessionID }, output);
-  assert.match(output.system[0], /level: mammon/i);
+test("OpenCode V2 context and compaction preserve existing parts and host data", async () => {
+  const plugin = await v2Harness();
+  let policy;
+  for (const hook of ["context", "compaction"]) {
+    const existing = { type: "text", text: "original", cache: { type: "ephemeral" } };
+    const event = { sessionID: "session", system: [existing], messages: [{ role: "user" }], tools: {} };
+    await plugin.hooks.get(hook)(event);
+    assert.equal(event.system[0], existing);
+    assert.deepEqual(existing, { type: "text", text: "original", cache: { type: "ephemeral" } });
+    assert.equal(event.system.length, 2);
+    assert.equal(event.system[1].type, "text");
+    assert.match(event.system[1].text, /^NECKTIE ACTIVE\./);
+    assert.match(event.system[1].text, /Let Necktie decide/);
+    if (policy) assert.equal(event.system[1].text, policy);
+    policy = event.system[1].text;
+    assert.deepEqual(event.messages, [{ role: "user" }]);
+    assert.deepEqual(event.tools, {});
+  }
 });
 
 test("OpenCode directory and npm entry points expose exactly one dual API plugin", async () => {

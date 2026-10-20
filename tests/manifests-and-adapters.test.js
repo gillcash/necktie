@@ -27,15 +27,13 @@ test("versioned manifests identify Necktie 0.6.2", () => {
   assert.match(fs.readFileSync(path.join(root, "NOTICE"), "utf8"), /^Necktie 0\.6\.2$/m);
 });
 
-test("release checks allow a separate private website version but reject plugin and tag mismatches", (t) => {
+test("release checks reject plugin and tag mismatches", (t) => {
   const directory = temporary(t);
   for (const relative of [...jsonFiles, "necktie-mcp/package-lock.json", "plugin.yaml", "NOTICE", "scripts/check-versions.js"]) {
     const target = path.join(directory, relative);
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.copyFileSync(path.join(root, relative), target);
   }
-  fs.mkdirSync(path.join(directory, "website"));
-  fs.writeFileSync(path.join(directory, "website/package.json"), JSON.stringify({ private: true, version: "0.0.0" }));
   const run = (tag) => {
     const result = spawnSync(process.execPath, [path.join(directory, "scripts/check-versions.js")], {
       encoding: "utf8", timeout: 10000,
@@ -67,7 +65,7 @@ test("Codex manifest registers lifecycle hooks and keeps MCP optional", () => {
   assert.equal(manifest.hooks, "./hooks/claude-codex-hooks.json");
   assert.equal(manifest.mcpServers, undefined);
   assert.equal(manifest.skills, "./skills/");
-  assert.equal(manifest.interface.shortDescription, "Opinionated judgment for incentives, power, and hidden costs");
+  assert.equal(manifest.interface.shortDescription, "Necktie decision support");
   assert.equal(manifest.interface.privacyPolicyURL, "https://github.com/gillcash/necktie/blob/main/PRIVACY.md");
   assert.equal(manifest.interface.termsOfServiceURL, "https://github.com/gillcash/necktie/blob/main/TERMS.md");
 });
@@ -95,10 +93,10 @@ test("OpenAI submission materials contain the required review cases and public p
   assert.ok(fs.existsSync(path.join(root, "TERMS.md")));
 });
 
-test("static adapter generation targets Full and the package ships shared mode assets", () => {
-  const full = policy.buildInstructions("full");
-  assert.equal(fs.readFileSync(path.join(root, "AGENTS.md"), "utf8").trim(), full);
-  assert.match(full, /level: full/i);
+test("static adapters and runtime load the same single policy", () => {
+  const instructions = policy.buildInstructions();
+  assert.equal(fs.readFileSync(path.join(root, "AGENTS.md"), "utf8").trim(), instructions);
+  assert.match(instructions, /^NECKTIE ACTIVE\./);
   const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   assert.ok(pkg.files.includes("lib/"));
   assert.ok(pkg.files.includes("skills/"));
@@ -122,11 +120,12 @@ test("private MCP package keeps only required direct dependencies and a matching
   assert.equal(lock.version, "0.6.2");
 });
 
-test("benchmark fixtures cover each mode and observable safety boundaries", () => {
+test("benchmark fixtures cover decisions and observable boundaries", () => {
   const fixtures = JSON.parse(fs.readFileSync(path.join(root, "benchmarks", "fixtures.json"), "utf8"));
-  assert.deepEqual(fixtures.modes, ["lite", "full", "mammon"]);
+  assert.equal("modes" in fixtures, false);
   assert.deepEqual(fixtures.cases.map((entry) => entry.id).sort(), ["benign-plan", "extractive-metric", "trivial-task"]);
   for (const fixture of fixtures.cases) {
+    assert.deepEqual(Object.keys(fixture).sort(), ["expectations", "id", "prompt"]);
     assert.ok(fixture.expectations.every((value) => !/chain.of.thought/i.test(value)));
   }
 });

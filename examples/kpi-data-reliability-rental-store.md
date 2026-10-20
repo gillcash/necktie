@@ -16,7 +16,7 @@ The internal adversary must not appear as a speaker in the output. The user need
 
 ## Turn the judgment into useful work
 
-Full should offer to build a research prompt when the store's actual systems, source events, policies, or evidence are not yet known.
+Necktie should offer to build a research prompt when the store's actual systems, source events, policies, or evidence are not yet known.
 
 If the user accepts, `necktie-research` should work backward from the intended operating package rather than emit a generic "research this topic" prompt. The prompt should encode:
 

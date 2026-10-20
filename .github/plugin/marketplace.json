@@ -1,11 +1,11 @@
 {
   "name": "necktie",
-  "description": "An opinionated agent policy for decisions shaped by incentives, metrics, power, and hidden costs.",
+  "description": "Necktie agent plugin.",
   "owner": { "name": "gillcash", "url": "https://github.com/gillcash" },
   "plugins": [
     {
       "name": "necktie",
-      "description": "Expose incentives, rebut extraction, and recommend a better course.",
+      "description": "Necktie agent plugin.",
       "source": "./",
       "category": "productivity",
       "tags": ["incentives", "power", "externalities"],
