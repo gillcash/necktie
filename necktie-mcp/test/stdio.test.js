@@ -40,8 +40,10 @@ test("live stdio MCP handshake exposes mode-aware prompt and read-only tool", { 
 
     const mammon = await client.callTool({ name: "necktie_instructions", arguments: { mode: "mammon" } });
     assert.equal(mammon.structuredContent.mode, "mammon");
-    assert.match(mammon.structuredContent.instructions, /sole final perspective/);
-    assert.doesNotMatch(mammon.structuredContent.instructions, /Then rebut Mammon/);
+    assert.match(mammon.structuredContent.instructions, /Mammon makes wealth the master/);
+    assert.match(mammon.structuredContent.instructions, /greatest expected increase in their net wealth/);
+    assert.match(mammon.structuredContent.instructions, /Binding safeguards\s+remain: legality, authorized scope, honesty/);
+    assert.doesNotMatch(mammon.structuredContent.instructions, /adversarial risk assessment|do not\s+adopt them as objectives|Then rebut Mammon/i);
     assert.equal(mammon.content[0].text, mammon.structuredContent.instructions);
 
     const omitted = await client.callTool({ name: "necktie_instructions", arguments: {} });
