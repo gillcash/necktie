@@ -1,6 +1,6 @@
 {
   "name": "necktie",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Necktie agent plugin. Default objective: maximize the beneficiary's expected net wealth.",
   "author": {
     "name": "gillcash",
