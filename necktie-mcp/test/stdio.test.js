@@ -25,7 +25,8 @@ test("live MCP exposes one argument-free prompt and a strictly validated read-on
     env: { ...process.env, NECKTIE_DEFAULT_MODE: "lite", APPDATA: directory, XDG_CONFIG_HOME: directory },
     stderr: "pipe",
   });
-  const client = new Client({ name: "necktie-test", version: "0.7.0" });
+  const { version } = JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+  const client = new Client({ name: "necktie-test", version });
   try {
     await client.connect(transport);
     const prompts = await client.listPrompts();

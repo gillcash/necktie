@@ -14,17 +14,22 @@ const jsonFiles = [
   ".devin-plugin/plugin.json", ".qoder-plugin/plugin.json", ".github/plugin/plugin.json",
   "gemini-extension.json", "pi-extension/package.json", "necktie-mcp/package.json",
 ];
+const { version } = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+const escapedVersion = version.replaceAll(".", "\\.");
+const nextVersion = version.replace(/\d+$/, (patch) => String(Number(patch) + 1));
+const escapedNextVersion = nextVersion.replaceAll(".", "\\.");
 
-test("versioned manifests identify Necktie 0.7.0", () => {
+test("versioned manifests identify the package version", () => {
+  assert.match(version, /^\d+\.\d+\.\d+$/);
   for (const relative of jsonFiles) {
     const value = JSON.parse(fs.readFileSync(path.join(root, relative), "utf8"));
-    assert.equal(value.version, "0.7.0", relative);
+    assert.equal(value.version, version, relative);
     if (!["@gillcash/necktie-pi-extension", "necktie-mcp", "@gillcash/necktie"].includes(value.name)) {
       assert.equal(value.name, "necktie", relative);
     }
   }
-  assert.match(fs.readFileSync(path.join(root, "plugin.yaml"), "utf8"), /^version: 0\.7\.0$/m);
-  assert.match(fs.readFileSync(path.join(root, "NOTICE"), "utf8"), /^Necktie 0\.7\.0$/m);
+  assert.match(fs.readFileSync(path.join(root, "plugin.yaml"), "utf8"), new RegExp(`^version: ${escapedVersion}$`, "m"));
+  assert.match(fs.readFileSync(path.join(root, "NOTICE"), "utf8"), new RegExp(`^Necktie ${escapedVersion}$`, "m"));
 });
 
 test("release checks reject plugin and tag mismatches", (t) => {
@@ -43,21 +48,21 @@ test("release checks reject plugin and tag mismatches", (t) => {
     return result;
   };
 
-  const matching = run("v0.7.0");
+  const matching = run(`v${version}`);
   assert.equal(matching.status, 0, matching.stderr);
-  assert.match(matching.stdout, /All 13 version files are pinned at 0\.7\.0/);
+  assert.match(matching.stdout, new RegExp(`All 13 version files are pinned at ${escapedVersion}`));
 
   const manifest = path.join(directory, "plugin.json");
   const original = fs.readFileSync(manifest, "utf8");
-  fs.writeFileSync(manifest, JSON.stringify({ ...JSON.parse(original), version: "0.7.1" }));
-  const mismatchedPlugin = run("v0.7.0");
+  fs.writeFileSync(manifest, JSON.stringify({ ...JSON.parse(original), version: nextVersion }));
+  const mismatchedPlugin = run(`v${version}`);
   assert.equal(mismatchedPlugin.status, 1);
-  assert.match(mismatchedPlugin.stderr, /plugin\.json: 0\.7\.1/);
+  assert.match(mismatchedPlugin.stderr, new RegExp(`plugin\\.json: ${escapedNextVersion}`));
 
   fs.writeFileSync(manifest, original);
-  const mismatchedTag = run("v0.7.1");
+  const mismatchedTag = run(`v${nextVersion}`);
   assert.equal(mismatchedTag.status, 1);
-  assert.match(mismatchedTag.stderr, /Release tag v0\.7\.1 does not match 0\.7\.0/);
+  assert.match(mismatchedTag.stderr, new RegExp(`Release tag v${escapedNextVersion} does not match ${escapedVersion}`));
 });
 
 test("Codex manifest registers lifecycle hooks and keeps MCP optional", () => {
@@ -166,7 +171,7 @@ test("private MCP package keeps only required direct dependencies and a matching
   const lock = JSON.parse(fs.readFileSync(path.join(root, "necktie-mcp", "package-lock.json"), "utf8"));
   assert.deepEqual(Object.keys(manifest.dependencies).sort(), ["@modelcontextprotocol/sdk", "zod"]);
   assert.deepEqual(lock.packages[""].dependencies, manifest.dependencies);
-  assert.equal(lock.version, "0.7.0");
+  assert.equal(lock.version, version);
 });
 
 test("benchmark fixtures cover decisions and observable boundaries", () => {
