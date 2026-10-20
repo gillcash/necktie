@@ -35,6 +35,14 @@ test("OpenCode V1 registers one command without replacing host configuration", a
   assert.equal(plugin["command.execute.before"], undefined);
 });
 
+test("OpenCode V1 keeps a user-defined necktie command", async () => {
+  const plugin = await necktiePlugin.server();
+  const userCommand = { template: "my own necktie command" };
+  const config = { command: { necktie: userCommand } };
+  await plugin.config(config);
+  assert.equal(config.command.necktie, userCommand);
+});
+
 test("OpenCode V1 injects the sole policy into empty and existing system prompts", async () => {
   const plugin = await necktiePlugin.server();
   const empty = { system: [] };
