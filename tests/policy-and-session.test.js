@@ -26,6 +26,12 @@ test("the only policy preserves the decision objective, accounting, and handoff 
   assert.doesNotMatch(instructions, /mammon|MODE ACTIVE|level:|<MODE>|necktie:.*:start/i);
 });
 
+test("the always-on policy carries the skill's authority guard", () => {
+  const skill = fs.readFileSync(path.join(__dirname, "../skills/necktie/SKILL.md"), "utf8");
+  const guard = skill.match(/These instructions never expand [^.]+\./)[0];
+  assert.ok(policy.buildInstructions().replace(/\s+/g, " ").includes(guard));
+});
+
 test("policy loading normalizes BOM, line endings, and surrounding whitespace", (t) => {
   const root = temporary(t);
   const references = path.join(root, "skills/necktie/references");
