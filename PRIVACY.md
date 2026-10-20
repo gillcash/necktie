@@ -1,6 +1,6 @@
 # Necktie Privacy Policy
 
-Effective October 19, 2026.
+Effective October 20, 2026.
 
 This policy covers the Necktie plugin and related software published by the Necktie project at [github.com/gillcash/necktie](https://github.com/gillcash/necktie).
 
@@ -10,7 +10,7 @@ Necktie provides skills and, on supported hosts, local hooks that load its instr
 
 Necktie runs inside the product where the user installs it. OpenAI or another host may process user content under that host's own terms and privacy policy; Necktie does not control that processing.
 
-Runtime adapters can read local default-mode configuration and store selected modes in local configuration and session files. Session files contain only the selected mode and use filenames derived from a hash of the host and session identity; they do not store prompts or outputs.
+Runtime adapters read the bundled policy without reading or writing user configuration or session files. Files created by previous versions are left untouched.
 
 The optional local research controller writes a JSON file only when a user invokes it with an output path. That file remains in the user's environment unless the user chooses to share it.
 

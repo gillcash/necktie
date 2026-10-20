@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 
 from research_state import (
-    ORIGIN_MODES, REVISION_LIMITS, STATES, LoopError, load_packet, new_packet,
+    REVISION_LIMITS, STATES, LoopError, load_packet, new_packet,
     record_review, record_verification, save_packet, transition,
 )
 
@@ -20,7 +20,6 @@ def build_parser() -> argparse.ArgumentParser:
     initialize = commands.add_parser("init", help="create a research-prompt run packet")
     initialize.add_argument("--goal", required=True)
     initialize.add_argument("--depth", choices=sorted(REVISION_LIMITS), default="standard")
-    initialize.add_argument("--origin-mode", choices=sorted(ORIGIN_MODES), default="full")
     initialize.add_argument("--output", dest="file", type=Path, required=True)
     parsers = {name: commands.add_parser(name, help=help_text) for name, help_text in {
         "transition": "advance to an allowed phase",

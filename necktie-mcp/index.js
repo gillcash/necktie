@@ -8,26 +8,17 @@ import policy from "../lib/necktie-policy.cjs";
 
 const { version } = JSON.parse(await fs.promises.readFile(new URL("./package.json", import.meta.url), "utf8"));
 const server = new McpServer({ name: "necktie", version });
-const modeArg = z.string().optional()
-  .describe("Necktie policy mode. Omit for the configured default.");
-const select = (requestedMode) => {
-  const { mode, warnings } = policy.resolveMode({ requestedMode });
-  for (const warning of warnings) process.stderr.write(`${warning}\n`);
-  return { mode, instructions: policy.buildInstructions(mode) };
-};
 
 server.registerPrompt(
   "necktie",
   {
-    title: "Necktie mode",
-    description: "Load Necktie's selected incentive, power, and ambition instructions.",
-    argsSchema: { mode: modeArg },
+    title: "Necktie",
+    description: "Load Necktie instructions.",
   },
-  ({ mode }) => {
-    const selected = select(mode);
+  () => {
     return {
-      description: `Necktie ${selected.mode} instructions`,
-      messages: [{ role: "user", content: { type: "text", text: selected.instructions } }],
+      description: "Necktie instructions",
+      messages: [{ role: "user", content: { type: "text", text: policy.buildInstructions() } }],
     };
   },
 );
@@ -36,13 +27,13 @@ server.registerTool(
   "necktie_instructions",
   {
     title: "Necktie instructions",
-    description: "Return the selected Necktie instructions. MCP does not activate them automatically.",
-    inputSchema: { mode: modeArg },
-    outputSchema: { mode: z.string(), instructions: z.string() },
+    description: "Return Necktie instructions. MCP does not activate them automatically.",
+    inputSchema: z.object({}).strict().default({}),
+    outputSchema: { instructions: z.string() },
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
-  ({ mode }) => {
-    const structuredContent = select(mode);
+  () => {
+    const structuredContent = { instructions: policy.buildInstructions() };
     return {
       content: [{ type: "text", text: structuredContent.instructions }],
       structuredContent,

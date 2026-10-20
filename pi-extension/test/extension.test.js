@@ -3,118 +3,74 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import helpers from "../../tests/helpers.cjs";
-import necktieExtension, {
-  coreContext,
-  parseNecktieModeCommand,
-  resolveSessionMode,
-  sendSkill,
-} from "../index.js";
-const { isolatedConfig } = helpers;
+import necktieExtension, { coreContext, sendSkill } from "../index.js";
 
 function fakePi() {
   const commands = new Map();
   const handlers = new Map();
   const messages = [];
-  const entries = [];
   return {
-    commands, handlers, messages, entries,
-    appendEntry(customType, data) { entries.push({ type: "custom", customType, data }); },
+    commands, handlers, messages,
+    appendEntry() { assert.fail("Necktie must not write session settings"); },
     registerCommand(name, value) { commands.set(name, value); },
     on(name, handler) { handlers.set(name, handler); },
     sendUserMessage(...args) { messages.push(args); },
   };
 }
 
-function context(entries = []) {
-  const notifications = [];
-  return {
-    notifications,
-    isIdle: () => true,
-    sessionManager: { getEntries: () => entries },
-    ui: { notify: (...args) => notifications.push(args) },
-  };
-}
-
-async function fixture(t, entries = []) {
-  const directory = isolatedConfig(t);
-  const pi = fakePi();
-  const ctx = context(entries);
-  necktieExtension(pi);
-  await pi.handlers.get("session_start")({}, ctx);
-  return { directory, pi, ctx,
-    command: (args) => pi.commands.get("necktie-mode").handler(args, ctx),
-    prompt: async (event = {}) => (await pi.handlers.get("before_agent_start")(event)).systemPrompt,
-  };
-}
-
-test("Pi registers separate decision and mode commands", () => {
+test("Pi registers only the decision command and policy injection hook", () => {
   const pi = fakePi();
   necktieExtension(pi);
-  assert.deepEqual([...pi.commands.keys()], ["necktie", "necktie-mode"]);
-  assert.doesNotMatch(JSON.stringify([...pi.commands.values()]), /mammon/i);
+  assert.deepEqual([...pi.commands.keys()], ["necktie"]);
+  assert.deepEqual([...pi.handlers.keys()], ["before_agent_start"]);
 });
 
-test("Pi injects Full safely with or without an existing prompt", async (t) => {
-  const { pi } = await fixture(t);
+test("Pi injects the sole policy safely with or without an existing prompt", async () => {
+  const pi = fakePi();
+  necktieExtension(pi);
   const handler = pi.handlers.get("before_agent_start");
-  assert.deepEqual(await handler(undefined), { systemPrompt: coreContext("full") });
-  assert.deepEqual(await handler({}), { systemPrompt: coreContext("full") });
-  assert.deepEqual(await handler({ systemPrompt: "base" }), { systemPrompt: `base\n\n${coreContext("full")}` });
+  const policy = coreContext();
+  assert.match(policy, /^NECKTIE ACTIVE\./);
+  assert.match(policy, /Let Necktie decide/);
+  assert.deepEqual(await handler(undefined), { systemPrompt: policy });
+  assert.deepEqual(await handler({}), { systemPrompt: policy });
+  assert.deepEqual(await handler({ systemPrompt: "base" }), { systemPrompt: `base\n\n${policy}` });
 });
 
-test("Pi mode command updates and restores only session state", async (t) => {
-  const { pi, command, prompt } = await fixture(t);
-  const message = await command("mammon");
-  assert.match(message, /mammon for this session/);
-  assert.deepEqual(pi.entries.at(-1), { type: "custom", customType: "necktie-mode", data: { mode: "mammon" } });
-  assert.match(await prompt(), /level: mammon/i);
-
-  const resumed = fakePi();
-  necktieExtension(resumed);
-  await resumed.handlers.get("session_start")({}, context(pi.entries));
-  assert.match((await resumed.handlers.get("before_agent_start")({})).systemPrompt, /level: mammon/i);
-});
-
-test("Pi persisted default leaves the current session unchanged", async (t) => {
-  const { directory, pi, command, prompt } = await fixture(t);
-  await command("default mammon");
-  assert.deepEqual(pi.entries.at(-1).data, { mode: "full" });
-  const resumed = fakePi();
-  necktieExtension(resumed);
-  await resumed.handlers.get("session_start")({}, context(pi.entries));
-  assert.match((await resumed.handlers.get("before_agent_start")({})).systemPrompt, /level: full/i);
-  await command("lite");
-  const message = await command("default mammon");
-  assert.match(message, /Current session remains lite/);
-  assert.match(await prompt(), /level: lite/i);
-  const config = JSON.parse(fs.readFileSync(path.join(directory, "necktie", "config.json"), "utf8"));
-  assert.equal(config.defaultMode, "mammon");
-  pi.appendEntry = () => { throw new Error("storage unavailable"); };
-  assert.match(await command("default full"), /Failed to initialize Necktie session mode/);
-  assert.match(await prompt(), /level: lite/i);
-  assert.equal(JSON.parse(fs.readFileSync(path.join(directory, "necktie/config.json"), "utf8")).defaultMode, "mammon");
-});
-
-test("Pi status and invalid commands are non-mutating", async (t) => {
-  const { pi, command } = await fixture(t);
-  assert.match(await command("status"), /current full; configured default full/);
-  assert.match(await command("off"), /^Usage:/);
-  assert.deepEqual(pi.entries, []);
-});
-
-test("Pi decision delegation preserves arguments and follow-up delivery", () => {
+test("Pi ignores legacy environment, config, and session entries without accessing settings", async (t) => {
+  const directory = helpers.isolatedConfig(t);
+  const legacy = path.join(directory, "necktie");
+  const settings = path.join(legacy, "config.json");
+  fs.mkdirSync(legacy);
+  fs.writeFileSync(settings, '{"defaultMode":"lite","keep":"untouched"}');
+  process.env.NECKTIE_DEFAULT_MODE = "lite";
+  const originalRead = fs.readFileSync;
+  const originalWrite = fs.writeFileSync;
+  const guard = (file) => assert.ok(!path.resolve(String(file)).startsWith(`${legacy}${path.sep}`), "legacy settings must not be accessed");
+  fs.readFileSync = (file, ...args) => { guard(file); return originalRead(file, ...args); };
+  fs.writeFileSync = (file, ...args) => { guard(file); return originalWrite(file, ...args); };
+  t.after(() => { fs.readFileSync = originalRead; fs.writeFileSync = originalWrite; });
   const pi = fakePi();
-  sendSkill(pi, "necktie", "--mode lite a decision", { isIdle: () => false });
-  assert.deepEqual(pi.messages[0], ["/skill:necktie --mode lite a decision", { deliverAs: "followUp" }]);
-  sendSkill(pi, "necktie", "", { isIdle: () => true });
-  assert.deepEqual(pi.messages[1], ["/skill:necktie"]);
+  necktieExtension(pi);
+  const ctx = {
+    sessionManager: {
+      getBranch() { assert.fail("Necktie must not read session settings"); },
+      getEntries() { assert.fail("Necktie must not read session settings"); },
+    },
+  };
+  const output = await pi.handlers.get("before_agent_start")({}, ctx);
+  assert.match(output.systemPrompt, /^NECKTIE ACTIVE\./);
+  assert.match(output.systemPrompt, /Let Necktie decide/);
+  assert.equal(originalRead(settings, "utf8"), '{"defaultMode":"lite","keep":"untouched"}');
 });
 
-test("Pi helper parsing and session resolution accept supported modes", () => {
-  assert.deepEqual(parseNecktieModeCommand("default lite"), { type: "set-default", mode: "lite" });
-  assert.equal(parseNecktieModeCommand("off").type, "invalid");
-  assert.equal(resolveSessionMode([
-    { type: "custom", customType: "necktie-mode", data: { mode: "lite" } },
-    { type: "custom", customType: "necktie-mode", data: { mode: "mammon" } },
-  ], "full"), "mammon");
+test("Pi decision command delegates arguments and queues follow-up delivery while busy", () => {
+  const pi = fakePi();
+  necktieExtension(pi);
+  pi.commands.get("necktie").handler("  price the renewal $&  ", { isIdle: () => false });
+  assert.deepEqual(pi.messages[0], ["/skill:necktie price the renewal $&", { deliverAs: "followUp" }]);
+  pi.commands.get("necktie").handler("", { isIdle: () => true });
+  assert.deepEqual(pi.messages[1], ["/skill:necktie"]);
+  sendSkill(pi, "necktie", "a decision");
+  assert.deepEqual(pi.messages[2], ["/skill:necktie a decision"]);
 });

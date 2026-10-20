@@ -10,7 +10,6 @@ import uuid
 
 SCHEMA_VERSION = "1.0"
 REVISION_LIMITS = {"standard": 3, "deep": 5}
-ORIGIN_MODES = {"full", "mammon"}
 PHASES = "intake discover fingerprint critique blueprint draft review".split()
 ALLOWED_TRANSITIONS = {current: {target} for current, target in zip(PHASES, PHASES[1:])}
 ALLOWED_TRANSITIONS["revise"] = {"review"}
@@ -33,12 +32,12 @@ def event(kind: str, **details) -> dict:
     return {"at": utc_now(), "kind": kind, **details}
 
 
-def new_packet(goal: str, depth: str, origin_mode: str) -> dict:
+def new_packet(goal: str, depth: str) -> dict:
     now = utc_now()
     return validate_packet({
         "schema_version": SCHEMA_VERSION, "run_id": str(uuid.uuid4()),
         "created_at": now, "updated_at": now, "goal": goal.strip() if isinstance(goal, str) else goal,
-        "depth": depth, "origin_mode": origin_mode, "state": "intake",
+        "depth": depth, "state": "intake",
         **dict.fromkeys(("audience", "strongest_unasked_question", "prompt_path"), ""),
         **{key: [] for key in (
             "target_deliverables", "acceptance_criteria", "constraints", "non_goals",
@@ -52,8 +51,7 @@ def new_packet(goal: str, depth: str, origin_mode: str) -> dict:
 def validate_packet(packet: object) -> dict:
     if not isinstance(packet, dict):
         raise LoopError("run packet must be a JSON object")
-    choices = {"schema_version": {SCHEMA_VERSION}, "depth": REVISION_LIMITS,
-               "origin_mode": ORIGIN_MODES, "state": STATES}
+    choices = {"schema_version": {SCHEMA_VERSION}, "depth": REVISION_LIMITS, "state": STATES}
     for key in (*choices, "run_id", "goal"):
         value = packet.get(key)
         if not isinstance(value, str) or not value.strip():

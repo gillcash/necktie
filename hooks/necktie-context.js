@@ -3,9 +3,7 @@
 
 const path = require("node:path");
 
-const { resolveMode } = require("../lib/necktie-policy.cjs");
-const { buildContext, executeModeCommand, parseModeCommand } = require("../lib/necktie-command.cjs");
-const { readSessionMode, sessionIdentifier, writeSessionMode } = require("../lib/necktie-session.cjs");
+const { buildInstructions } = require("../lib/necktie-policy.cjs");
 
 function pluginRoot(env = process.env) {
   return env.PLUGIN_ROOT || env.CLAUDE_PLUGIN_ROOT || path.resolve(__dirname, "..");
@@ -19,41 +17,10 @@ function host(env = process.env) {
   return "claude";
 }
 
-function promptText(input = {}) {
-  return [input.prompt, input.text, input.userPrompt, input.user_prompt]
-    .find((value) => typeof value === "string")?.trim() || "";
-}
-
-function evaluate(event, env = process.env, explicitHost = "", input = {}, options = {}) {
-  const detectedHost = explicitHost || host(env);
-  const identifier = sessionIdentifier(input, env, options.sessionOptions);
-  let sessionMode = readSessionMode(detectedHost, identifier, options.sessionOptions);
-  const saveSession = (mode) => writeSessionMode(detectedHost, identifier, mode, options.sessionOptions);
-  let stateWarning = "";
-
-  // Persist the initial default in session scope before handling a default write,
-  // so `/necktie-mode default ...` never changes the current session implicitly.
-  if (!sessionMode) {
-    sessionMode = resolveMode({ env, configOptions: options.configOptions }).mode;
-    try {
-      saveSession(sessionMode);
-    } catch (error) {
-      stateWarning = `Could not persist Necktie session mode: ${error.message}`;
-    }
-  }
-
-  const parsed = event === "UserPromptSubmit" ? parseModeCommand(promptText(input)) : null;
-  const { resolution, message } = executeModeCommand(parsed, {
-    sessionMode: stateWarning ? null : sessionMode, saveSession, env, configOptions: options.configOptions,
-  });
-  if (stateWarning) resolution.warnings.push(stateWarning);
+function evaluate(event, env = process.env, explicitHost = "") {
   return {
-    command: parsed,
-    context: buildContext(resolution.mode, message, { root: pluginRoot(env) }),
-    host: detectedHost,
-    message,
-    resolution,
-    sessionId: identifier,
+    context: buildInstructions({ root: pluginRoot(env) }),
+    host: explicitHost || host(env),
   };
 }
 
@@ -98,9 +65,8 @@ async function main(argv = process.argv.slice(2), env = process.env, options = {
   const event = argv[0] || "SessionStart";
   const hint = argv[1] || "";
   const explicitHost = hint === "copilot" || hint === "qoder" ? hint : hint ? "gemini" : "";
-  const input = options.input || await readHookInput(options.stdin || process.stdin, options.timeoutMs || 1000);
-  const evaluated = evaluate(event, env, explicitHost, input, options);
-  for (const warning of evaluated.resolution.warnings) process.stderr.write(`${warning}\n`);
+  if (!options.input) await readHookInput(options.stdin || process.stdin, options.timeoutMs || 1000);
+  const evaluated = evaluate(event, env, explicitHost);
   const result = hostPayload(event, evaluated.context, evaluated.host);
   process.stdout.write(typeof result === "string" ? result : JSON.stringify(result));
   return result;
@@ -114,6 +80,5 @@ module.exports = {
   hostPayload,
   main,
   pluginRoot,
-  promptText,
   readHookInput,
 };

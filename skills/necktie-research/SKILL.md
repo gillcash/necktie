@@ -12,7 +12,7 @@ Turn an initial question, iterative conversation, prior research, or reference d
 1. Treat an explicit invocation or the user's acceptance of a Necktie offer as authorization to begin. Recover the approved topic and intended artifact from the conversation; do not ask for permission again.
 2. Read [references/research-prompt-protocol.md](references/research-prompt-protocol.md) completely before drafting.
 3. Use `standard` depth unless the user asks for deep, exhaustive, multi-pass, or reference-matching work; then use `deep`.
-4. Infer the originating perspective from the active Necktie mode: `full` by default or `mammon` when selected. The perspective shapes the research objective, not the evidence standard.
+4. Carry the beneficiary, expected-net-wealth objective, mandate, horizon, and material constraints into the research brief. Keep evidence standards unchanged.
 5. Ask only for a missing answer that would materially change the research objective or required output. Otherwise label a reasonable assumption and continue in the same turn.
 
 ## Build the prompt
@@ -38,7 +38,7 @@ Lead the handoff with the final prompt in one `text` code block. Then list only 
 For an audit trail or resumable run, use:
 
 ```text
-python skills/necktie-research/scripts/research_prompt_loop.py init --goal "..." --depth standard --origin-mode full --output .necktie/research-prompt.json
+python skills/necktie-research/scripts/research_prompt_loop.py init --goal "..." --depth standard --output .necktie/research-prompt.json
 python skills/necktie-research/scripts/research_prompt_loop.py transition --file .necktie/research-prompt.json --to discover --note "Candidate context located"
 python skills/necktie-research/scripts/research_prompt_loop.py review --file .necktie/research-prompt.json --decision REVISE --reason "Output schema is underspecified" --issue-signature schema-gap
 python skills/necktie-research/scripts/research_prompt_loop.py verify --file .necktie/research-prompt.json --result PASS --reason "Fresh-session completeness check passed"

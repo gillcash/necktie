@@ -3,14 +3,13 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { MODES } = require("../lib/necktie-policy.cjs");
 const ROOT = path.resolve(__dirname, "..");
 const SKILLS = ["necktie", "necktie-research"];
 const ADAPTERS = {
   "AGENTS.md": "",
   ".agents/rules/necktie.md": "",
   ".clinerules/necktie.md": "",
-  ".cursor/rules/necktie.mdc": "---\ndescription: Necktie Core. Apply opinionated judgment to incentives, power, extraction, and human agency.\nglobs:\nalwaysApply: true\n---\n\n",
+  ".cursor/rules/necktie.mdc": "---\ndescription: Necktie instructions.\nglobs:\nalwaysApply: true\n---\n\n",
   ".kiro/steering/necktie.md": "---\ntitle: Necktie Core\ninclusion: always\n---\n\n",
   ".qoder/rules/necktie.md": "",
   ".windsurf/rules/necktie.md": "",
@@ -27,21 +26,12 @@ function filesUnder(directory) {
 
 function generate(root = ROOT) {
   const read = (file) => fs.readFileSync(path.join(root, file));
-  const source = read("skills/necktie/references/policy.md").toString("utf8")
-    .replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
-  const section = (name) => {
-    const match = source.match(new RegExp(`<!-- necktie:${name}:start -->([\\s\\S]*?)<!-- necktie:${name}:end -->`));
-    if (!match) throw new Error(`Missing or invalid ${name} policy section.`);
-    return match[1].trim();
-  };
-  const core = `NECKTIE MODE ACTIVE — level: <MODE>.\n\n${section("shared")}\n`;
+  const policy = read("skills/necktie/references/policy.md").toString("utf8")
+    .replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n").trim();
+  if (!policy) throw new Error("Necktie policy is empty.");
   const generated = new Map();
-  for (const mode of MODES) {
-    const delta = section(mode);
-    generated.set(`skills/necktie/references/${mode}.md`, `${core.replace("<MODE>", mode).trim()}\n\n${delta}\n`);
-  }
   for (const [file, prefix] of Object.entries(ADAPTERS)) {
-    generated.set(file, prefix + generated.get("skills/necktie/references/full.md"));
+    generated.set(file, `${prefix}${policy}\n`);
   }
   for (const name of SKILLS) {
     const skill = read(`skills/${name}/SKILL.md`).toString("utf8").replace(/\r\n?/g, "\n");

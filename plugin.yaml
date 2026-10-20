@@ -1,13 +1,12 @@
 name: necktie
 version: 0.6.2
-description: An opinionated agent policy for decisions shaped by incentives, metrics, power, and hidden costs.
+description: Necktie agent plugin.
 author: gillcash
 provides_hooks:
   - pre_llm_call
   - pre_gateway_dispatch
 provides_commands:
   - necktie
-  - necktie-mode
 provides_skills:
   - necktie
   - necktie-research

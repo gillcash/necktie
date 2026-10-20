@@ -1,6 +1,6 @@
 {
   "name": "necktie",
-  "description": "An opinionated agent policy for decisions shaped by incentives, metrics, power, and hidden costs.",
+  "description": "Necktie agent plugin.",
   "version": "0.6.2",
   "author": { "name": "gillcash", "url": "https://github.com/gillcash" },
   "homepage": "https://github.com/gillcash/necktie",

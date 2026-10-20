@@ -8,31 +8,30 @@ const { temporary } = require("./helpers.cjs");
 
 const root = path.resolve(__dirname, "..");
 
-test("judgment and research skills ship with two distinct commands", () => {
+test("decision and research skills ship with one decision command", () => {
   const skillDirs = fs.readdirSync(path.join(root, "skills"), { withFileTypes: true })
     .filter((entry) => entry.isDirectory() && fs.existsSync(path.join(root, "skills", entry.name, "SKILL.md")))
     .map((entry) => entry.name).sort();
   assert.deepEqual(skillDirs, ["necktie", "necktie-research"]);
-  assert.deepEqual(fs.readdirSync(path.join(root, "commands")).sort(), ["necktie-mode.toml", "necktie.toml"]);
-  assert.deepEqual(fs.readdirSync(path.join(root, ".opencode", "command")).sort(), ["necktie-mode.md", "necktie.md"]);
+  assert.deepEqual(fs.readdirSync(path.join(root, "commands")), ["necktie.toml"]);
+  assert.deepEqual(fs.readdirSync(path.join(root, ".opencode", "command")), ["necktie.md"]);
 });
 
-test("skill frontmatter stays minimal and mode selection is one-shot", () => {
+test("skill frontmatter stays minimal and loads one canonical policy", () => {
   const skill = fs.readFileSync(path.join(root, "skills", "necktie", "SKILL.md"), "utf8");
   const frontmatter = skill.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] || "";
   const keys = [...frontmatter.matchAll(/^([a-z_]+):/gm)].map((match) => match[1]).sort();
   assert.deepEqual(keys, ["description", "name"]);
   assert.doesNotMatch(frontmatter, /mammon/i);
-  assert.match(skill, /--mode lite/);
-  assert.match(skill, /use it for this invocation only/i);
-  assert.match(skill, /references\/.*lite\.md.*full\.md.*mammon\.md/s);
-  assert.match(skill, /never expands authority, permissions, tool access/i);
-  assert.match(skill, /do not invent an `off` mode/i);
-  assert.match(skill, /In Mammon mode, return only Mammon's conclusion without a Necktie rebuttal/i);
+  assert.match(skill, /references\/policy\.md/);
+  assert.match(skill, /never expand authority, permissions, tool access/i);
+  assert.match(skill, /Return one conclusion without a debate transcript/i);
+  assert.doesNotMatch(skill, /--mode|mammon|selected policy/i);
+  assert.deepEqual(fs.readdirSync(path.join(root, "skills/necktie/references")), ["policy.md"]);
   assert.match(skill, /necktie-research\/SKILL\.md/);
 
   const openai = fs.readFileSync(path.join(root, "skills", "necktie", "agents", "openai.yaml"), "utf8");
-  assert.match(openai, /\$necktie --mode full/);
+  assert.match(openai, /\$necktie to judge/);
   assert.match(openai, /allow_implicit_invocation:\s*false/);
 });
 
@@ -47,8 +46,9 @@ test("research skill uses a bounded, copy-ready prompt loop", () => {
   assert.match(protocol, /reference output/i);
   assert.match(protocol, /KPI research prompt checklist/i);
   assert.match(protocol, /maximum of three revision passes.*five at `deep`/i);
-  assert.match(protocol, /For Mammon-origin prompts, preserve the beneficiary's expected-net-wealth objective/i);
+  assert.match(protocol, /Preserve Necktie's beneficiary and expected-net-wealth objective/i);
   assert.match(protocol, /Do not weaken evidence standards or conceal downside risk/i);
+  assert.doesNotMatch(skill, /--origin-mode|active Necktie mode/);
   assert.match(openai, /\$necktie-research/);
   assert.match(openai, /allow_implicit_invocation:\s*true/);
 });
@@ -60,7 +60,7 @@ test("generation repairs drift in one pass and check mode never writes", (t) => 
   const options = { root: directory, check: false };
   assert.ok(run(options).length);
   assert.deepEqual(run({ ...options, check: true }), []);
-  const missing = "skills/necktie/references/full.md";
+  const missing = "AGENTS.md";
   const extra = ".openclaw/skills/necktie/obsolete.md";
   fs.unlinkSync(path.join(directory, missing));
   fs.writeFileSync(path.join(directory, extra), "obsolete");
@@ -72,23 +72,22 @@ test("generation repairs drift in one pass and check mode never writes", (t) => 
   for (const [relative, expected] of generate(directory)) {
     assert.ok(fs.readFileSync(path.join(directory, relative)).equals(expected), relative);
   }
-  fs.writeFileSync(path.join(directory, "skills/necktie/references/policy.md"), "broken");
-  assert.throws(() => run(options), /Missing or invalid shared policy section/);
+  const previous = fs.readFileSync(path.join(directory, missing));
+  fs.writeFileSync(path.join(directory, "skills/necktie/references/policy.md"), " \n");
+  assert.throws(() => run(options), /Necktie policy is empty/);
+  assert.deepEqual(fs.readFileSync(path.join(directory, missing)), previous);
 });
 
-test("command templates advertise only public modes and no off state", () => {
+test("command templates invoke Necktie without selectors", () => {
   const combined = [
     fs.readFileSync(path.join(root, "commands", "necktie.toml"), "utf8"),
-    fs.readFileSync(path.join(root, "commands", "necktie-mode.toml"), "utf8"),
     fs.readFileSync(path.join(root, ".opencode", "command", "necktie.md"), "utf8"),
-    fs.readFileSync(path.join(root, ".opencode", "command", "necktie-mode.md"), "utf8"),
   ].join("\n");
-  assert.match(combined, /NECKTIE_MODE_COMMAND/);
-  assert.match(combined, /lite or full/i);
-  assert.doesNotMatch(combined, /mammon|lite\|full\|off/i);
+  assert.match(combined, /Use \$necktie/);
+  assert.doesNotMatch(combined, /--mode|necktie-mode|NECKTIE_MODE_COMMAND|mammon|lite|full/i);
 });
 
-test("public documentation does not advertise hidden modes", () => {
+test("README files and current documentation use only the Necktie name", () => {
   const files = [
     "README.md", "README.es.md", "README.ko.md", "after-install.md",
     "benchmarks/README.md", "docs/host-support.md",

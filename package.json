@@ -1,7 +1,6 @@
 {
   "name": "@gillcash/necktie",
   "version": "0.6.2",
-  "description": "An opinionated agent policy for decisions shaped by incentives, metrics, power, and hidden costs.",
   "keywords": ["agent-plugin", "incentives", "power", "externalities", "opinionated-agent", "research-prompts"],
   "license": "MIT",
   "author": {
@@ -47,7 +46,7 @@
     "check:policy": "node scripts/build-adapters.js --check",
     "check:adapters": "node scripts/build-adapters.js --check",
     "check:versions": "node scripts/check-versions.js",
-    "test": "npm run check:adapters && npm run check:versions && node --test tests/*.test.js tests/*.test.mjs && npm test --prefix pi-extension && npm test --prefix necktie-mcp && python -m unittest discover -s tests -p test_*.py && npm test --prefix website"
+    "test": "npm run check:adapters && npm run check:versions && node --test tests/*.test.js tests/*.test.mjs && npm test --prefix pi-extension && npm test --prefix necktie-mcp && python -m unittest discover -s tests -p test_*.py"
   },
   "pi": {
     "extensions": ["./pi-extension/index.js"],

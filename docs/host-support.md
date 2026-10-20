@@ -1,81 +1,69 @@
-# Host support and adapter boundaries
+# Host support
 
-Use this document to select and verify a Necktie adapter. Every adapter preserves one public conclusion and the selected Necktie policy; hosts differ in activation and state facilities.
+## Install and activate
 
-## Select the mechanism
-
-| Mechanism | Hosts | Mode behavior |
+| Adapter | Hosts | Activation |
 | --- | --- | --- |
-| Lifecycle hook | Claude Code, Codex, GitHub Copilot CLI, Qoder | Injects the selected policy. Session and default commands work when the host supplies prompt hooks and stable session identity. |
-| Model-call hook | Hermes Agent | Injects before each model call; `/necktie-mode` uses process-session state. |
-| Session hooks / chat transform | OpenCode 2 / OpenCode 1.18.29+ | Appends the selected policy to each turn and compaction in v2, or each chat transform in v1; mode changes remain scoped to the session. |
-| Agent-start transform | Pi | Stores session mode in native session entries and appends the selected policy before each run. |
-| Persistent context | Gemini, Antigravity, CodeWhale, and static-rule hosts | Loads Full from `AGENTS.md` or a host-specific rule. No persistent session selector is available. |
-| Skill package | Devin, Swival, OpenClaw, Grok Build | Uses Full unless ambient host context selects a mode; `$necktie --mode <mode>` is a one-shot override. |
-| MCP adapter | Any MCP client | Selects a policy per prompt/tool request; it has no session mode and cannot guarantee per-turn injection. |
+| Lifecycle hooks | Claude Code, Codex, Copilot CLI, Qoder | Bundled policy is added through native instruction events. |
+| Model-call hook | Hermes | Bundled policy is added before each model call. |
+| Chat/session hooks | OpenCode 2 and OpenCode 1.18.29+ | Bundled policy is appended to context; v2 also preserves it during compaction. |
+| Agent-start hook | Pi | Bundled policy is appended before each run. |
+| Static instructions | Gemini, Antigravity, Cursor, Windsurf, Cline, Kiro, Copilot Chat and AGENTS.md hosts | Host reads its generated rule or AGENTS.md. |
+| Skills | Devin, Swival, OpenClaw, Grok Build | Invoke the installed Necktie skill. |
+| MCP | Any MCP client | Retrieve instructions per request; no automatic activation. |
 
-Copilot clients that ignore additional context from `userPromptSubmitted` may not apply a switch until their next supported instruction injection. The command still records the session selection. Do not claim immediate switching on a host that does not expose the necessary injection point.
+Installation commands for primary hosts are in the [README](../README.md). Additional installations:
 
-Claude Code and Codex explicitly load `hooks/claude-codex-hooks.json`. There is no `hooks/hooks.json`: Gemini auto-discovers that path, but its lifecycle events differ from Claude/Codex events. Gemini uses the static Full context selected by `gemini-extension.json` instead.
+| Host | Install or adapter |
+| --- | --- |
+| Devin CLI | `devin plugins install gillcash/necktie` |
+| Grok Build | `grok plugin install gillcash/necktie --trust` |
+| Swival | `swival skills add --global https://github.com/gillcash/necktie` |
+| OpenClaw | `clawhub install necktie` or copy `.openclaw/skills/necktie/` |
+| Qoder | `.qoder/rules/necktie.md` and optional `hooks/qoder-hooks.json` |
+| Cursor | `.cursor/rules/necktie.mdc` |
+| Windsurf | `.windsurf/rules/necktie.md` |
+| Cline | `.clinerules/necktie.md` |
+| Kiro | `.kiro/steering/necktie.md` |
+| Copilot Chat | `.github/copilot-instructions.md` |
+| Aider, Zed, CodeWhale, Amp, Jules, Junie | `AGENTS.md` |
 
-The root `plugin.json` omits the Agent Plugins `$schema` so hosts do not bypass native hooks by selecting a skills-only loader. OpenCode 2 uses the `plugins` key and local directory paths; OpenCode 1.18.29+ uses the legacy `plugin` key. The same adapter exports v2 `id`/`setup` and v1 `server()` entry points.
+OpenCode 2 uses `plugins` and a local directory such as `./.opencode/plugins`. OpenCode 1.18.29+ uses `plugin` and can load `@gillcash/necktie` or `./.opencode/plugins/necktie.mjs`. This checkout exposes both APIs through one adapter.
 
-## Mode interface
+If Hermes' installer rejects the root plugin manifest, use its native loader:
 
-Dynamic command adapters expose:
-
-```text
-/necktie-mode status
-/necktie-mode lite|full
-/necktie-mode default lite|full
+```bash
+git clone https://github.com/gillcash/necktie.git ~/.hermes/plugins/necktie
+hermes plugins enable necktie
 ```
 
-The first form reports current and configured defaults. A plain mode changes only the current session. `default` writes future-session configuration and leaves the current session unchanged. `NECKTIE_DEFAULT_MODE` overrides the saved default and is reported by status. Invalid values change nothing.
+Claude and Codex explicitly load `hooks/claude-codex-hooks.json`. There is no `hooks/hooks.json`, because Gemini auto-discovers that path with a different event contract. Gemini reads `AGENTS.md` instead. The root `plugin.json` omits the Agent Plugins schema to preserve native hook loading.
 
-There is no off state. Disable or uninstall the relevant adapter when ambient Necktie instructions are unwanted.
+## Verify
 
-The explicit decision skill also accepts `$necktie --mode lite|full <decision>` as a one-shot override. This never changes session or configured state.
+Review and trust hooks when required, restart the host, and invoke `/necktie <task>`. Copilot CLI uses `/necktie:necktie`. Check that the host loads `skills/necktie/references/policy.md` and preserves existing prompt content. Invoke `$necktie-research <topic>` to check the research handoff.
 
-`$necktie-research <goal>` invokes the portable research-prompt loop directly. Full may also offer it; accepting that offer should trigger the same skill without another permission question.
-
-## Verify an installation
-
-1. Start a new host session after installation and confirm Full is active by default.
-2. Inspect and trust hooks when the host requires approval.
-3. Run `/necktie-mode full`, then check status and confirm the session reports Full.
-4. Run `/necktie-mode default lite`; confirm the current session remains Full and a new session starts in Lite.
-5. Ask a trivial factual or coding question and confirm no irrelevant political commentary or extra architecture appears.
-6. Ask for a material decision involving a metric, incentive, power imbalance, hidden labor, lock-in, ambition, or externalized cost.
-7. Confirm Full takes one position, explains the decisive tradeoff, offers or completes useful work, and does not expose a debate transcript or private reasoning.
-8. Invoke `$necktie --mode full <decision>` and confirm the override applies once without changing status.
-9. Invoke `$necktie-research <topic>` and confirm it returns one copy-ready prompt after the bounded protocol.
-
-## Respect host limits
-
-A plugin cannot create a lifecycle event or state primitive that the host does not expose. Static rules provide Full only while the host reads the rule. MCP provides retrieval, not automatic activation. Session files used by lifecycle adapters contain only the selected mode, are keyed by a hash of host/session identity, and expire opportunistically using file age.
-
-Necktie must return one user-facing conclusion on every host. Modes never broaden permissions, authority, or acceptable risk.
+Every adapter uses the same policy. Previous selectors and configuration no longer control it; existing configuration and session files are left untouched. Disable or uninstall the adapter to stop ambient instruction injection.
 
 ## Source map
 
-| Responsibility | Source and callers |
+| Responsibility | Source |
 | --- | --- |
-| Policy text | `skills/necktie/references/policy.md` → `scripts/build-adapters.js` → shared mode references, static host rules, and standalone OpenClaw packages |
-| Mode precedence and configuration | `lib/necktie-policy.cjs`; used by the JavaScript adapters and MCP |
-| Command parsing, execution, and response text | `lib/necktie-command.cjs`; shared by lifecycle hooks, OpenCode, and Pi |
-| Session storage | `lib/necktie-session.cjs` for hooks and OpenCode; Pi uses native session entries |
-| OpenCode | `.opencode/plugins/index.js` exposes the dual-API adapter in `necktie.mjs`; npm exports point to the same adapter |
-| Atomic JSON writes | `lib/necktie-json.cjs`; shared by configuration and session storage |
-| Hermes | `__init__.py` registers host commands and hooks; `necktie_policy.py` resolves modes, stores defaults, and reads the same generated policy text |
-| Research loop | `skills/necktie-research/scripts/research_prompt_loop.py` parses CLI commands; `research_state.py` validates packets, saves them, and enforces bounded transitions |
-| Website | `website/` contains the static page, styles, assets, and dependency-free build and local preview commands |
+| Policy | `skills/necktie/references/policy.md` |
+| Generation | `scripts/build-adapters.js` copies the policy into static rules and standalone OpenClaw skills |
+| JavaScript loading | `lib/necktie-policy.cjs` |
+| Lifecycle hooks | `hooks/necktie-context.js` |
+| OpenCode | `.opencode/plugins/necktie.mjs` and `index.js` |
+| Pi | `pi-extension/index.js` |
+| Hermes | `__init__.py` and `necktie_policy.py` |
+| Research loop | `skills/necktie-research/scripts/research_prompt_loop.py` and `research_state.py` |
 
-Edit policy and research sources under `skills/`, then run `npm run build:adapters`.
-The generator builds all expected outputs in memory before writing them, so one
-pass repairs drift without reading stale generated policies. `--check` reports
-missing, changed, and obsolete outputs without changing files. Generated copies
-remain committed because hosts install from Git and OpenClaw skills travel alone.
+## Develop
 
-Run `npm test` for adapter, MCP, Python, generator, and website checks.
-JavaScript and Python retain native configuration implementations so installing
-the Hermes adapter does not require Node merely to resolve a mode.
+```bash
+npm ci --prefix necktie-mcp
+npm run build:adapters
+npm test
+```
+
+Edit policy and skill sources, then regenerate. Check mode reports missing, changed, and obsolete generated outputs without writing files. The generator validates and builds every output in memory before writing.

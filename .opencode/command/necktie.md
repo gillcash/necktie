@@ -1,5 +1,5 @@
 ---
-description: Apply Necktie's useful judgment
+description: Use Necktie
 ---
 
-Use $necktie on: $ARGUMENTS. Apply the selected Necktie policy, take one candid position, and complete or offer one context-specific useful action when the selected mode requires it.
+Use $necktie on: $ARGUMENTS. Apply Necktie, take one position, and complete the authorized work or offer one concrete next artifact.

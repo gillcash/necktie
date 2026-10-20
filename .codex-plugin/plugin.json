@@ -1,7 +1,7 @@
 {
   "name": "necktie",
   "version": "0.6.2",
-  "description": "An opinionated agent policy for decisions shaped by incentives, metrics, power, and hidden costs.",
+  "description": "Necktie agent plugin.",
   "author": {
     "name": "gillcash",
     "url": "https://github.com/gillcash"
@@ -14,17 +14,16 @@
   "hooks": "./hooks/claude-codex-hooks.json",
   "interface": {
     "displayName": "Necktie",
-    "shortDescription": "Opinionated judgment for incentives, power, and hidden costs",
-    "longDescription": "Necktie tests incentives, metrics, power, extraction, and hidden costs, then gives a clear recommendation and completes or offers one useful next action.",
+    "shortDescription": "Necktie decision support",
+    "longDescription": "Necktie agent plugin.",
     "developerName": "gillcash",
     "category": "Productivity",
-    "capabilities": ["Mode-selectable incentive analysis", "Power and externality analysis", "Research-prompt construction"],
+    "capabilities": ["Decision support", "Research-prompt construction"],
     "websiteURL": "https://github.com/gillcash/necktie",
     "privacyPolicyURL": "https://github.com/gillcash/necktie/blob/main/PRIVACY.md",
     "termsOfServiceURL": "https://github.com/gillcash/necktie/blob/main/TERMS.md",
     "defaultPrompt": [
-      "Use /necktie to expose the incentives in this decision.",
-      "Who benefits, who pays, who controls this system, and who can leave?",
+      "Use /necktie to help with this decision.",
       "Use $necktie-research to build a reusable research brief."
     ],
     "brandColor": "#334155",
