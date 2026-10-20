@@ -145,8 +145,9 @@ test("package exposes the OpenCode adapter and uses generated-policy checks", ()
   const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   assert.equal(pkg.main, "./.opencode/plugins/necktie.mjs");
   assert.equal(pkg.repository.url, "git+https://github.com/gillcash/necktie.git");
-  assert.equal(pkg.scripts["build:adapters"], pkg.scripts["build:policy"]);
-  assert.equal(pkg.scripts["check:adapters"], pkg.scripts["check:policy"]);
+  assert.equal(pkg.scripts["build:adapters"], "node scripts/build-adapters.js");
+  assert.equal(pkg.scripts["check:adapters"], "node scripts/build-adapters.js --check");
+  assert.match(pkg.scripts.test, /^npm run check:adapters && /);
 });
 
 test("private MCP package keeps only required direct dependencies and a matching lockfile", () => {

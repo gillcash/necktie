@@ -42,9 +42,7 @@
     "!pi-extension/test/**"
   ],
   "scripts": {
-    "build:policy": "node scripts/build-adapters.js",
     "build:adapters": "node scripts/build-adapters.js",
-    "check:policy": "node scripts/build-adapters.js --check",
     "check:adapters": "node scripts/build-adapters.js --check",
     "check:versions": "node scripts/check-versions.js",
     "test": "npm run check:adapters && npm run check:versions && node --test tests/*.test.js tests/*.test.mjs && npm test --prefix pi-extension && npm test --prefix necktie-mcp && python -m unittest discover -s tests -p test_*.py"
