@@ -70,6 +70,15 @@ test("Codex manifest registers lifecycle hooks and keeps MCP optional", () => {
   assert.equal(manifest.interface.termsOfServiceURL, "https://github.com/gillcash/necktie/blob/main/TERMS.md");
 });
 
+test("Qoder manifest declares only fields in Qoder's plugin reference", () => {
+  const documented = new Set([
+    "name", "version", "displayName", "description", "author", "homepage", "repository", "license", "keywords", "dependencies",
+    "commands", "agents", "skills", "outputStyles", "workflowsPath", "workflowsPaths", "hooks", "mcpServers", "settings",
+  ]);
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, ".qoder-plugin", "plugin.json"), "utf8"));
+  assert.deepEqual(Object.keys(manifest).filter((key) => !documented.has(key)), []);
+});
+
 test("marketplace copy describes utility without internal framing", () => {
   const publicMetadataFiles = [
     "package.json", "plugin.json", "plugin.yaml", "gemini-extension.json",
