@@ -6,8 +6,6 @@
 
 <p align="center"><em>He follows the money. He finds the hidden cost. He takes a side.</em></p>
 
-**Default objective:** maximize the beneficiary's expected net wealth. Necktie ranks feasible moves by captured value after costs and obligations, breaks near-ties toward more capture, identifies who pays, and discloses material downsides.
-
 ## Install
 
 | Host | Install |
