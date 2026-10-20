@@ -150,6 +150,15 @@ test("package exposes the OpenCode adapter and uses generated-policy checks", ()
   assert.match(pkg.scripts.test, /^npm run check:adapters && /);
 });
 
+test("npm package keeps the logo and leaves out the icon pack preview", () => {
+  const result = spawnSync("npm pack --dry-run --json --ignore-scripts", { cwd: root, shell: true, encoding: "utf8", timeout: 60000 });
+  assert.equal(result.status, 0, result.stderr);
+  const files = JSON.parse(result.stdout)[0].files.map((file) => file.path);
+  assert.ok(files.includes("assets/logo-dark.png"));
+  assert.equal(files.includes("assets/necktie-icon-pack-preview.png"), false);
+  assert.equal(files.some((file) => file.startsWith("assets/necktie-icon-favicon-pack/")), false);
+});
+
 test("private MCP package keeps only required direct dependencies and a matching lockfile", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "necktie-mcp", "package.json"), "utf8"));
   const lock = JSON.parse(fs.readFileSync(path.join(root, "necktie-mcp", "package-lock.json"), "utf8"));
