@@ -9,7 +9,6 @@
       "source": "./",
       "category": "productivity",
       "tags": ["incentives", "power", "externalities"],
-      "commands": "commands/",
       "skills": "skills/",
       "hooks": "hooks/copilot-hooks.json"
     }

@@ -70,6 +70,18 @@ test("Codex manifest registers lifecycle hooks and keeps MCP optional", () => {
   assert.equal(manifest.interface.termsOfServiceURL, "https://github.com/gillcash/necktie/blob/main/TERMS.md");
 });
 
+test("Claude and Copilot manifests do not point at the Gemini-only commands directory", () => {
+  assert.deepEqual(fs.readdirSync(path.join(root, "commands")).filter((file) => file.endsWith(".md")), []);
+  const marketplace = JSON.parse(fs.readFileSync(path.join(root, ".github", "plugin", "marketplace.json"), "utf8"));
+  for (const [relative, manifest] of [
+    [".claude-plugin/plugin.json", JSON.parse(fs.readFileSync(path.join(root, ".claude-plugin", "plugin.json"), "utf8"))],
+    [".github/plugin/plugin.json", JSON.parse(fs.readFileSync(path.join(root, ".github", "plugin", "plugin.json"), "utf8"))],
+    [".github/plugin/marketplace.json", marketplace.plugins[0]],
+  ]) {
+    assert.equal(manifest.commands, undefined, relative);
+  }
+});
+
 test("Qoder manifest declares only fields in Qoder's plugin reference", () => {
   const documented = new Set([
     "name", "version", "displayName", "description", "author", "homepage", "repository", "license", "keywords", "dependencies",
