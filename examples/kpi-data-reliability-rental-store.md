@@ -6,13 +6,13 @@ Invoke Necktie with a decision, not a request to operate a workflow:
 /necktie Our tool and equipment rental store wants to rank branches and determine bonuses from utilization, dollar utilization, turnaround, maintenance cost, damage recovery, receivables, forward bookings, and repeat business. Assess whether those KPIs are trustworthy and whether tying compensation to them will improve the business.
 ```
 
-Necktie should privately test the strongest case for aggressive metric-driven management, including its real benefits: comparability, faster intervention, accountability, and capital efficiency.
+Necktie should fix the beneficiary (here, the store's owners), the mandate, and the horizon, then weigh the real benefits of metric-driven management, such as comparability, faster intervention, accountability, and capital efficiency, against what it costs.
 
-It should then test who controls each source event, which employees inherit the measurement burden, which costs disappear from the dashboard, how each metric can be gamed, and which failures can remain plausible across several KPIs.
+It should test who controls each source event, which employees inherit the measurement burden, which costs disappear from the dashboard, how each metric can be gamed, and which failures can remain plausible across several KPIs.
 
-The response should take a position. A likely recommendation is to avoid compensation based on unvalidated composite rankings, trace each KPI to authoritative source events, pair outcomes with quality and safety checks, and pilot the incentive with appeal and rollback mechanisms. That recommendation remains a hypothesis until supported by the store's actual systems, policies, and records.
+The response should take a position on the move that most increases the owners' expected net wealth. A likely recommendation is to avoid compensation based on unvalidated composite rankings, trace each KPI to authoritative source events, pair outcomes with quality and safety checks, and pilot the incentive with appeal and rollback mechanisms. Pay tied to metrics that can be gamed rewards gaming and erodes the value it was meant to capture. That recommendation remains a hypothesis until supported by the store's actual systems, policies, and records.
 
-The internal adversary must not appear as a speaker in the output. The user needs the decisive incentive analysis, not the private debate.
+The response should not narrate private analysis or a debate transcript. The user needs the conclusion, the material tradeoff, and the evidence it needs.
 
 ## Turn the judgment into useful work
 

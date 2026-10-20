@@ -97,6 +97,13 @@ test("command templates invoke Necktie without selectors", () => {
   assert.doesNotMatch(combined, /--mode|necktie-mode|NECKTIE_MODE_COMMAND|mammon|lite|full/i);
 });
 
+test("current docs do not describe removed modes or the removed internal adversary", () => {
+  for (const relative of ["docs/openai-submission.md", "examples/kpi-data-reliability-rental-store.md", "TERMS.md", "docs/host-support.md"]) {
+    assert.doesNotMatch(fs.readFileSync(path.join(root, relative), "utf8"), /Lite mode|focused mode|internal adversary/i, relative);
+  }
+  assert.doesNotMatch(fs.readFileSync(path.join(root, "TERMS.md"), "utf8"), /plugin for ChatGPT and Codex\./);
+});
+
 test("README files and current documentation use only the Necktie name", () => {
   const files = [
     "README.md", "README.es.md", "README.ko.md", "after-install.md",

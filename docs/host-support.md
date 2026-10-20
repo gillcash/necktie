@@ -20,7 +20,7 @@ Installation commands for primary hosts are in the [README](../README.md). Addit
 | Grok Build | `grok plugin install gillcash/necktie --trust` |
 | Swival | `swival skills add --global https://github.com/gillcash/necktie` |
 | OpenClaw | `clawhub install necktie` or copy `.openclaw/skills/necktie/` |
-| Qoder | `.qoder/rules/necktie.md`; for settings-level hooks, copy the `hooks` object from `hooks/qoder-hooks.json` and replace `${QODER_PLUGIN_ROOT}` with the absolute path to this checkout |
+| Qoder | Plugin installs load the skills and hooks. For static rules, copy `.qoder/rules/necktie.md` into your project's `.qoder/rules/`. For settings-level hooks, copy the `hooks` object from `hooks/qoder-hooks.json` and replace `${QODER_PLUGIN_ROOT}` with the absolute path to this checkout |
 | Cursor | `.cursor/rules/necktie.mdc` |
 | Windsurf | `.windsurf/rules/necktie.md` |
 | Cline | `.clinerules/necktie.md` |
@@ -52,11 +52,12 @@ Every adapter uses the same policy. Previous selectors and configuration no long
 | Policy | `skills/necktie/references/policy.md` |
 | Generation | `scripts/build-adapters.js` copies the policy into static rules and standalone OpenClaw skills |
 | JavaScript loading | `lib/necktie-policy.cjs` |
-| Lifecycle hooks | `hooks/necktie-context.js` |
+| Lifecycle hooks | `hooks/necktie-context.js`, run by `hooks/claude-hooks.json`, `hooks/codex-hooks.json`, `hooks/copilot-hooks.json`, and `hooks/qoder-hooks.json` |
 | OpenCode | `.opencode/plugins/necktie.mjs` and `index.js` |
 | Pi | `pi-extension/index.js` |
 | Hermes | `__init__.py` and `necktie_policy.py` |
 | Research loop | `skills/necktie-research/scripts/research_prompt_loop.py` and `research_state.py` |
+| Behavioral eval | `benchmarks/run-evals.mjs`, run with `npm run eval` (needs an API key; not part of `npm test`) |
 
 ## Develop
 

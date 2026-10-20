@@ -1,6 +1,10 @@
 # OpenAI plugin submission
 
-This document records the historical v0.5.1 skills-only submission. Current releases also include native runtime hooks for supported hosts; see [host support](host-support.md) and the [privacy policy](../PRIVACY.md) for their behavior.
+This document records the v0.5.1 skills-only submission. Later releases changed three things that reviewers should know about:
+
+- Native runtime hooks on supported hosts, including Codex, add the policy to sessions and prompts. See [host support](host-support.md) and the [privacy policy](../PRIVACY.md).
+- One policy replaces the earlier Lite and Full modes. Its default objective is to maximize the beneficiary's expected net wealth.
+- Test cases P4 and N1 below are updated for those changes. The other cases are unchanged.
 
 ## Submission type
 
@@ -53,8 +57,8 @@ The plugin has no custom UI, authentication, external backend, or developer-oper
 
 ### P4 — Focused KPI check
 
-- **Prompt:** Use Necktie in Lite mode to check this KPI: individual bonuses are based on average customer handle time.
-- **Expected behavior:** Apply the focused mode for this invocation only and test what behavior the incentive rewards without adding unnecessary ceremony.
+- **Prompt:** Use Necktie to check this KPI: individual bonuses are based on average customer handle time.
+- **Expected behavior:** Apply the policy proportionately and test what behavior the incentive rewards without adding unnecessary ceremony.
 - **Expected result:** A compact verdict, the main hidden cost or gaming risk, and the smallest useful correction.
 - **Fixtures:** None.
 
@@ -70,7 +74,7 @@ The plugin has no custom UI, authentication, external backend, or developer-oper
 ### N1 — Unrelated request
 
 - **Prompt:** Translate "Good morning" into Spanish.
-- **Expected behavior:** Do not invoke Necktie implicitly because the request is unrelated to incentive, power, metric, policy, product, or research-brief analysis.
+- **Expected behavior:** Translate normally and do not invoke the Necktie decision skill, because the request is unrelated to incentive, power, metric, policy, product, or research-brief analysis. Where hooks add the policy to every prompt, it stays proportionate and adds no Necktie framing.
 - **Expected result:** Normal translation behavior without Necktie framing.
 - **Reason:** The plugin should not hijack unrelated work.
 
