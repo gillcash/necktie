@@ -163,7 +163,7 @@ Require citations close to material claims and a source register when the task w
 
 Tell the researcher to state assumptions and complete the work when unanswered questions are not material. Do not create ceremonial follow-up questions. Do not ask for hidden reasoning; ask for concise rationale, evidence, calculations, and checks.
 
-For Mammon-origin prompts, preserve the beneficiary's wealth-accumulation objective and the Mammon policy's binding safeguards. Do not weaken evidence standards or conceal downside risk. For Full-origin prompts, include Necktie's agency, recourse, externality, and durability concerns when material.
+For Mammon-origin prompts, preserve the beneficiary's expected-net-wealth objective. Do not weaken evidence standards or conceal downside risk. For Full-origin prompts, include Necktie's agency, recourse, externality, and durability concerns when material.
 
 ## Phase 6 — Review and revise
 

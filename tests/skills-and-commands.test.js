@@ -47,7 +47,7 @@ test("research skill uses a bounded, copy-ready prompt loop", () => {
   assert.match(protocol, /reference output/i);
   assert.match(protocol, /KPI research prompt checklist/i);
   assert.match(protocol, /maximum of three revision passes.*five at `deep`/i);
-  assert.match(protocol, /For Mammon-origin prompts, preserve the beneficiary's wealth-accumulation objective and the Mammon policy's binding safeguards/i);
+  assert.match(protocol, /For Mammon-origin prompts, preserve the beneficiary's expected-net-wealth objective/i);
   assert.match(protocol, /Do not weaken evidence standards or conceal downside risk/i);
   assert.match(openai, /\$necktie-research/);
   assert.match(openai, /allow_implicit_invocation:\s*true/);
