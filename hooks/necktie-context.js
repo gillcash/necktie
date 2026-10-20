@@ -61,18 +61,24 @@ function readHookInput(stream = process.stdin, timeoutMs = 1000) {
   });
 }
 
+// Manifest launchers call main() from `node -e` without a catch, so it must never reject.
 async function main(argv = process.argv.slice(2), env = process.env, options = {}) {
-  const event = argv[0] || "SessionStart";
-  const hint = argv[1] || "";
-  const explicitHost = hint === "copilot" || hint === "qoder" ? hint : hint ? "gemini" : "";
-  if (!options.input) await readHookInput(options.stdin || process.stdin, options.timeoutMs || 1000);
-  const evaluated = evaluate(event, env, explicitHost);
-  const result = hostPayload(event, evaluated.context, evaluated.host);
-  process.stdout.write(typeof result === "string" ? result : JSON.stringify(result));
-  return result;
+  try {
+    const event = argv[0] || "SessionStart";
+    const hint = argv[1] || "";
+    const explicitHost = hint === "copilot" || hint === "qoder" ? hint : hint ? "gemini" : "";
+    if (!options.input) await readHookInput(options.stdin || process.stdin, options.timeoutMs || 1000);
+    const evaluated = evaluate(event, env, explicitHost);
+    const result = hostPayload(event, evaluated.context, evaluated.host);
+    process.stdout.write(typeof result === "string" ? result : JSON.stringify(result));
+    return result;
+  } catch (_) {
+    process.exitCode = 0;
+    return undefined;
+  }
 }
 
-if (require.main === module) main().catch(() => { process.exitCode = 0; });
+if (require.main === module) main();
 
 module.exports = {
   evaluate,

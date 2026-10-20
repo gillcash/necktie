@@ -135,6 +135,25 @@ test("hook exits when stdin never closes", async () => {
   assert.equal(Buffer.concat(output).toString("utf8"), policy.buildInstructions());
 });
 
+test("manifest launchers fail like the direct hook when the policy is unreadable", (t) => {
+  const broken = temporary(t);
+  for (const relative of ["hooks/necktie-context.js", "lib/necktie-policy.cjs"]) {
+    fs.mkdirSync(path.join(broken, path.dirname(relative)), { recursive: true });
+    fs.copyFileSync(path.join(root, relative), path.join(broken, relative));
+  }
+  const env = { ...childEnvironment(), CLAUDE_PLUGIN_ROOT: broken };
+  const outcome = (result) => [result.status, result.stdout, result.stderr];
+  const direct = spawnSync(process.execPath, [path.join(broken, "hooks/necktie-context.js"), "SessionStart"], { encoding: "utf8", env, input: "{}" });
+  assert.deepEqual(outcome(direct), [0, "", ""]);
+  for (const [event, [group]] of Object.entries(json("hooks/claude-codex-hooks.json").hooks)) {
+    const command = group.hooks[0].command.replaceAll("${CLAUDE_PLUGIN_ROOT}", broken);
+    for (const [host, hostEnv] of [["claude", env], ["codex", { ...env, PLUGIN_ROOT: broken, PLUGIN_DATA: path.join(broken, "data") }]]) {
+      const launched = spawnSync(command, { shell: true, encoding: "utf8", env: hostEnv, input: "{}" });
+      assert.deepEqual(outcome(launched), outcome(direct), `${host} ${event}`);
+    }
+  }
+});
+
 test("a policy read failure does not block the host", (t) => {
   const result = spawnSync(process.execPath, [path.join(root, "hooks/necktie-context.js"), "SessionStart"], {
     encoding: "utf8", env: { ...childEnvironment(), PLUGIN_ROOT: temporary(t) }, input: "{}",
