@@ -56,9 +56,9 @@ class HermesTests(IsolatedConfig):
             self.assertEqual("Ambition pass" in context, mode == "full")
         self.assertIn("Useful action pass", hermes.build_injected_context("full"))
         mammon = hermes.build_injected_context("mammon")
-        self.assertIn("Mammon makes wealth the master", mammon)
-        self.assertIn("greatest expected increase in their net wealth", mammon)
-        self.assertRegex(mammon, r"Binding safeguards\s+remain: legality, authorized scope, honesty")
+        self.assertIn("Let Mammon decide", mammon)
+        self.assertRegex(mammon, r"most increases the beneficiary['’]s\s+expected net wealth")
+        self.assertIn("take the authorized next action", mammon)
         self.assertNotRegex(mammon, r"adversarial risk assessment|do not\s+adopt them as objectives|Then rebut")
         with self.assertRaises(ValueError):
             hermes.build_injected_context("off")

@@ -17,21 +17,27 @@ test("generated references preserve distinct modes and one shared core", () => {
   for (const [mode, included, excluded] of [
     ["lite", [/Mammon is an internal adversary/i, /Mammon stays internal/i], /Ambition pass|Useful action pass|sole final perspective/i],
     ["full", [/Ambition pass/, /Useful action pass/], /Mammon is the sole final perspective/i],
-    ["mammon", [/Mammon makes wealth the master/i, /greatest expected increase in their net wealth/i, /Useful action pass/], /adversarial risk assessment|do not\s+adopt them as objectives|Then rebut|Ambition pass/i],
+    ["mammon", [/Let Mammon decide/i, /most increases the beneficiary['’]s\s+expected net wealth/i, /Useful action pass/], /adversarial risk assessment|do not\s+adopt them as objectives|Then rebut|Ambition pass/i],
   ]) {
     const instructions = policy.buildInstructions(mode);
     assert.equal(instructions.match(/NECKTIE MODE ACTIVE/g)?.length, 1);
     assert.doesNotMatch(instructions, /<MODE>/);
     assert.match(instructions, /Never narrate private analysis/i);
+    assert.match(instructions, /Never trade away security, privacy, accessibility, input\s+validation, or data-loss protection/i);
     assert.match(instructions, new RegExp(`level: ${mode}`, "i"));
     for (const pattern of included) assert.match(instructions, pattern);
     assert.doesNotMatch(instructions, excluded);
     if (mode === "mammon") {
-      assert.match(instructions, /beneficiary's accumulation of money, ownership,\s+and command over future income/i);
-      assert.match(instructions, /wealth accumulation takes precedence over the shared core's\s+general preferences for human agency and shared value/i);
-      assert.match(instructions, /Binding safeguards\s+remain: legality, authorized scope, honesty, security, privacy/i);
-      assert.match(instructions, /Never\s+fabricate evidence, conceal a material downside, recommend deception or\s+unauthorized surveillance/i);
-      assert.match(instructions, /exceed the\s+user['’]s authority,\s+or bypass safety\s+boundaries/i);
+      assert.match(instructions, /Fix the beneficiary, mandate, horizon, and loss\s+capacity/i);
+      assert.match(instructions, /breaking near-ties toward more capture/i);
+      assert.match(instructions, /keeping revenue, contribution, profit, cash, and asset value\s+distinct/i);
+      assert.match(instructions, /per-unit, one-time, and attributed figures apart from total,\s+recurring, and incremental ones/i);
+      assert.match(instructions, /When recommending a\s+measurable action, set the baseline, metric, target, measurement horizon,\s+and external success check/i);
+      assert.match(instructions, /Do not invent\s+trust dividends, backlash, or penalties, treat unknown risks as zero, or\s+accept ruin exposure the user has not explicitly accepted/i);
+      assert.match(instructions, /take the authorized next action/i);
+      assert.match(instructions, /Where a test\s+is defined, report gains, misses, and uncertainty against it,\s+distinguishing projections from observed results/i);
+      assert.match(instructions, /When a material response ends at\s+judgment, offer exactly one concrete next artifact/i);
+      assert.doesNotMatch(instructions, /Binding safeguards\s+remain|wealth accumulation takes precedence/i);
     }
     if (mode !== "lite") assert.match(instructions, /use `necktie-research`; approval\s+authorizes starting immediately/i);
   }
